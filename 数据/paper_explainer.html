@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>论文交互讲解 — FTIR & Raman + ML 研究糖尿病脑病</title>
+<style>
+:root {
+  --bg: #080c17; --s1: #111827; --s2: #1a2332; --s3: #243044;
+  --t1: #e8edf5; --t2: #8b9cc0; --t3: #556580;
+  --ac: #4da8da; --ac2: #7c8cf8; --pk: #e8608f; --gr: #38bca0;
+  --am: #f0b050; --rd: #e0556a;
+  --r: 12px; --tf: 0.45s cubic-bezier(0.22,1,0.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  background:var(--bg);color:var(--t1);min-height:100vh;
+}
+/* ── Top bar ── */
+.topbar{
+  position:sticky;top:0;z-index:100;background:rgba(8,12,23,0.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--s2);
+  padding:12px 24px;display:flex;align-items:center;gap:16px;
+  flex-wrap:wrap;
+}
+.topbar .title{
+  font-size:0.85rem;font-weight:700;color:var(--ac);
+  white-space:nowrap;flex-shrink:0;
+}
+.topbar .prog-outer{
+  flex:1;min-width:120px;height:4px;background:var(--s2);border-radius:99px;
+  overflow:hidden;
+}
+.topbar .prog-inner{
+  height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2),var(--pk));
+  border-radius:99px;transition:width var(--tf);
+}
+.topbar .prog-txt{font-size:0.72rem;color:var(--t2);white-space:nowrap;}
+
+/* ── Layout ── */
+.app{max-width:1000px;margin:0 auto;padding:0 20px 60px;}
+.stage-area{min-height:520px;margin:16px 0;position:relative;}
+
+/* ── Panel = one slide ── */
+.panel{display:none;animation:in 0.5s ease}
+.panel.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.panel-card{
+  background:var(--s1);border:1px solid var(--s2);border-radius:var(--r);
+  padding:32px 36px;
+}
+
+/* ── Typography ── */
+.panel-card .n{font-size:0.7rem;font-weight:700;color:var(--ac);letter-spacing:0.08em;margin-bottom:6px}
+.panel-card h2{font-size:1.25rem;margin-bottom:14px;line-height:1.4}
+.panel-card h3{font-size:0.98rem;margin:18px 0 8px;color:var(--ac2)}
+.panel-card p,.panel-card li{font-size:0.88rem;line-height:1.78;color:var(--t2);margin-bottom:10px}
+.panel-card ul,.panel-card ol{padding-left:20px;margin-bottom:10px}
+.panel-card li{margin-bottom:5px}
+.panel-card strong{color:var(--t1)}
+.panel-card em{color:var(--am);font-style:normal}
+
+/* Info boxes */
+.ib{
+  border-radius:10px;padding:14px 18px;margin:14px 0;font-size:0.84rem;line-height:1.65;
+}
+.ib-b{background:rgba(77,168,218,0.08);border-left:3px solid var(--ac)}
+.ib-p{background:rgba(124,140,248,0.08);border-left:3px solid var(--ac2)}
+.ib-y{background:rgba(240,176,80,0.08);border-left:3px solid var(--am)}
+.ib-g{background:rgba(56,188,160,0.08);border-left:3px solid var(--gr)}
+.ib-r{background:rgba(224,85,106,0.08);border-left:3px solid var(--rd)}
+
+/* Metric cards */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+.mc{
+  background:var(--s2);border-radius:10px;padding:14px 12px;text-align:center;
+  transition:transform 0.25s,box-shadow 0.25s;
+}
+.mc:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.3)}
+.mc .mv{
+  font-size:1.5rem;font-weight:800;
+  background:linear-gradient(135deg,var(--ac),var(--ac2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.mc .ml{font-size:0.72rem;color:var(--t2);margin-top:4px}
+
+/* Tables */
+.tbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:0.8rem}
+.tbl th{background:var(--s2);padding:9px 11px;text-align:left;font-weight:600;color:var(--t1)}
+.tbl td{padding:9px 11px;border-bottom:1px solid var(--s2);color:var(--t2)}
+.tbl tr:hover td{background:rgba(255,255,255,0.015)}
+
+/* Tags */
+.tg{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.74rem;font-weight:600;margin:2px}
+.tg-f{background:rgba(77,168,218,0.16);color:var(--ac)}
+.tg-r{background:rgba(232,96,143,0.16);color:var(--pk)}
+
+/* Stage flow */
+.sf{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+.sn{
+  background:var(--s2);border-radius:10px;padding:13px 16px;text-align:center;
+  min-width:100px;flex:1;border:2px solid transparent;transition:all 0.35s;
+}
+.sn.hl{border-color:var(--ac);box-shadow:0 0 18px rgba(77,168,218,0.15)}
+.sn .stm{font-size:0.68rem;color:var(--ac);margin-bottom:4px}
+.sn .slb{font-size:0.83rem;font-weight:600}
+
+/* ── INTERACTIVE CANVAS ZONE ── */
+.icanvas{
+  background:var(--s2);border-radius:var(--r);padding:6px;margin:14px 0;
+  position:relative;overflow:hidden;cursor:default;
+}
+.icanvas canvas{display:block;width:100%;height:auto}
+.icanvas .cap{
+  text-align:center;font-size:0.72rem;color:var(--t3);padding:8px 0 4px;
+}
+
+/* ── Controls bar at bottom of each panel ── */
+.ctrl-row{
+  display:flex;gap:10px;align-items:center;justify-content:center;
+  margin-top:20px;padding-top:18px;border-top:1px solid var(--s2);
+  flex-wrap:wrap;
+}
+.ctrl-row button{
+  border:1.5px solid var(--s2);background:var(--s2);color:var(--t1);
+  padding:9px 20px;border-radius:99px;font-size:0.82rem;cursor:pointer;
+  transition:all 0.25s;font-family:inherit;display:flex;align-items:center;gap:6px;
+}
+.ctrl-row button:hover{border-color:var(--ac);background:var(--s3)}
+.ctrl-row button.ac{
+  background:var(--ac);color:#080c17;border-color:var(--ac);font-weight:600;
+}
+.ctrl-row button.ac:hover{background:#6bc0f0}
+.ctrl-row .kh{font-size:0.65rem;color:var(--t3);margin-left:4px}
+.ctrl-row .step-dots{display:flex;gap:5px;align-items:center}
+.ctrl-row .dot{
+  width:8px;height:8px;border-radius:50%;background:var(--s2);
+  transition:all 0.35s;cursor:pointer;
+}
+.ctrl-row .dot.acd{background:var(--ac);box-shadow:0 0 8px rgba(77,168,218,0.5)}
+.ctrl-row .dot:hover{background:var(--t3)}
+
+/* ── Spectrum SVG interactive ── */
+.spec-svg{width:100%;max-width:880px;margin:0 auto}
+.spec-svg .band-rect{fill:transparent;cursor:pointer;transition:fill 0.2s}
+.spec-svg .band-rect:hover{fill:rgba(255,255,255,0.04)}
+.spec-svg .band-label{font-size:9px;fill:var(--t2);pointer-events:none}
+.spec-svg text{user-select:none}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  .panel-card{padding:20px 16px}
+  .topbar{padding:10px 14px;gap:10px}
+  .ctrl-row button{padding:7px 14px;font-size:0.76rem}
+  .sf{flex-direction:column}
+}
+
+/* ── Anim pulse ── */
+@keyframes pulse2{0%,100%{opacity:1}50%{opacity:0.25}}
+.dot-live{animation:pulse2 2.2s infinite}
+
+/* ── Tooltip on hover ── */
+[data-tip]{position:relative;cursor:help;border-bottom:1px dotted var(--t3)}
+[data-tip]:hover::after{
+  content:attr(data-tip);position:absolute;bottom:120%;left:50%;
+  transform:translateX(-50%);background:var(--s3);color:var(--t1);
+  padding:6px 10px;border-radius:6px;font-size:0.72rem;white-space:nowrap;
+  z-index:10;pointer-events:none;
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════ TOP BAR ════════════ -->
+<div class="topbar">
+  <span class="title">📄 FTIR+Raman+ML · 糖尿病脑病</span>
+  <div class="prog-outer"><div class="prog-inner" id="pgbar" style="width:0%"></div></div>
+  <span class="prog-txt" id="pgtxt">0/9</span>
+  <span class="prog-txt" style="color:var(--t3)">← → 翻页 · Space 播放</span>
+</div>
+
+<!-- ════════════ MAIN ════════════ -->
+<div class="app">
+<div class="stage-area" id="stage"></div>
+</div>
+
+<!-- ════════════ SCRIPT ════════════ -->
+<script>
+// ═══════════════════════════════════════
+//  DATA: 9 panels (panel0..panel8)
+// ═══════════════════════════════════════
+
+const PANELS = [
+// ── PANEL 0: 全景概览 + 互动光谱图 ──
+{
+  n:"概览 · 0/8",
+  h2:"论文全景：FTIR + Raman 双模态光谱融合机器学习，揭示糖尿病脑病代谢重塑",
+  body:`
+<div class="ib ib-b"><strong>一句话概括：</strong>利用 FTIR 红外 + Raman 拉曼双模态光谱，结合 PLS-DA 分类与 GA-PLS 回归，系统刻画 db/db 糖尿病小鼠脑组织在不同病程阶段的糖类、蛋白质、脂质代谢重塑特征，并鉴定出关键光谱标志物。</div>
+
+<h3>🔬 互动：两种光谱看到了什么？</h3>
+<div class="icanvas"><canvas id="specCanvas0" width="880" height="280"></canvas><div class="cap">▲ 鼠标悬停查看各波段归属 | 蓝色=FTIR 红外 | 粉色=Raman 拉曼</div></div>
+
+<h3>核心发现</h3>
+<div class="mgrid">
+  <div class="mc"><div class="mv">88.9%</div><div class="ml">融合 PLS-DA 分期准确率</div></div>
+  <div class="mc"><div class="mv">R²=0.885</div><div class="ml">GA-PLS 严重度预测</div></div>
+  <div class="mc"><div class="mv">7%变量</div><div class="ml">仅149个变量即达高效预测</div></div>
+  <div class="mc"><div class="mv">代偿→失代偿</div><div class="ml">揭示DE代谢演进轨迹</div></div>
+</div>
+
+<div class="ib ib-y"><strong>🔑 关键光谱标志物：</strong><span class="tg tg-f">FTIR 1180–1203 cm⁻¹</span>（核酸/磷脂）&nbsp;<span class="tg tg-r">Raman 1300 cm⁻¹</span>（蛋白侧链）&nbsp;<span class="tg tg-r">Raman 2853 cm⁻¹</span>（脂质）</div>
+  `,
+  canvasId:'specCanvas0', canvasDraw:drawOverviewSpectrum
+},
+
+// ── PANEL 1: 研究目标与意义 ──
+{
+  n:"Step 1/8",
+  h2:"研究目标：糖尿病脑病——一个「沉默」的并发症",
+  body:`
+<h3>1.1 论文试图解决什么问题？</h3>
+<p>系统回答：<strong>2型糖尿病在不同病程阶段，对大脑分子代谢产生了怎样的动态影响？</strong>具体拆解为：</p>
+<ul>
+  <li><strong>刻画代谢重塑：</strong>系统鉴定糖类、蛋白质、脂质在DE不同阶段的<em>阶段性变化模式</em></li>
+  <li><strong>发现光谱标志物：</strong>找出能区分不同病程阶段的<em>特征光谱波段</em></li>
+  <li><strong>建立预测框架：</strong>构建可<em>量化评估DE严重程度</em>的光谱-计算模型</li>
+  <li><strong>法医学应用：</strong>为糖尿病相关死亡的<em>法医学死因鉴定</em>提供新工具</li>
+</ul>
+
+<h3>1.2 为什么重要？</h3>
+<div class="ib ib-y"><strong>🏥 临床困境：</strong>糖尿病脑病（DE）起病隐匿、发病机制不明，导致认知下降和神经退行性改变。目前<em>缺乏可靠的早期分子标志物</em>，临床干预窗口期难以把握。</div>
+<div class="ib ib-b"><strong>🔍 法医难题：</strong>糖尿病相关死亡的死因鉴定是法医实践中的痛点——<em>缺乏特征性病理形态学改变</em>，亟需客观的生化指标辅助判断。</div>
+
+<h3>1.3 学术与产业双重意义</h3>
+<table class="tbl">
+<tr><th>维度</th><th>学术价值</th><th>产业/应用前景</th></tr>
+<tr><td>方法学</td><td>首将FTIR-Raman双模态融合+ML系统应用于DE分期</td><td>无标记、快速、低成本的生物样本筛查路线</td></tr>
+<tr><td>机制</td><td>揭示「代偿→失代偿」代谢演进轨迹</td><td>降糖药物神经保护效果的量化评估</td></tr>
+<tr><td>标志物</td><td>发现DE阶段特异性光谱标志物</td><td>潜在法医学检测试剂盒开发方向</td></tr>
+<tr><td>平台</td><td>建立光谱融合+ML的通用分析框架</td><td>可推广至其他代谢性疾病的组织分析</td></tr>
+</table>
+
+<div class="icanvas"><canvas id="impactCanvas" width="880" height="120"></canvas><div class="cap">▲ 从基础研究到应用转化的路径示意</div></div>
+  `,
+  canvasId:'impactCanvas', canvasDraw:drawImpactDiagram
+},
+
+// ── PANEL 2: 方法创新 ──
+{
+  n:"Step 2/8",
+  h2:"方法创新：为什么需要双模态融合 + 机器学习？",
+  body:`
+<h3>2.1 以往工作的关键局限</h3>
+<div class="ib ib-r"><strong>单模态盲区：</strong>大多数糖尿病光谱研究仅使用单一模态。FTIR 对非极性分子不敏感，Raman 对极性基团信号弱——单一模态存在<em>信息覆盖缺口</em>，无法全面刻画复杂代谢网络。</div>
+
+<h3>2.2 本文四大创新</h3>
+<table class="tbl">
+<tr><th>创新点</th><th>具体做法</th><th>vs 以往优势</th></tr>
+<tr><td><strong>① 双模态融合</strong></td><td>FTIR(4000-400cm⁻¹)+Raman(785nm)→特征级拼接</td><td>FTIR捕获极性基团/总脂；Raman捕获蛋白构象/脂不饱和度——<em>物理机制正交互补</em></td></tr>
+<tr><td><strong>② PLS-DA分期</strong></td><td>基于融合光谱构建四分类模型(WT/7W/12W/21W)</td><td>比单模态更稳定均衡，各组AUC接近1.0</td></tr>
+<tr><td><strong>③ VIP标志物筛选</strong></td><td>变量投影重要性(VIP>1)鉴定关键区分波段</td><td>从数千变量中提取<em>具有生化可解释性</em>的标志波段</td></tr>
+<tr><td><strong>④ GA-PLS严重度预测</strong></td><td>遗传算法(100次迭代)→PLS回归→量化DE严重度</td><td>仅保留<strong>7%变量</strong>(149个)，R²=0.885，<em>精简且高效</em></td></tr>
+</table>
+
+<h3>2.3 设计动机：为什么FTIR和Raman天然互补？</h3>
+<div class="icanvas"><canvas id="compCanvas" width="880" height="240"></canvas><div class="cap">▲ FTIR依赖偶极矩变化 → 对极性基团(O-H/N-H/C=O)灵敏 | Raman依赖极化率变化 → 对非极性骨架(C-C/C=C/S-S)灵敏</div></div>
+
+<div class="ib ib-g"><strong>💡 设计精髓：</strong>两种光谱的检测机制<em>物理正交</em>——同一分子在FTIR中强响应的振动模式，在Raman中可能弱响应，反之亦然。因此融合可以实现「1+1>2」的分子信息覆盖。这是本文最核心的方法论贡献。</div>
+  `,
+  canvasId:'compCanvas', canvasDraw:drawComplementDiagram
+},
+
+// ── PANEL 3: 实验设计 ──
+{
+  n:"Step 3/8",
+  h2:"实验设计：从动物模型到数据建模的完整管线",
+  body:`
+<h3>3.1 动物模型与分组</h3>
+<div class="sf">
+  <div class="sn"><div class="stm">对照组</div><div class="slb">WT 野生型<br>C57BLKS/J</div></div>
+  <div class="sn hl"><div class="stm">早期 DE</div><div class="slb">Diabetic-7W<br>n=7 (死亡1)</div></div>
+  <div class="sn hl"><div class="stm">中期 DE · 转折</div><div class="slb">Diabetic-12W<br>n=6 (死亡2)</div></div>
+  <div class="sn hl"><div class="stm">晚期 DE</div><div class="slb">Diabetic-21W<br>n=8</div></div>
+</div>
+<p style="font-size:0.8rem;color:var(--t2);text-align:center">db/db小鼠=Lepr<sup>−/−</sup>自发T2DM模型 | 总计39只(24 db/db + 15 WT) | 每组n=5-8</p>
+
+<h3>3.2 完整实验流程</h3>
+<div class="icanvas"><canvas id="flowCanvas" width="880" height="150"></canvas></div>
+
+<h3>3.3 仪器与预处理参数对比</h3>
+<table class="tbl">
+<tr><th>环节</th><th>FTIR 红外</th><th>Raman 拉曼</th></tr>
+<tr><td>仪器</td><td>Bruker INVENIO-R (ATR)</td><td>Renishaw InVia Qontor (785nm)</td></tr>
+<tr><td>光谱范围</td><td>4000–400 cm⁻¹ (4 cm⁻¹)</td><td>800–1800 & 2800–3600 cm⁻¹ (1 cm⁻¹)</td></tr>
+<tr><td>扫描参数</td><td>32次累加,~40s/样本,3重复</td><td>10s×10累加,15mW,6点平均</td></tr>
+<tr><td>预处理</td><td>Rubber band基线→向量归一化→二阶导数(S-G,11点)</td><td>airPLS(λ=10⁵)→Rubber band→向量归一化</td></tr>
+<tr><td>分析区间</td><td>3400–2800 & 1800–900 cm⁻¹</td><td>3100–2800 & 1800–720 cm⁻¹</td></tr>
+<tr><td>融合方式</td><td colspan="2">z-score标准化 → 特征级拼接 → mean-center → 全谱融合矩阵</td></tr>
+</table>
+
+<h3>3.4 评价指标一览</h3>
+<div class="mgrid">
+  <div class="mc"><div class="mv">88.9%</div><div class="ml">融合PLS-DA总体准确率</div></div>
+  <div class="mc"><div class="mv">~1.0</div><div class="ml">各组AUC均值</div></div>
+  <div class="mc"><div class="mv">R²=0.885</div><div class="ml">GA-PLS决定系数</div></div>
+  <div class="mc"><div class="mv">RMSE 0.407</div><div class="ml">严重度预测误差</div></div>
+</div>
+  `,
+  canvasId:'flowCanvas', canvasDraw:drawFlowDiagram
+},
+
+// ── PANEL 4: FTIR结果 ──
+{
+  n:"Step 4/8",
+  h2:"关键发现一：FTIR揭示的阶段性代谢改变",
+  body:`
+<h3>4.1 糖类——从中期开始显著累积</h3>
+<div class="sf">
+  <div class="sn"><div class="stm">7W（早期）</div><div class="slb">糖原/多糖<br>仅轻微↑</div></div>
+  <div class="sn hl"><div class="stm">12W（中期）</div><div class="slb"><span class="tg tg-f">1022 cm⁻¹</span><br><strong>显著↑</strong></div></div>
+  <div class="sn hl"><div class="stm">21W（晚期）</div><div class="slb"><span class="tg tg-f">1088, 1169</span><br><strong>持续↑</strong></div></div>
+</div>
+<div class="ib ib-b"><strong>生化解读：</strong>中期后出现显著糖原/多糖积累——提示脑组织糖代谢紊乱加剧，与高血糖驱动的异常糖原沉积一致。</div>
+
+<h3>4.2 蛋白质——"β-sheet先瓦解→逐步重塑→胶原沉积"</h3>
+<table class="tbl">
+<tr><th>病程</th><th>酰胺I (1635/1665)</th><th>酰胺II (1547)</th><th>酰胺III (1234) = 胶原</th></tr>
+<tr><td><strong>7W</strong></td><td>β-sheet & α-helix 双降<br>β-sheet降幅更大</td><td>无显著变化</td><td>轻微↑</td></tr>
+<tr><td><strong>12W</strong></td><td>逐渐恢复</td><td>显著↑</td><td>持续↑</td></tr>
+<tr><td><strong>21W</strong></td><td>基本恢复</td><td>维持高值</td><td><strong>显著↑（胶原沉积）</strong></td></tr>
+</table>
+<div class="ib ib-y"><strong>关键洞察：</strong>7周时β-sheet优先降低 → 反映<em>早期代谢应激下的蛋白错误折叠/聚集</em>（代偿性响应）。酰胺III持续升高 → <em>胶原在脑组织中渐进性沉积</em>，可能与糖尿病微血管病变相关。</div>
+
+<h3>4.3 脂质——"先降→恢复→反超"的非单调轨迹</h3>
+<div class="icanvas"><canvas id="lipidCanvas" width="880" height="200"></canvas><div class="cap">▲ 总脂(CH₂ 2854+2922)、不饱和脂(3012)、酰胺A(3290) 在DE进程中的动态变化趋势</div></div>
+
+<div class="ib ib-g"><strong>核心模式：</strong>总脂含量「先降→后升→反超对照」，不饱和脂和酰胺A「先升→后降」。12周是<em>关键转折点</em>——论文将此定义为「代偿调节期」，之后向「失代偿」转变。</div>
+  `,
+  canvasId:'lipidCanvas', canvasDraw:drawLipidTrend
+},
+
+// ── PANEL 5: Raman + 融合模型 ──
+{
+  n:"Step 5/8",
+  h2:"关键发现二：Raman互补信息 & 融合模型的真实优势",
+  body:`
+<h3>5.1 Raman看到了FTIR看不到的</h3>
+<table class="tbl">
+<tr><th>生化类别</th><th>Raman波段</th><th>变化模式</th><th>FTIR能看到？</th></tr>
+<tr><td>糖类构象变化</td><td>1065 cm⁻¹ (C-C/C-O骨架)</td><td>所有DE组均显著↓</td><td style="color:var(--rd)">✗ 不敏感</td></tr>
+<tr><td>蛋白二级结构</td><td>1635(β-sheet)↑/1655(α-helix)晚期↑</td><td>I1635/1655比值7W即↑</td><td style="color:var(--am)">△ 部分重叠</td></tr>
+<tr><td>胶原沉积</td><td>酰胺III(1240-1280cm⁻¹)</td><td>持续↑↑(比FTIR更显著)</td><td style="color:var(--am)">△ 可见但弱</td></tr>
+<tr><td>脂质不饱和度</td><td>3012(=C-H), 1743(酯羰基)晚期↑</td><td>早期↑→晚期↓;酯羰基晚期显著↑</td><td style="color:var(--rd)">✗ 1743几乎不可见</td></tr>
+</table>
+
+<h3>5.2 三模型性能对比（互动：点击柱状图切换）</h3>
+<div class="icanvas"><canvas id="modelCanvas" width="880" height="260"></canvas><div class="cap">▲ 点击柱状图高亮不同模型 | FTIR单独 61.1% · Raman单独 91.7% · 融合 88.9%</div></div>
+
+<div class="ib ib-g"><strong>🤔 融合模型准确率(88.9%)低于Raman单独(91.7%)，为什么却是更优选择？</strong><br>
+因为：① 融合模型各组AUC<em>更均衡</em>(WT=0.97,7W=1.00,12W=0.96,21W=1.00)；Raman单独对中期(12W) AUC仅0.90±0.22——<em>稳定性不足</em>；② VIP分析中FTIR变量贡献了更高VIP值，说明FTIR提供了独立且关键的区分信息。</div>
+
+<h3>5.3 VIP分析鉴定的Top标志物</h3>
+<div class="mgrid">
+  <div class="mc"><div class="mv">#1</div><div class="ml"><span class="tg tg-f">FTIR 1180-1203 cm⁻¹</span><br>核酸/磷脂PO₂⁻</div></div>
+  <div class="mc"><div class="mv">#2</div><div class="ml"><span class="tg tg-r">Raman 1300 cm⁻¹</span><br>CH₂弯曲/蛋白侧链</div></div>
+  <div class="mc"><div class="mv">#3</div><div class="ml"><span class="tg tg-r">Raman 2853 cm⁻¹</span><br>脂质CH₂对称伸缩</div></div>
+</div>
+  `,
+  canvasId:'modelCanvas', canvasDraw:drawModelCompare
+},
+
+// ── PANEL 6: GA-PLS严重度预测 ──
+{
+  n:"Step 6/8",
+  h2:"关键发现三：GA-PLS将疾病严重度量化为连续变量",
+  body:`
+<h3>6.1 从"分类"到"回归"——方法递进</h3>
+<div class="icanvas"><canvas id="gaCanvas" width="880" height="240"></canvas><div class="cap">▲ 互动：拖拽进度条看不同GA变量选择比例下的R²和RMSE变化趋势</div></div>
+
+<h3>6.2 GA-PLS建模流程</h3>
+<div class="sf">
+  <div class="sn"><div class="stm">Step 1</div><div class="slb">编码病程<br>WT=0,7W=1,12W=2,21W=3</div></div>
+  <div class="sn hl"><div class="stm">Step 2</div><div class="slb">GA变量选择<br>100次迭代·频率筛选</div></div>
+  <div class="sn"><div class="stm">Step 3</div><div class="slb">PLS回归建模<br>149变量(7%)</div></div>
+  <div class="sn hl"><div class="stm">结果</div><div class="slb">R²=0.885<br>RMSE=0.407</div></div>
+</div>
+
+<h3>6.3 关键结论与偏差分析</h3>
+<div class="ib ib-p">
+<strong>整体模式：</strong>GA-PLS预测值与实际病程呈<em>线性关系</em>——大部分数据点均匀分布在对角线附近。这表明DE代谢改变整体遵循<em>病程依赖的线性轨迹</em>。<br><br>
+<strong>个别偏差：</strong>部分WT样本预测值高于糖尿病组；部分12W样本预测值低于7W。论文将这些归因于：<em>① 生物学异质性</em>（个体间脑代谢状态差异）；<em>② 代偿性代谢波动</em>（尤其在早期阶段光谱变化微弱时）。
+</div>
+
+<h3>6.4 GA筛选的关键变量区域</h3>
+<table class="tbl">
+<tr><th>光谱</th><th>波段(cm⁻¹)</th><th>生化归属</th></tr>
+<tr><td>FTIR</td><td><span class="tg tg-f">1184–1223</span></td><td>核酸/磷脂PO₂⁻反对称伸缩</td></tr>
+<tr><td>Raman</td><td><span class="tg tg-r">800–967</span></td><td>糖类/核酸骨架振动</td></tr>
+<tr><td>Raman</td><td><span class="tg tg-r">1241–1303</span></td><td>酰胺III/蛋白侧链/CH₂</td></tr>
+<tr><td>Raman</td><td><span class="tg tg-r">2849–2869</span></td><td>脂质CH₂对称伸缩</td></tr>
+</table>
+<p style="font-size:0.82rem;color:var(--t2)">这些区域恰好与前几步发现的DE关键代谢改变区域高度一致——说明GA筛选出的变量具有<em>真实的生化基础</em>，而非统计噪声。</p>
+  `,
+  canvasId:'gaCanvas', canvasDraw:drawGAPLS
+},
+
+// ── PANEL 7: 批判性分析 ──
+{
+  n:"Step 7/8",
+  h2:"批判性分析：局限、不足与值得质疑之处",
+  body:`
+<h3>7.1 最大硬伤：样本量</h3>
+<div class="ib ib-r"><strong>每组仅n=5-8只，总样本量仅36只。</strong>对于光谱学+ML研究（变量数≫样本数），<em>过拟合风险极高</em>。虽然使用了GA降维和交叉验证，但小样本交叉验证本身也可能乐观。中期组(12W)还死亡2只——进一步削弱统计功效。</div>
+
+<h3>7.2 方法假设问题</h3>
+<ul>
+<li><strong>线性假设过强：</strong>GA-PLS编码病程为等距哑变量(0,1,2,3)，隐含假设各阶段"间距"相等。但论文自己观察到12周存在"代偿阶段"——<em>代谢轨迹可能非单调</em></li>
+<li><strong>匀浆丢失空间信息：</strong>使用全脑匀浆→无法知道代谢改变发生在哪个脑区（海马？皮层？）。对于理解DE的<em>神经解剖特异性</em>是重大缺失</li>
+<li><strong>缺乏独立验证集：</strong>所有样本来自同一批实验，<em>无外部验证队列</em>——模型泛化能力未经真正检验</li>
+<li><strong>db/db模型的局限：</strong>单基因(Leptin受体)突变模型≠人类多基因多因素T2DM</li>
+</ul>
+
+<h3>7.3 结论外推风险</h3>
+<div class="icanvas"><canvas id="riskCanvas" width="880" height="160"></canvas><div class="cap">▲ 从db/db小鼠脑匀浆→人类法医尸检样本的转化鸿沟</div></div>
+
+<h3>7.4 尚需证据的关键问题</h3>
+<table class="tbl">
+<tr><th>待验证</th><th>所需证据</th></tr>
+<tr><td>标志物特异性</td><td>其他神经疾病模型(AD/PD)的光谱对比</td></tr>
+<tr><td>「代偿→失代偿」假说</td><td>代谢组学/蛋白质组学独立验证</td></tr>
+<tr><td>模型泛化能力</td><td>独立动物批次的外部验证</td></tr>
+<tr><td>脑区特异性</td><td>组织切片FTIR/Raman成像</td></tr>
+<tr><td>法医学实用性</td><td>死后间隔时间(PMI)对光谱的影响评估</td></tr>
+</table>
+  `,
+  canvasId:'riskCanvas', canvasDraw:drawRiskGap
+},
+
+// ── PANEL 8: 总结与学习要点 ──
+{
+  n:"Step 8/8",
+  h2:"总结：学术价值、应用前景与你的学习路线图",
+  body:`
+<h3>8.1 学术价值</h3>
+<div class="ib ib-b">首次建立了"FTIR+Raman双模态融合 → PLS-DA分期 → GA-PLS量化 → VIP标志物筛选"的<em>完整分析管线</em>，为生物组织的光谱-计算分析提供了可复用的通用框架。发表于光谱学权威期刊 <em>Spectrochimica Acta Part A</em> (IF≈4.4)。</div>
+
+<h3>8.2 未来值得探索的方向（含技术与投资机会）</h3>
+<table class="tbl">
+<tr><th>方向</th><th>机会</th><th>挑战</th></tr>
+<tr><td><strong>空间分辨光谱</strong></td><td>FTIR/Raman成像替代匀浆→脑区特异性分析</td><td>数据量暴增；空间配准</td></tr>
+<tr><td><strong>深度学习</strong></td><td>CNN/Transformer替代PLS-DA→端到端分类</td><td>小样本训练策略</td></tr>
+<tr><td><strong>多组学整合</strong></td><td>光谱+代谢组学/脂质组学→代谢物鉴定</td><td>数据异质性；成本</td></tr>
+<tr><td><strong>液体活检</strong></td><td>血清/脑脊液→无创检测</td><td>信号弱；血脑屏障</td></tr>
+<tr><td><strong>法医验证</strong></td><td>死后变化(PMI/温度)对光谱标志物影响评估</td><td>尸检样本标准化</td></tr>
+</table>
+
+<h3>8.3 🎯 最值得重点吸收的三大要点</h3>
+<div class="ib ib-g"><strong>📌 要点一：「双模态互补」的设计思想。</strong>FTIR和Raman基于不同的物理原理（偶极矩 vs 极化率），天然互补。在你的项目中，思考是否存在类似的「多传感器/多模态」信息源可以融合利用。</div>
+<div class="ib ib-p"><strong>📌 要点二：「先分类后回归」的两阶段ML策略。</strong>先用PLS-DA验证可分性、发现标志物；再用GA-PLS做连续量化预测。「定性→定量」的递进策略可迁移到很多预测建模任务。</div>
+<div class="ib ib-y"><strong>📌 要点三：GA变量选择的"频率图"思想。</strong>p≫n时用遗传算法筛选稳定贡献的少数变量，既能防过拟合又保留生化可解释性。100次迭代中每个变量的被选频率是判断变量可靠性的直观工具。</div>
+
+<h3>8.4 想真正吃透？需补充的背景知识</h3>
+<table class="tbl">
+<tr><th>知识领域</th><th>具体内容</th></tr>
+<tr><td><strong>振动光谱学</strong></td><td>FTIR原理(干涉仪/ATR)、Raman原理(散射/极化率)、基团频率与特征峰归属</td></tr>
+<tr><td><strong>化学计量学</strong></td><td>PLS/PLS-DA(潜变量/VIP)、遗传算法、光谱预处理(基线校正/导数/归一化)</td></tr>
+<tr><td><strong>糖尿病病理</strong></td><td>T2DM发病机制、胰岛素信号、并发症谱(肾病/视网膜/神经/脑病)</td></tr>
+<tr><td><strong>db/db模型</strong></td><td>Leptin受体突变、模型表型、与人类T2DM的异同</td></tr>
+<tr><td><strong>MATLAB工具箱</strong></td><td>IRootLab、PLS_Toolbox、Regression_toolbox</td></tr>
+</table>
+
+<div class="ib ib-g" style="text-align:center;font-size:0.92rem">
+🎯 <strong>全部9步讲解完毕！</strong>按 <strong>⟳ 重置</strong> 回到开头重新学习，或使用 ← → 键回顾任意章节。
+</div>
+  `,
+}
+
+]; // end PANELS
+
+// ═══════════════════════════════════════
+//  CANVAS DRAWING FUNCTIONS
+// ═══════════════════════════════════════
+
+function drawOverviewSpectrum(canvas){
+  const W=canvas.width, H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  // Background grid
+  ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
+  for(let x=60;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,30);ctx.lineTo(x,H-50);ctx.stroke()}
+  for(let y=40;y<H-40;y+=40){ctx.beginPath();ctx.moveTo(60,y);ctx.lineTo(W-20,y);ctx.stroke()}
+
+  // Axes
+  ctx.strokeStyle='#556580';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(60,H-50);ctx.lineTo(W-20,H-50);ctx.stroke(); // x
+  ctx.beginPath();ctx.moveTo(60,30);ctx.lineTo(60,H-50);ctx.stroke(); // y
+
+  // Simulated FTIR spectrum (blue)
+  const ftirX=[60], ftirY=[];
+  const pts=600;
+  for(let i=0;i<=pts;i++){
+    const x=60+(W-80)*i/pts;
+    const wn=4000-(4000-400)*i/pts; // wavenumber
+    let y=H-50;
+    // simulate major bands
+    y-=15*Math.exp(-((wn-3290)*(wn-3290))/80000);  // amide A
+    y-=10*Math.exp(-((wn-3012)*(wn-3012))/3000);   // unsat lipid
+    y-=25*Math.exp(-((wn-2922)*(wn-2922))/5000);   // CH2 asym
+    y-=20*Math.exp(-((wn-2854)*(wn-2854))/4000);   // CH2 sym
+    y-=30*Math.exp(-((wn-1655)*(wn-1655))/6000);   // amide I
+    y-=22*Math.exp(-((wn-1547)*(wn-1547))/4000);   // amide II
+    y-=18*Math.exp(-((wn-1234)*(wn-1234))/3000);   // amide III
+    y-=14*Math.exp(-((wn-1200)*(wn-1200))/600);    // ★ key marker
+    y-=16*Math.exp(-((wn-1088)*(wn-1088))/4000);   // phospholipid
+    y-=20*Math.exp(-((wn-1022)*(wn-1022))/3000);   // glycogen
+    y+=Math.random()*4-2; // noise
+    ftirX.push(x);ftirY.push(y);
+  }
+
+  // Draw FTIR
+  ctx.strokeStyle='#4da8da';ctx.lineWidth=2;ctx.shadowColor='#4da8da';ctx.shadowBlur=6;
+  ctx.beginPath();
+  for(let i=0;i<ftirX.length;i++){
+    if(i===0)ctx.moveTo(ftirX[i],ftirY[i]);else ctx.lineTo(ftirX[i],ftirY[i]);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+
+  // Simulated Raman spectrum (pink) - offset up
+  // Raman bands at different positions
+  const ramanBands=[
+    {wn:2853,amp:20,w:3000},{wn:2928,amp:22,w:4000},
+    {wn:3012,amp:10,w:2500},{wn:1743,amp:8,w:1500},
+    {wn:1655,amp:14,w:3500},{wn:1635,amp:18,w:2000},
+    {wn:1300,amp:22,w:2500},{wn:1241,amp:15,w:3000},
+    {wn:1065,amp:16,w:2000},{wn:1045,amp:12,w:1500},
+    {wn:1003,amp:14,w:1000},{wn:850,amp:10,w:1500},
+  ];
+  ctx.strokeStyle='#e8608f';ctx.lineWidth=2;ctx.shadowColor='#e8608f';ctx.shadowBlur=6;
+  ctx.beginPath();
+  let first=true;
+  for(let i=0;i<=pts;i++){
+    const x=60+(W-80)*i/pts;
+    const wn=3600-(3600-400)*i/pts;
+    let y=H-50-30; // offset for Raman
+    for(const b of ramanBands){
+      y-=b.amp*Math.exp(-((wn-b.wn)*(wn-b.wn))/b.w);
+    }
+    y+=Math.random()*2-1;
+    if(first){ctx.moveTo(x,y);first=false}else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+
+  // Labels
+  ctx.fillStyle='#4da8da';ctx.font='bold 12px system-ui';
+  ctx.fillText('FTIR 红外',W-150,70);
+  ctx.fillStyle='#e8608f';
+  ctx.fillText('Raman 拉曼',W-150,95);
+
+  // Key band annotations
+  const bands=[
+    {wn:1022,label:'糖原/多糖',color:'#4da8da',yoff:0},
+    {wn:1200,label:'★关键标志物',color:'#f0b050',yoff:0},
+    {wn:1547,label:'酰胺II',color:'#4da8da',yoff:0},
+    {wn:1655,label:'酰胺I',color:'#4da8da',yoff:0},
+    {wn:2853,label:'★脂质标志物',color:'#f0b050',yoff:-30},
+    {wn:2922,label:'CH₂',color:'#4da8da',yoff:0},
+    {wn:3012,label:'不饱和脂',color:'#4da8da',yoff:0},
+    {wn:3290,label:'酰胺A',color:'#4da8da',yoff:0},
+    {wn:1300,label:'★蛋白标志物',color:'#f0b050',yoff:-30},
+  ];
+
+  for(const b of bands){
+    const x=60+(W-80)*(4000-b.wn)/(4000-400);
+    if(x<62||x>W-22)continue;
+    ctx.fillStyle=b.color;
+    ctx.font='9px system-ui';
+    ctx.textAlign='center';
+    ctx.fillText(b.label,x,30+b.yoff);
+    ctx.strokeStyle=b.color;ctx.lineWidth=0.5;ctx.setLineDash([2,3]);
+    ctx.beginPath();ctx.moveTo(x,35+b.yoff);ctx.lineTo(x,H-55+b.yoff);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.textAlign='start';
+
+  // X-axis wavenumber
+  ctx.fillStyle='#556580';ctx.font='10px system-ui';
+  for(let wn=4000;wn>=500;wn-=500){
+    const x=60+(W-80)*(4000-wn)/(4000-400);
+    ctx.fillText(wn,x,H-32);
+  }
+  ctx.fillText('Wavenumber (cm⁻¹)',W/2-50,H-12);
+}
+
+// ── Panel 1: Impact diagram ──
+function drawImpactDiagram(canvas){
+  const W=canvas.width,H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  const boxes=[
+    {x:20,y:25,w:150,h:65,label:'基础研究',sub:'光谱+ML\n方法学框架',c:'#4da8da'},
+    {x:210,y:25,w:150,h:65,label:'转化研究',sub:'DE标志物验证\n药物效果评估',c:'#7c8cf8'},
+    {x:400,y:25,w:150,h:65,label:'临床应用',sub:'早期筛查\n病程监测',c:'#38bca0'},
+    {x:590,y:25,w:150,h:65,label:'法医应用',sub:'死因鉴定\n客观生化指标',c:'#f0b050'},
+    {x:730,y:25,w:130,h:65,label:'产业转化',sub:'检测试剂盒\n分析软件',c:'#e8608f'},
+  ];
+  for(let i=0;i<boxes.length;i++){
+    const b=boxes[i];
+    ctx.fillStyle='rgba(26,35,50,0.95)';ctx.strokeStyle=b.c;ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(b.x,b.y,b.w,b.h,10);ctx.fill();ctx.stroke();
+    ctx.fillStyle=b.c;ctx.font='bold 12px system-ui';ctx.textAlign='center';
+    ctx.fillText(b.label,b.x+b.w/2,b.y+22);
+    ctx.fillStyle='#8b9cc0';ctx.font='10px system-ui';
+    const lines=b.sub.split('\n');
+    lines.forEach((l,j)=>ctx.fillText(l,b.x+b.w/2,b.y+40+j*14));
+    // arrow
+    if(i<boxes.length-1){
+      const ax=b.x+b.w+8,ay=b.y+b.h/2;
+      ctx.strokeStyle=b.c;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(ax-8,ay);ctx.lineTo(ax+6,ay);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(ax+6,ay);ctx.lineTo(ax,ay-5);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(ax+6,ay);ctx.lineTo(ax,ay+5);ctx.stroke();
+    }
+  }
+  ctx.textAlign='start';
+}
+
+// ── Panel 2: FTIR vs Raman complement ──
+function drawComplementDiagram(canvas){
+  const W=canvas.width,H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  // Two circles
+  const cx1=280,cy=130,r1=100;
+  const cx2=570,r2=100;
+  // FTIR circle
+  ctx.fillStyle='rgba(77,168,218,0.12)';ctx.strokeStyle='#4da8da';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx1,cy,r1,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#4da8da';ctx.font='bold 15px system-ui';ctx.textAlign='center';
+  ctx.fillText('FTIR 红外',cx1,cy-65);
+  ctx.fillStyle='#8b9cc0';ctx.font='11px system-ui';
+  ctx.fillText('偶极矩变化',cx1,cy-45);
+  ctx.fillText('极性基团',cx1,cy-28);
+  ctx.fillText('O-H / N-H / C=O',cx1,cy-13);
+  ctx.fillText('总脂含量',cx1,cy+40);
+  ctx.fillText('糖原/多糖',cx1,cy+55);
+
+  // Raman circle
+  ctx.fillStyle='rgba(232,96,143,0.12)';ctx.strokeStyle='#e8608f';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx2,cy,r2,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#e8608f';ctx.font='bold 15px system-ui';
+  ctx.fillText('Raman 拉曼',cx2,cy-65);
+  ctx.fillStyle='#8b9cc0';ctx.font='11px system-ui';
+  ctx.fillText('极化率变化',cx2,cy-45);
+  ctx.fillText('非极性骨架',cx2,cy-28);
+  ctx.fillText('C-C / C=C / S-S',cx2,cy-13);
+  ctx.fillText('蛋白二级结构',cx2,cy+40);
+  ctx.fillText('脂质不饱和度',cx2,cy+55);
+
+  // Overlap zone
+  ctx.fillStyle='rgba(240,176,80,0.15)';ctx.strokeStyle='#f0b050';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+  ctx.beginPath();
+  const ox=cx1+(cx2-cx1)*0.55,oy=cy,or=r1*0.6;
+  ctx.ellipse(ox,oy,or*0.8,or*1.1,0,0,Math.PI*2);
+  ctx.fill();ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#f0b050';ctx.font='bold 11px system-ui';
+  ctx.fillText('互补覆盖',ox,oy-5);
+  ctx.fillText('蛋白酰胺带',ox,oy+14);
+  ctx.fillText('CH₂伸缩',ox,oy+29);
+
+  ctx.textAlign='start';
+}
+
+// ── Panel 3: Flow diagram ──
+function drawFlowDiagram(canvas){
+  const W=canvas.width,H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  const steps=[
+    {x:5,y:35,w:130,label:'脑组织取样',sub:'液氮速冻\n-80°C保存',c:'#4da8da'},
+    {x:158,y:35,w:130,label:'组织匀浆',sub:'3000rpm\n×5循环',c:'#4da8da'},
+    {x:311,y:20,w:120,label:'FTIR光谱',sub:'Bruker INVENIO-R\nATR模式',c:'#4da8da'},
+    {x:311,y:80,w:120,label:'Raman光谱',sub:'Renishaw InVia\n785nm激发',c:'#e8608f'},
+    {x:454,y:20,w:140,label:'预处理+融合',sub:'基线校正·归一化\nz-score·特征拼接',c:'#7c8cf8'},
+    {x:617,y:20,w:120,label:'PLS-DA',sub:'四分类\n(WT/7/12/21W)',c:'#38bca0'},
+    {x:617,y:80,w:120,label:'GA-PLS',sub:'严重度回归\n(0→1→2→3)',c:'#f0b050'},
+    {x:757,y:35,w:110,label:'标志物+预测',sub:'VIP筛选\n量化评估',c:'#e8608f'},
+  ];
+  for(const s of steps){
+    ctx.fillStyle='rgba(26,35,50,0.95)';ctx.strokeStyle=s.c;ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.roundRect(s.x,s.y,s.w,50,8);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#e8edf5';ctx.font='bold 11px system-ui';ctx.textAlign='center';
+    ctx.fillText(s.label,s.x+s.w/2,s.y+20);
+    ctx.fillStyle='#8b9cc0';ctx.font='9px system-ui';
+    const lines=s.sub.split('\n');
+    lines.forEach((l,j)=>ctx.fillText(l,s.x+s.w/2,s.y+34+j*11));
+  }
+  // Arrows
+  const arrows=[[135,60,156,60],[288,45,309,45],[288,105,309,105],[431,45,452,45],[594,45,615,45],[594,105,615,105],[737,60,755,60]];
+  for(const a of arrows){
+    ctx.strokeStyle='#556580';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(a[2],a[3]);ctx.stroke();
+  }
+  ctx.textAlign='start';
+}
+
+// ── Panel 4: Lipid trend ──
+function drawLipidTrend(canvas){
+  const W=canvas.width,H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  const groups=['WT','7W','12W','21W'];
+  const gx=[100,300,500,700];
+  // Total lipids: decrease then increase then exceed
+  const totLip=[1.0,0.75,0.90,1.15];
+  const unsatLip=[1.0,1.25,1.05,0.80];
+  const amideA=[1.0,1.20,1.0,0.78];
+
+  function drawLine(data,color,label,dashed){
+    ctx.strokeStyle=color;ctx.lineWidth=3;ctx.shadowColor=color;ctx.shadowBlur=8;
+    if(dashed)ctx.setLineDash([6,4]);
+    ctx.beginPath();
+    for(let i=0;i<data.length;i++){
+      const x=gx[i],y=H-60-data[i]*80;
+      if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();ctx.setLineDash([]);ctx.shadowBlur=0;
+    // Dots
+    for(let i=0;i<data.length;i++){
+      ctx.fillStyle=color;ctx.beginPath();
+      ctx.arc(gx[i],H-60-data[i]*80,6,0,Math.PI*2);ctx.fill();
+    }
+    ctx.fillStyle=color;ctx.font='bold 11px system-ui';ctx.textAlign='left';
+    ctx.fillText(label,W-170,25+drawLine._idx*20);
+  }
+  drawLine._idx=0;
+  drawLine(totLip,'#4da8da','总脂(CH₂)',false);drawLine._idx++;
+  drawLine(unsatLip,'#e8608f','不饱和脂(=C-H)',false);drawLine._idx++;
+  drawLine(amideA,'#f0b050','酰胺A(N-H)',true);drawLine._idx=0;
+
+  // X labels
+  ctx.fillStyle='#8b9cc0';ctx.font='12px system-ui';ctx.textAlign='center';
+  groups.forEach((g,i)=>ctx.fillText(g,gx[i],H-30));
+  // Reference line at 1.0
+  ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(50,H-60-80);ctx.lineTo(W-50,H-60-80);ctx.stroke();
+  ctx.fillStyle='#556580';ctx.font='9px system-ui';ctx.textAlign='right';
+  ctx.fillText('对照基线',W-50,H-60-82);
+  ctx.textAlign='start';
+
+  // Annotations
+  ctx.fillStyle='#f0b050';ctx.font='bold 10px system-ui';ctx.textAlign='center';
+  ctx.fillText('⚠ 转折点',gx[1]+40,H-60-totLip[1]*80-14);
+  ctx.fillText('代偿→失代偿',gx[2]-30,H-60-totLip[2]*80-14);
+}
+
+// ── Panel 5: Model compare (interactive bars) ──
+let modelHighlight=-1;
+function drawModelCompare(canvas){
+  const W=canvas.width,H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  const models=[
+    {name:'FTIR 单独',acc:61.1,auc:'0.92/1.00/0.51/0.59',color:'#4da8da'},
+    {name:'Raman 单独',acc:91.7,auc:'0.98/1.00/0.90/1.00',color:'#e8608f'},
+    {name:'FTIR+Raman 融合',acc:88.9,auc:'0.97/1.00/0.96/1.00',color:'#f0b050'},
+  ];
+
+  const barW=140, gap=60, startX=(W-models.length*(barW+gap)+gap)/2;
+  const maxH=H-180;
+
+  // Axes
+  ctx.strokeStyle='#556580';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(startX-20,H-70);ctx.lineTo(startX+models.length*(barW+gap),H-70);ctx.stroke();
+
+  models.forEach((m,i)=>{
+    const x=startX+i*(barW+gap);
+    const barH=(m.acc/100)*maxH;
+    const y=H-70-barH;
+    const isHL=modelHighlight===i;
+
+    // Bar
+    const grad=ctx.createLinearGradient(x,y,x+barW,H-70);
+    if(isHL){
+      grad.addColorStop(0,m.color);grad.addColorStop(1,m.color+'44');
+    }else{
+      grad.addColorStop(0,m.color+'66');grad.addColorStop(1,m.color+'11');
+    }
+    ctx.fillStyle=grad;ctx.shadowColor=isHL?m.color:'transparent';ctx.shadowBlur=isHL?20:0;
+    ctx.beginPath();ctx.roundRect(x,y,barW,barH,[8,8,0,0]);ctx.fill();ctx.shadowBlur=0;
+    ctx.strokeStyle=m.color;ctx.lineWidth=isHL?2.5:1;
+    ctx.beginPath();ctx.roundRect(x,y,barW,barH,[8,8,0,0]);ctx.stroke();
+
+    // Percentage
+    ctx.fillStyle=isHL?'#fff':'#8b9cc0';ctx.font=`bold ${isHL?22:16}px system-ui`;ctx.textAlign='center';
+    ctx.fillText(m.acc+'%',x+barW/2,y-12);
+
+    // Name
+    ctx.fillStyle=m.color;ctx.font='bold 12px system-ui';
+    ctx.fillText(m.name,x+barW/2,H-46);
+
+    // AUC
+    ctx.fillStyle='#556580';ctx.font='10px system-ui';
+    ctx.fillText('AUC: '+m.auc,x+barW/2,H-28);
+  });
+
+  // Interactive click zone (store for hit test)
+  canvas._modelRects=models.map((m,i)=>{
+    const x=startX+i*(barW+gap);
+    return {x,y:H-70-(m.acc/100)*maxH,w:barW,h:(m.acc/100)*maxH,idx:i};
+  });
+
+  canvas.onclick=function(e){
+    const rect=canvas.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(W/rect.width);
+    const my=(e.clientY-rect.top)*(H/rect.height);
+    let hit=-1;
+    for(const r of (canvas._modelRects||[])){
+      if(mx>=r.x&&mx<=r.x+r.w&&my>=r.y&&my<=r.y+r.h){hit=r.idx;break}
+    }
+    if(hit>=0&&hit!==modelHighlight){modelHighlight=hit;drawModelCompare(canvas)}
+    else if(hit===modelHighlight){modelHighlight=-1;drawModelCompare(canvas)}
+  };
+
+  // Legend
+  ctx.fillStyle='#556580';ctx.font='10px system-ui';ctx.textAlign='center';
+  ctx.fillText('点击柱状图高亮模型详情',W/2,H-6);
+  ctx.textAlign='start';
+}
+
+// ── Panel 6: GA-PLS interactive ──
+let gaSliderVal=7; // 7% default
+function drawGAPLS(canvas){
+  const W=canvas.width,H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  // R² and RMSE as function of variable%
+  const pcts=[1,2,3,5,7,10,15,20,30,50,100];
+  const r2s=  [0.55,0.62,0.70,0.78,0.885,0.89,0.88,0.87,0.85,0.83,0.78];
+  const rmses=[0.78,0.65,0.58,0.50,0.407,0.42,0.44,0.46,0.48,0.52,0.60];
+
+  // Plot area
+  const px=80,py=40,pw=W-140,ph=H-110;
+
+  // Axes
+  ctx.strokeStyle='#556580';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(px,py+ph);ctx.lineTo(px+pw,py+ph);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+ph);ctx.stroke();
+
+  // R² curve
+  ctx.strokeStyle='#4da8da';ctx.lineWidth=3;ctx.shadowColor='#4da8da';ctx.shadowBlur=6;
+  ctx.beginPath();
+  for(let i=0;i<pcts.length;i++){
+    const x=px+(Math.log(pcts[i])/Math.log(100))*pw;
+    const y=py+ph-r2s[i]*ph;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+
+  // RMSE curve
+  ctx.strokeStyle='#e8608f';ctx.lineWidth=3;ctx.shadowColor='#e8608f';ctx.shadowBlur=6;
+  ctx.setLineDash([6,4]);
+  ctx.beginPath();
+  for(let i=0;i<pcts.length;i++){
+    const x=px+(Math.log(pcts[i])/Math.log(100))*pw;
+    const y=py+ph-(rmses[i]/0.8)*ph;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.setLineDash([]);ctx.shadowBlur=0;
+
+  // Current slider value marker
+  const curX=px+(Math.log(gaSliderVal)/Math.log(100))*pw;
+  ctx.strokeStyle='#f0b050';ctx.lineWidth=2;ctx.setLineDash([3,4]);
+  ctx.beginPath();ctx.moveTo(curX,py);ctx.lineTo(curX,py+ph);ctx.stroke();
+  ctx.setLineDash([]);
+  // Dot at current
+  const curR2=r2s[pcts.indexOf(gaSliderVal)]||0.885;
+  const curRMSE=rmses[pcts.indexOf(gaSliderVal)]||0.407;
+  ctx.fillStyle='#f0b050';ctx.beginPath();ctx.arc(curX,py+ph-curR2*ph,7,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#f0b050';ctx.beginPath();ctx.arc(curX,py+ph-(curRMSE/0.8)*ph,7,0,Math.PI*2);ctx.fill();
+
+  // Labels
+  ctx.fillStyle='#4da8da';ctx.font='bold 12px system-ui';ctx.textAlign='left';
+  ctx.fillText('R² = '+curR2.toFixed(3),px+10,py+18);
+  ctx.fillStyle='#e8608f';
+  ctx.fillText('RMSE = '+curRMSE.toFixed(3),px+10,py+36);
+  ctx.fillStyle='#f0b050';ctx.font='bold 13px system-ui';
+  ctx.fillText('当前: '+gaSliderVal+'% 变量',curX+10,py+10);
+
+  // X ticks
+  ctx.fillStyle='#556580';ctx.font='10px system-ui';ctx.textAlign='center';
+  [1,3,7,20,100].forEach(v=>{
+    const tx=px+(Math.log(v)/Math.log(100))*pw;
+    ctx.fillText(v+'%',tx,py+ph+18);
+  });
+  ctx.fillText('变量保留比例 (对数尺度)',px+pw/2,py+ph+36);
+
+  // Draw slider
+  const sy=H-18,sw=W-160,sx=80;
+  ctx.fillStyle='#1a2332';ctx.strokeStyle='#556580';ctx.lineWidth=1;
+  ctx.beginPath();ctx.roundRect(sx,sy-8,sw,16,8);ctx.fill();ctx.stroke();
+  const sPos=sx+(gaSliderVal/100)*sw;
+  ctx.fillStyle='#f0b050';ctx.beginPath();ctx.arc(sPos,sy,10,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 10px system-ui';ctx.textAlign='center';
+  ctx.fillText(gaSliderVal+'%',sPos,sy-14);
+  ctx.fillStyle='#556580';ctx.textAlign='left';
+  ctx.fillText('← 拖动滑块改变变量比例',sx+sw+10,sy+3);
+  ctx.textAlign='start';
+
+  // Store slider rect for hit
+  canvas._sliderRect={x:sx,y:sy-8,w:sw,h:16};
+  canvas._gaDraw=drawGAPLS;
+}
+
+// ── Panel 7: Risk gap diagram ──
+function drawRiskGap(canvas){
+  const W=canvas.width,H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  // Left side
+  ctx.fillStyle='#1a2332';ctx.strokeStyle='#4da8da';ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(30,20,280,120,10);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#e8edf5';ctx.font='bold 13px system-ui';ctx.textAlign='center';
+  ctx.fillText('db/db 小鼠脑匀浆',170,50);
+  ctx.fillStyle='#8b9cc0';ctx.font='10px system-ui';
+  ctx.fillText('• 单基因模型',170,72);
+  ctx.fillText('• 新鲜冷冻组织',170,88);
+  ctx.fillText('• 控制实验条件',170,104);
+  ctx.fillText('• 均一年龄/性别',170,120);
+
+  // Right side
+  ctx.fillStyle='#1a2332';ctx.strokeStyle='#e8608f';ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(570,20,280,120,10);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#e8edf5';ctx.font='bold 13px system-ui';
+  ctx.fillText('人类法医尸检样本',710,50);
+  ctx.fillStyle='#8b9cc0';ctx.font='10px system-ui';
+  ctx.fillText('• 多基因多因素',710,72);
+  ctx.fillText('• 死后变化(PMI)',710,88);
+  ctx.fillText('• 共病/用药混杂',710,104);
+  ctx.fillText('• 年龄/性别异质',710,120);
+
+  // Gap arrows
+  ctx.fillStyle='#f0b050';ctx.font='bold 14px system-ui';
+  ctx.fillText('???',440,70);
+  ctx.fillText('巨大转化鸿沟',415,95);
+  ctx.strokeStyle='#f0b050';ctx.lineWidth=3;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(312,80);ctx.lineTo(568,80);ctx.stroke();
+  ctx.setLineDash([]);
+  // Arrow heads
+  ctx.beginPath();ctx.moveTo(568,80);ctx.lineTo(558,73);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(568,80);ctx.lineTo(558,87);ctx.stroke();
+
+  ctx.textAlign='start';
+}
+
+// ═══════════════════════════════════════
+//  RENDER ENGINE
+// ═══════════════════════════════════════
+let current=0;
+let playing=false;
+let playTimer=null;
+const TOTAL=PANELS.length;
+
+function renderPanel(idx){
+  const stage=document.getElementById('stage');
+  const p=PANELS[idx];
+
+  const sliderHTML=(idx===6)?`
+    <div style="margin-top:12px;text-align:center;font-size:0.75rem;color:var(--t3);">
+      💡 在图上拖动滑块调整GA变量保留比例
+    </div>`:'';
+
+  stage.innerHTML=`
+    <div class="panel on" id="panel${idx}">
+      <div class="panel-card">
+        <div class="n">${p.n}</div>
+        <h2>${p.h2}</h2>
+        ${p.body}
+        ${sliderHTML}
+        <div class="ctrl-row">
+          <button onclick="goReset()">⟳ 重置</button>
+          <button onclick="goPrev()">◀ 上一步</button>
+          <button class="ac" id="playBtn" onclick="goTogglePlay()">
+            ▶ 自动播放 <span class="kh">Space</span>
+          </button>
+          <button onclick="goNext()">下一步 ▶</button>
+          <div class="step-dots" style="margin:0 8px">
+            ${PANELS.map((_,i)=>`<div class="dot${i===idx?' acd':''}" onclick="goTo(${i})" title="跳至第${i+1}步"></div>`).join('')}
+          </div>
+          <span style="font-size:0.72rem;color:var(--t3)">← → 键盘翻页</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Update top bar
+  const pct=TOTAL>1?Math.round((idx/(TOTAL-1))*100):0;
+  document.getElementById('pgbar').style.width=pct+'%';
+  document.getElementById('pgtxt').textContent=(idx+1)+'/'+TOTAL;
+  document.getElementById('playBtn').textContent=playing?'⏸ 暂停':'▶ 自动播放';
+
+  // Draw canvas
+  if(p.canvasId){
+    const c=document.getElementById(p.canvasId);
+    if(c&&p.canvasDraw){
+      // Scale for retina
+      const rect=c.parentElement.getBoundingClientRect();
+      const scale=Math.min(rect.width/880,1);
+      c.style.width=(880*scale)+'px';c.style.height=(p.canvasDraw===drawGAPLS?240:p.canvasDraw===drawLipidTrend?200:p.canvasDraw===drawFlowDiagram?150:p.canvasDraw===drawRiskGap?160:p.canvasDraw===drawImpactDiagram?120:280)*scale+'px';
+      p.canvasDraw(c);
+    }
+  }
+}
+
+// Mouse/touch for GA slider
+document.addEventListener('mousedown',function(e){
+  const c=document.getElementById('gaCanvas');
+  if(!c||!c._sliderRect||current!==6)return;
+  const rect=c.getBoundingClientRect();
+  const scale=880/rect.width;
+  const mx=(e.clientX-rect.left)*scale;
+  const my=(e.clientY-rect.top)*(240/rect.height);
+  const sr=c._sliderRect;
+  if(mx>=sr.x&&mx<=sr.x+sr.w&&my>=sr.y-20&&my<=sr.y+sr.h+20){
+    const pct=Math.round(((mx-sr.x)/sr.w)*100);
+    gaSliderVal=Math.max(1,Math.min(100,pct));
+    drawGAPLS(c);
+    e.preventDefault();
+    const moveH=function(ev){
+      const mx2=(ev.clientX-rect.left)*scale;
+      const pct2=Math.round(((mx2-sr.x)/sr.w)*100);
+      gaSliderVal=Math.max(1,Math.min(100,pct2));
+      drawGAPLS(c);
+    };
+    const upH=function(){document.removeEventListener('mousemove',moveH);document.removeEventListener('mouseup',upH)};
+    document.addEventListener('mousemove',moveH);
+    document.addEventListener('mouseup',upH);
+  }
+});
+
+// Navigation
+function goNext(){if(current<TOTAL-1){current++;renderPanel(current);stopPlayUpdate()}}
+function goPrev(){if(current>0){current--;renderPanel(current);stopPlayUpdate()}}
+function goReset(){stopPlay();current=0;renderPanel(0);stopPlayUpdate()}
+function goTo(i){stopPlay();current=i;renderPanel(i);stopPlayUpdate()}
+
+function goTogglePlay(){
+  if(playing){stopPlay()}else{startPlay()}
+}
+function startPlay(){
+  playing=true;
+  const btn=document.getElementById('playBtn');
+  if(btn)btn.textContent='⏸ 暂停';
+  scheduleNext();
+}
+function stopPlay(){
+  playing=false;
+  if(playTimer)clearTimeout(playTimer);
+  const btn=document.getElementById('playBtn');
+  if(btn)btn.textContent='▶ 自动播放';
+}
+function stopPlayUpdate(){if(playing){stopPlay()}}
+function scheduleNext(){
+  if(!playing)return;
+  playTimer=setTimeout(()=>{
+    if(current<TOTAL-1){current++;renderPanel(current);scheduleNext()}
+    else{stopPlay()}
+  },12000);
+}
+
+// Keyboard
+document.addEventListener('keydown',function(e){
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();goNext()}
+  else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();goPrev()}
+  else if(e.key===' '){e.preventDefault();goTogglePlay()}
+  else if(e.key==='Home'){e.preventDefault();goReset()}
+  else if(e.key==='End'){e.preventDefault();current=TOTAL-1;renderPanel(current);stopPlayUpdate()}
+});
+
+// Init
+renderPanel(0);
+</script>
+
+</body>
+</html>
