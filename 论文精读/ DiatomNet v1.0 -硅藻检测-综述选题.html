@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>综述选题 · DiatomNet v1.0 自动硅藻检测</title>
+<style>:root{--bg:#faf8f5;--card:#fff;--text:#2d2a26;--text-muted:#7a746d;--accent:#c44f1c;--accent2:#2e6b8f;--accent3:#5a8a4a;--border:#e8e4df;--shadow:0 1px 3px rgba(0,0,0,.06);--shadow-lg:0 4px 16px rgba(0,0,0,.08);--radius:10px;--font-sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;--font-serif:'Noto Serif SC','Source Han Serif SC','Songti SC',Georgia,serif}*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.7}#app{max-width:960px;margin:0 auto;padding:20px 24px 80px}.hero{text-align:center;padding:36px 0 24px;border-bottom:2px solid var(--border);margin-bottom:28px}.hero .badge{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:#f0f7ed;color:var(--accent3);padding:4px 14px;border-radius:12px;margin-bottom:10px}.hero h1{font-family:var(--font-serif);font-size:clamp(15px,2.6vw,18px);font-weight:700;line-height:1.5;color:#1a1815;margin-bottom:6px}.hero .meta{font-size:13px;color:var(--text-muted)}.hero .meta strong{color:var(--accent)}.snapshot-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}@media(max-width:640px){.snapshot-grid{grid-template-columns:1fr}}.snap-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}.snap-card .snap-label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:6px;font-weight:600}.snap-card .snap-value{font-size:14px;line-height:1.6}.snap-card.full{grid-column:1/-1}.section{margin-bottom:28px}.section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}.section-header .icon{font-size:22px}.section-header h2{font-size:18px;font-weight:700}.theme-map{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.theme-node{padding:8px 16px;border-radius:20px;font-size:13px;border:1.5px solid var(--border);background:#fdfcfa;position:relative}.theme-node.current{border-color:var(--accent);background:#fff0ed;font-weight:700;color:var(--accent);box-shadow:0 0 0 3px rgba(196,79,28,.08)}.theme-node.related{border-color:var(--accent2);background:#f0f6fa}.thread-list{display:flex;flex-direction:column;gap:12px}.thread-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);position:relative}.thread-card .thread-num{position:absolute;top:-10px;left:16px;width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}.thread-card h3{font-size:15px;margin:4px 0 6px;padding-left:24px}.thread-tag{display:inline-block;font-size:11px;padding:2px 10px;border-radius:10px;font-weight:600;margin-right:6px;margin-bottom:8px}.tag-feasible{background:#f0f7ed;color:var(--accent3)}.tag-caution{background:#fff3cd;color:#8b6914}.tag-novel{background:#f0f6fa;color:var(--accent2)}.gap-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.gap-table th{text-align:left;padding:10px 12px;background:#faf9f7;border-bottom:2px solid var(--border);font-size:12px;text-transform:uppercase;letter-spacing:.04em}.gap-table td{padding:12px;border-bottom:1px solid #f0ede8;vertical-align:top;line-height:1.6}.reading-list{list-style:none}.reading-list li{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid #f0ede8;font-size:14px}.reading-list .priority{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}.priority-high{background:var(--accent)}.priority-mid{background:var(--accent2)}.priority-low{background:var(--text-muted)}.reading-list .paper-info{flex:1}.reading-list .paper-info .paper-title{font-weight:600}.reading-list .paper-info .paper-reason{font-size:12px;color:var(--text-muted);margin-top:2px}.toggle-btn{font-size:13px;color:var(--accent2);cursor:pointer;border:none;background:none;font-family:var(--font-sans);text-decoration:underline;text-underline-offset:3px;padding:4px 0}.detail-block{display:none;margin-top:10px}.detail-block.open{display:block}.footer-note{text-align:center;padding:32px 0;color:var(--text-muted);font-size:13px;border-top:1px solid var(--border);margin-top:40px}.backlink{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--accent2);margin-bottom:20px;text-decoration:none}.paradigm-chain{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;padding:16px 0;margin:16px 0;font-size:13px}.paradigm-chain .node{padding:6px 14px;border-radius:16px;background:#f5f2ed;border:1px solid var(--border);font-weight:600;white-space:nowrap}.paradigm-chain .arrow{color:var(--accent);font-weight:700;font-size:16px}.paradigm-chain .node.highlight{background:#fff0ed;border-color:var(--accent);color:var(--accent)}.stack-diagram{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px;background:#fdfcfa;border-radius:var(--radius);border:1px solid var(--border);margin:12px 0}.stack-layer{padding:10px 20px;border-radius:12px;font-size:13px;font-weight:600;text-align:center;width:100%;max-width:420px}.stack-arrow{font-size:18px;color:var(--text-muted)}</style>
+</head>
+<body>
+<div id="app">
+<a href="./diatomnet-v1-精读.html" class="backlink">← 打开精读模式</a>
+
+<div class="hero">
+<div class="badge">综述选题模式 · 黄平课题组 · 主题#2 核心论文</div>
+<h1>DiatomNet v1.0: A novel approach for automatic diatom testing for drowning diagnosis in forensically biomedical application</h1>
+<div class="meta">Zhang, Vieira, Cheng, …, <strong>Ping Huang*</strong> · Comput Methods Prog Biomed (2023) · 司法鉴定科学研究院 / 复旦大学</div>
+</div>
+
+<div class="snapshot-grid">
+<div class="snap-card"><div class="snap-label">📌 一句话概括</div><div class="snap-value">把前期CNN硅藻识别算法封装成<strong>DiatomNet v1.0 GUI软件</strong>，用<strong>迁移学习</strong>应对碳色素/泥沙等复杂背景，实现<strong>接近人工精度(F1≈0.85)但速度快3倍</strong>的全自动硅藻检测。</div></div>
+<div class="snap-card"><div class="snap-label">🗂️ 黄平课题组版图位置</div><div class="snap-value"><strong>主题#2：硅藻AI</strong>的技术栈<strong>软件层</strong><br>Zhou 2019(算法)→Zhang 2021(分类)→<strong>DiatomNet v1.0(软件产品)</strong>→Ma 2025(简化分类)<br>这篇是<strong>proof-of-concept到可部署产品的桥梁</strong></div></div>
+<div class="snap-card"><div class="snap-label">🧬 技术架构</div><div class="snap-value">GUI(Drupal/PHP) + CNN(InceptionV3/TensorFlow) + 全片扫描(Leica 400×) + 网格分割 + GPU并行推理 + 迁移学习更新</div></div>
+<div class="snap-card"><div class="snap-label">🎯 核心贡献</div><div class="snap-value">① 首个<strong>可用的GUI硅藻AI软件</strong>（非概念验证）<br>② 迁移学习<strong>几千样本即可应对新背景</strong><br>③ RCT验证：真实玻片AI vs 人工<br>④ 法医AI模型评估的<strong>方法学建议</strong>(6条)</div></div>
+</div>
+
+<div class="section"><div class="section-header"><span class="icon">🔗</span><h2>硅藻AI技术栈：黄平课题组的完整管线</h2></div>
+<div class="stack-diagram">
+<div class="stack-layer" style="background:#f0f6fa;border:1px solid #c8dae8;">应用层：溺死诊断 · 地点推断(Ma 2025)</div><div class="stack-arrow">↑ 提供分类标准</div>
+<div class="stack-layer" style="background:#f0f7ed;border:1px solid var(--accent3);">分类层：简化3D向量分类 (Ma 2025) · 物种分类 (Zhang 2021)</div><div class="stack-arrow">↑ 提供识别结果</div>
+<div class="stack-layer" style="background:#fff0ed;border:2px solid var(--accent);font-weight:700;">识别层：<strong>DiatomNet v1.0 ← 本文</strong> (全片扫描+CNN检测)</div><div class="stack-arrow">↑ 数字化</div>
+<div class="stack-layer" style="background:#f5f2ed;border:1px solid var(--border);">数据层：全片扫描仪(Leica 400×) · 酸消化制样</div>
+</div>
+<p style="font-size:13px;color:var(--text-muted);text-align:center;">这个技术栈本身就是一篇综述的完美骨架</p>
+</div>
+
+<div class="section"><div class="section-header"><span class="icon">🧵</span><h2>综述线索</h2></div>
+<div class="thread-list">
+
+<div class="thread-card"><div class="thread-num" style="background:var(--accent);">A</div>
+<h3>AI驱动的法医硅藻检验：从手动镜检到全自动智能诊断</h3>
+<div><span class="thread-tag tag-feasible">可行性 ★★★★★</span><span class="thread-tag tag-novel">系统性强</span></div>
+<p style="font-size:13px;color:var(--text-muted);margin:8px 0;"><strong>逻辑链：</strong>这篇是黄平组硅藻AI路线的"产品化"节点。综述可以覆盖：传统手动镜检→环境科学AI(Anibal/Kloster/Salido)→法医AI(Zhou→Zhang→DiatomNet→Ma)→从检测到分类到地点推断的完整管线。</p>
+<button class="toggle-btn" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.textContent.includes('展开')?'▲ 收起':'▼ 展开详细分析'">▼ 展开详细分析</button>
+<div class="detail-block"><table class="gap-table"><tr><th style="width:25%">维度</th><th>评估</th></tr>
+<tr><td>论文量</td><td>黄平组硅藻AI ~8篇 + 国际AI硅藻 ~10篇 + 传统方法 ~5篇 = ~23篇</td></tr>
+<tr><td>竞争</td><td>低。目前没有系统综述"从手动到AI的法医硅藻检验演进"。</td></tr>
+<tr><td>框架</td><td>① 硅藻检验的法医学基础→② 传统手动方法及局限→③ AI方法分类(分类CNN/检测YOLO/分割)→④ 从算法到软件(DiatomNet案例)→⑤ 全流程整合(检测+分类+地点推断)</td></tr></table></div></div>
+
+<div class="thread-card"><div class="thread-num" style="background:var(--accent2);">B</div>
+<h3>迁移学习在法医图像分析中的应用：小样本下的模型适应策略</h3>
+<div><span class="thread-tag tag-feasible">可行性 ★★★★☆</span><span class="thread-tag tag-novel">方法论视角</span></div>
+<p style="font-size:13px;color:var(--text-muted);margin:8px 0;"><strong>逻辑链：</strong>本文证明了迁移学习只需几千样本就能让模型适应新背景。法医学中普遍存在"数据少、场景多"的问题——迁移学习是通用解决方案。可以综述迁移学习在法医图像各领域的应用。</p>
+<button class="toggle-btn" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.textContent.includes('展开')?'▲ 收起':'▼ 展开详细分析'">▼ 展开详细分析</button>
+<div class="detail-block"><table class="gap-table"><tr><th style="width:25%">维度</th><th>评估</th></tr>
+<tr><td>论文量</td><td>法医迁移学习~15篇 + 迁移学习方法论~5篇 = ~20篇</td></tr>
+<tr><td>竞争</td><td>低。"迁移学习+法医"这个交叉视角独特。</td></tr>
+<tr><td>框架</td><td>① 法医AI的数据稀缺问题→② 迁移学习原理(预训练+微调)→③ 硅藻识别案例(DiatomNet)→④ 其他法医应用(年龄/性别/病理)→⑤ 最佳实践建议</td></tr></table></div></div>
+
+<div class="thread-card"><div class="thread-num" style="background:var(--accent3);">C</div>
+<h3>从概念验证到可部署软件：法医AI产品的落地挑战</h3>
+<div><span class="thread-tag tag-feasible">可行性 ★★★☆☆</span><span class="thread-tag tag-caution">跨领域</span></div>
+<p style="font-size:13px;color:var(--text-muted);margin:8px 0;"><strong>逻辑链：</strong>大多数法医AI论文止于"我们的算法达到了XX%准确率"。DiatomNet是为数不多真正做成软件产品的。可以综述法医领域AI从论文到产品的鸿沟及跨越策略。</p>
+<button class="toggle-btn" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.textContent.includes('展开')?'▲ 收起':'▼ 展开详细分析'">▼ 展开详细分析</button>
+<div class="detail-block"><table class="gap-table"><tr><th style="width:25%">维度</th><th>评估</th></tr>
+<tr><td>论文量</td><td>法医AI软件 ~8篇 + AI产品化方法论 ~8篇 = ~16篇</td></tr>
+<tr><td>风险</td><td>法医领域可部署AI产品太少——可能需要扩展到医学影像AI（如病理AI产品）作为对比。</td></tr></table></div></div>
+</div></div>
+
+<div class="section"><div class="section-header"><span class="icon">📋</span><h2>下一步该读的论文</h2></div>
+<ul class="reading-list">
+<li><span class="priority priority-high">1</span><div class="paper-info"><div class="paper-title">Zhou & Zhang et al. (2019) — CNN for automated diatom test on whole digital slides</div><div class="paper-reason">🎯 DiatomNet的算法基础——InceptionV3+全片扫描的原始论文。</div></div></li>
+<li><span class="priority priority-high">2</span><div class="paper-info"><div class="paper-title">Zhang et al. (2021) — Deep learning for building diatom population database</div><div class="paper-reason">🎯 硅藻分类+数据库建立——DiatomNet从"检测"到"分类"的延伸。</div></div></li>
+<li><span class="priority priority-mid">3</span><div class="paper-info"><div class="paper-title">Ma et al. (2025) — Simplified optical microscopy diatom classification</div><div class="paper-reason">🎯 已在你的精读列表里——DiatomNet+简化分类=完整管线。</div></div></li>
+<li><span class="priority priority-mid">4</span><div class="paper-info"><div class="paper-title">Yu et al. — RetinaNet + SEM for diatom detection</div><div class="paper-reason">对比方法——SEM路线vs光镜路线，DiatomNet讨论中已详细对比。</div></div></li>
+</ul>
+</div>
+
+<div class="footer-note">综述选题模式 · <a href="./diatomnet-v1-精读.html" style="color:var(--accent2);">同时提供完整五步精读模式 →</a></div>
+</div>
+</body>
+</html>
