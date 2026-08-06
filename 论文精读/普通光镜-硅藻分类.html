@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>法医溺水地点推断：基于低倍显微镜的硅藻三维特征分类法</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                            accent: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-accent {
+            box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.3);
+        }
+        .step-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0ea5e9;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- Top Header -->
+    <header class="glass-panel sticky top-0 z-50 border-b border-slate-800 px-4 py-3 md:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-teal-400 flex items-center justify-center font-bold text-lg shadow-lg">
+                    <i class="fa-solid font-microscope text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-base md:text-lg font-bold text-white tracking-wide flex items-center gap-2">
+                        硅藻三维特征分类法与法医溺水案发现场推断
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30">2025 精读</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Int J Legal Med (2025) 139:2207-2218 | 马翱, 陈敏, 张吉等</p>
+                </div>
+            </div>
+
+            <!-- Global Controls -->
+            <div class="flex items-center gap-2 bg-slate-900/80 border border-slate-800 p-1.5 rounded-xl shadow-inner">
+                <button id="btn-prev" onclick="changeStep(-1)" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition" title="上一步 [←]">
+                    <i class="fa-solid fa-chevron-left text-sm"></i>
+                </button>
+                <button id="btn-play" onclick="toggleAutoPlay()" class="p-2 text-brand-400 hover:text-brand-300 hover:bg-slate-800 rounded-lg transition px-3 flex items-center gap-1.5 text-xs font-semibold">
+                    <i id="play-icon" class="fa-solid fa-play"></i>
+                    <span id="play-text">自动播放</span>
+                </button>
+                <button id="btn-next" onclick="changeStep(1)" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition" title="下一步 [→ / Space]">
+                    <i class="fa-solid fa-chevron-right text-sm"></i>
+                </button>
+                <div class="h-4 w-px bg-slate-800 mx-1"></div>
+                <button onclick="resetAll()" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition" title="重置演示 [R]">
+                    <i class="fa-solid fa-rotate-right text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Interactive Progress Dots -->
+        <div class="max-w-7xl mx-auto mt-3">
+            <div class="flex justify-between items-center gap-1 overflow-x-auto pb-1" id="step-dots-container">
+                <!-- Javascript will inject step indicators here -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Interactive Workspace -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 my-2">
+        
+        <!-- Step 1: Research Goal & Context -->
+        <section id="step-1" class="step-card hidden space-y-6">
+            <div class="glass-panel p-6 md:p-8 rounded-2xl glow-accent border border-brand-500/20">
+                <div class="flex items-center gap-3 text-brand-400 font-semibold mb-2">
+                    <span class="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center border border-brand-500/30">01</span>
+                    <span class="uppercase tracking-widest text-xs">研究背景与核心难题</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">法医水生命案判定：为什么需要“简易硅藻推断法”？</h2>
+                <p class="text-slate-300 leading-relaxed">
+                    在水体命案中，尸体往往随水流漂移，发现尸体的地点可能并非第一落水现场。精准推断<b>落水/溺亡地点 (Drowning Site Inference)</b>不仅是判定自杀、意外或他杀的关键证据，也是重建案发过程与查明死因的内核依据。
+                </p>
+
+                <!-- 3-Way Problem Comparison Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                    <div class="bg-slate-900/60 p-5 rounded-xl border border-rose-500/30 relative">
+                        <div class="text-rose-400 font-bold text-sm mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-microscope"></i> 传统形态学方法
+                        </div>
+                        <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside">
+                            <li>依赖<b>1000倍以上油镜</b>或<b>扫描电镜 (SEM)</b>。</li>
+                            <li>需识别微小纹饰、壳缝与刺突，非常繁琐。</li>
+                            <li>对法医极度依赖<b>高级藻类分类学专家经验</b>。</li>
+                            <li>成本极高，周期长，难以基层普及。</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-5 rounded-xl border border-amber-500/30 relative">
+                        <div class="text-amber-400 font-bold text-sm mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-dna"></i> 分子生物学法 (DNA条形码)
+                        </div>
+                        <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside">
+                            <li>基于 16S, 18S rDNA 或 rbcL 序列测序。</li>
+                            <li>存在<b>PCR非特异性扩增产物</b>的干扰。</li>
+                            <li>仪器昂贵，试剂成本高，试剂盒保存条件严苛。</li>
+                            <li>复杂基质下DNA降解率高，缺乏形态学直观验证。</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-5 rounded-xl border border-emerald-500/40 relative bg-emerald-950/10">
+                        <div class="text-emerald-400 font-bold text-sm mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-lightbulb"></i> 本文突破性方案
+                        </div>
+                        <ul class="text-xs text-slate-200 space-y-2 list-disc list-inside">
+                            <li>仅需普通<b>400倍以下常规光学显微镜</b>。</li>
+                            <li>抛弃繁琐分类学名称，解耦为<b>3D矢量特征 (S, O, P)</b>。</li>
+                            <li>无需高等藻类学经验，普通法医技术员即可掌握。</li>
+                            <li>匹配多元统计（PCA + 马氏距离），实现<b>&gt;90% 准确定位</b>。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Strategic Value Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-4 border-t border-slate-800">
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
+                            <i class="fa-solid fa-graduation-cap text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">学术价值</h4>
+                            <p class="text-xs text-slate-400 mt-1">打破传统分类学知识壁垒，提出以“任务为导向”的特征降维分类范式，证明了低倍形态抽象图谱在生物地理学推断中的高辨识度。</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-lg bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400 shrink-0">
+                            <i class="fa-solid fa-building-shield text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">产业与司法意义</h4>
+                            <p class="text-xs text-slate-400 mt-1">大幅降低基层法医实验室的硬件与技术门槛；可快速建立区域水体硅藻图谱数据库，为溺水案件侦破与公共水域安全预警提供标准化工具。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 2: Simplified 3D Morphological System -->
+        <section id="step-2" class="step-card hidden space-y-6">
+            <div class="glass-panel p-6 md:p-8 rounded-2xl border border-brand-500/20">
+                <div class="flex items-center gap-3 text-brand-400 font-semibold mb-2">
+                    <span class="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center border border-brand-500/30">02</span>
+                    <span class="uppercase tracking-widest text-xs">核心创新机制</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">论文提出的三维形态编码系统 `(S, O, P)`</h2>
+                <p class="text-xs text-slate-300 mb-6">论文将复杂的硅藻壳面特征解耦为三个正交维度：<b>对称性 (Symmetry)</b>、<b>外形 (Outline)</b> 和 <b>纹理 (Pattern)</b>，每个硅藻个体均被编码为一个 3D 整数向量：<code class="text-brand-400 bg-slate-900 px-2 py-0.5 rounded border border-brand-500/30 font-mono">(Symmetry, Outline, Pattern)</code>。</p>
+
+                <!-- Interactive 3D Vector Builder Widget -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-slate-900/80 p-6 rounded-xl border border-slate-800">
+                    <div class="lg:col-span-7 space-y-4">
+                        <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-brand-400"></i> 交互式硅藻编码构建器 (Interactive Diatom Synthesizer)
+                        </h3>
+
+                        <!-- Dimension 1: Symmetry -->
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 flex justify-between mb-1">
+                                <span>1. 对称性 (Symmetry - S) [1-5]:</span>
+                                <span id="val-sym" class="text-brand-400 font-mono font-bold">2: 双轴对称 (Double-axis)</span>
+                            </label>
+                            <select id="select-sym" onchange="updateDiatomBuilder()" class="w-full bg-slate-950 border border-slate-700 rounded-lg text-xs p-2.5 text-slate-200 focus:border-brand-500 outline-none">
+                                <option value="1">1 - 辐射对称 (Radial)</option>
+                                <option value="2" selected>2 - 双轴对称 (Double-axis)</option>
+                                <option value="3">3 - 对称颠倒 (Inversion)</option>
+                                <option value="4">4 - 单轴对称 (Single-axis)</option>
+                                <option value="5">5 - 不对称 (Asymmetry)</option>
+                            </select>
+                        </div>
+
+                        <!-- Dimension 2: Outline -->
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 flex justify-between mb-1">
+                                <span>2. 外形轮廓 (Outline - O) [1-14]:</span>
+                                <span id="val-out" class="text-brand-400 font-mono font-bold">4: 针形 (Needle)</span>
+                            </label>
+                            <select id="select-out" onchange="updateDiatomBuilder()" class="w-full bg-slate-950 border border-slate-700 rounded-lg text-xs p-2.5 text-slate-200 focus:border-brand-500 outline-none">
+                                <option value="1">1 - 圆形 (Circle)</option>
+                                <option value="2">2 - 椭圆形 (Ellipse)</option>
+                                <option value="3">3 - 纺锤形 (Spindle)</option>
+                                <option value="4" selected>4 - 针形 (Needle)</option>
+                                <option value="5">5 - 棒状 (Rod)</option>
+                                <option value="6">6 - 弧形 (Curve)</option>
+                                <option value="7">7 - 正方形 (Square)</option>
+                                <option value="8">8 - 柳叶形 (Willow leaf)</option>
+                                <option value="9">9 - 舟形 (Navicular)</option>
+                                <option value="10">10 - 花生形 (Peanut)</option>
+                                <option value="11">11 - 糖果形 (Candy)</option>
+                                <option value="12">12 - 水滴形 (Drop)</option>
+                                <option value="13">13 - 双杆形 (Double-bar)</option>
+                                <option value="14">14 - 飞镖形 (Dart)</option>
+                            </select>
+                        </div>
+
+                        <!-- Dimension 3: Pattern -->
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 flex justify-between mb-1">
+                                <span>3. 400x镜下纹理 (Pattern - P) [1-7]:</span>
+                                <span id="val-pat" class="text-brand-400 font-mono font-bold">1: 空无纹 (Empty)</span>
+                            </label>
+                            <select id="select-pat" onchange="updateDiatomBuilder()" class="w-full bg-slate-950 border border-slate-700 rounded-lg text-xs p-2.5 text-slate-200 focus:border-brand-500 outline-none">
+                                <option value="1" selected>1 - 无纹 (Empty)</option>
+                                <option value="2">2 - 锯齿纹 (Serrated)</option>
+                                <option value="3">3 - 条纹 (Strip)</option>
+                                <option value="4">4 - 纵脊纹 (Vertical Divider - VD)</option>
+                                <option value="5">5 - 十字纹 (Cross Divider - CD)</option>
+                                <option value="6">6 - 篱笆纹 (Fence-like)</option>
+                                <option value="7">7 - 同心圆纹 (Concentric Circle - CC)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- SVG Preview Card -->
+                    <div class="lg:col-span-5 flex flex-col justify-between bg-slate-950 p-5 rounded-xl border border-slate-800 text-center">
+                        <div>
+                            <div class="text-xs text-slate-400 font-medium mb-1">生成的三维向量标识 (3D Vector)</div>
+                            <div id="vector-tag" class="inline-block text-xl font-mono font-extrabold text-brand-400 bg-brand-500/10 px-4 py-1.5 rounded-lg border border-brand-500/30">
+                                (2, 4, 1)
+                            </div>
+                        </div>
+
+                        <!-- Visual Canvas Render -->
+                        <div class="my-4 flex items-center justify-center min-h-[160px] bg-slate-900/50 rounded-lg border border-dashed border-slate-700 p-4" id="diatom-svg-container">
+                            <!-- SVG rendered via Javascript -->
+                        </div>
+
+                        <div class="text-[11px] text-slate-400 bg-slate-900 p-2.5 rounded-lg text-left border border-slate-800">
+                            <span class="text-teal-400 font-semibold"><i class="fa-solid fa-circle-info"></i> 论文典型代表：</span>
+                            <span id="vector-description">向量 (2, 4, 1) 代表长风公园(CF)水体中占比 33.4% 的优势针状双轴无纹硅藻。</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Table of Framework -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                        <div class="text-xs font-bold text-slate-300">对称性 (5分类)</div>
+                        <p class="text-[11px] text-slate-400 mt-1">从完全辐射对称 (1) 到 完全不对称 (5)，彻底替换传统二元 centric-pennate 划分。</p>
+                    </div>
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                        <div class="text-xs font-bold text-slate-300">外形轮廓 (14分类)</div>
+                        <p class="text-[11px] text-slate-400 mt-1">远超传统的“圆形/长条形”，精确捕捉椭圆、柳叶、舟形、花生、飞镖等细节。</p>
+                    </div>
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                        <div class="text-xs font-bold text-slate-300">显微纹理 (7分类)</div>
+                        <p class="text-[11px] text-slate-400 mt-1">针对 400x 光镜下精细点纹简化为条纹、十字脊、篱笆状等高对比度几何特征。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 3: Experimental Design & Digestion Pipeline -->
+        <section id="step-3" class="step-card hidden space-y-6">
+            <div class="glass-panel p-6 md:p-8 rounded-2xl border border-brand-500/20">
+                <div class="flex items-center gap-3 text-brand-400 font-semibold mb-2">
+                    <span class="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center border border-brand-500/30">03</span>
+                    <span class="uppercase tracking-widest text-xs">实验设计与样本消化</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">严谨的三组对照实验设计与消解流程</h2>
+
+                <!-- 3 Sample Groups -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-slate-900/80 p-5 rounded-xl border border-blue-500/30">
+                        <div class="text-xs font-bold text-blue-400 uppercase tracking-wide">Group I - 环境水样基准</div>
+                        <div class="text-lg font-bold text-white mt-1">上海普陀区 4大水体</div>
+                        <p class="text-xs text-slate-400 mt-2">长风公园(CF)、中山公园(ZS)、天山公园(TS)、曹杨公园(CY)。每水体5采样点×4=20水样，采集表层下1m处，确定各水域原生硅藻背景图谱。</p>
+                    </div>
+
+                    <div class="bg-slate-900/80 p-5 rounded-xl border border-purple-500/30">
+                        <div class="text-xs font-bold text-purple-400 uppercase tracking-wide">Group II - 体外模拟混合 (In Vitro)</div>
+                        <div class="text-lg font-bold text-white mt-1">非溺死肺组织 + 水样 (n=44)</div>
+                        <p class="text-xs text-slate-400 mt-2">颈椎脱臼处死SD大鼠肺组织 (1g) + 各水域浓缩水样混合漩涡振荡。检验有机肺组织消化过程是否干扰硅藻特征组合。</p>
+                    </div>
+
+                    <div class="bg-slate-900/80 p-5 rounded-xl border border-teal-500/30">
+                        <div class="text-xs font-bold text-teal-400 uppercase tracking-wide">Group III - 真实溺死动物 (In Vivo)</div>
+                        <div class="text-lg font-bold text-white mt-1">实测溺死大鼠模型 (n=44)</div>
+                        <p class="text-xs text-slate-400 mt-2">水样中麻醉溺死大鼠，水下浸泡24h后解剖取肺(1g)消化检测（包含4只死后浸泡对照组）。评估真实生物体内呼吸吸入及肺泡入血筛选效应。</p>
+                    </div>
+                </div>
+
+                <!-- Acid Digestion Workflow Steps -->
+                <div class="bg-slate-950 p-6 rounded-xl border border-slate-800">
+                    <h3 class="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-vial text-brand-400"></i> 标准化强酸消化与显微检测流程 (Acid Digestion Workflow)
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 relative">
+                            <div class="text-brand-400 font-mono text-xs font-bold mb-1">01. 采样称量</div>
+                            <p class="text-[11px] text-slate-300">精密称取 1g 大鼠肺组织，剪碎转入烧杯。</p>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 relative">
+                            <div class="text-brand-400 font-mono text-xs font-bold mb-1">02. 恒温强酸消化</div>
+                            <p class="text-[11px] text-slate-300">加入 10mL 65% $HNO_3$ + 1mL 无水乙醇，60°C 水浴磁力搅拌2-3小时至透明。</p>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 relative">
+                            <div class="text-brand-400 font-mono text-xs font-bold mb-1">03. 离心洗涤</div>
+                            <p class="text-[11px] text-slate-300">4000 rpm 离心 10min，去离子水洗涤沉淀2次，脱去酸液。</p>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 relative">
+                            <div class="text-brand-400 font-mono text-xs font-bold mb-1">04. 涂片干燥</div>
+                            <p class="text-[11px] text-slate-300">取沉淀悬浮液滴加至玻片，超净工作台通风晾干，避免污染。</p>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 relative">
+                            <div class="text-brand-400 font-mono text-xs font-bold mb-1">05. 400x 镜检</div>
+                            <p class="text-[11px] text-slate-300">普通光镜400倍下对 300-500 个硅藻进行 (S,O,P) 三维向量计数。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 4: Experimental Results & Performance -->
+        <section id="step-4" class="step-card hidden space-y-6">
+            <div class="glass-panel p-6 md:p-8 rounded-2xl border border-brand-500/20">
+                <div class="flex items-center gap-3 text-brand-400 font-semibold mb-2">
+                    <span class="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center border border-brand-500/30">04</span>
+                    <span class="uppercase tracking-widest text-xs">实验结果与算法推断</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">PCA降维、马氏距离与混淆矩阵验证</h2>
+                <p class="text-xs text-slate-300 mb-6">通过对丰度矩阵进行 Log 转换与标准化，使用主成分分析 (PCA) 提取前三个主成分，结合水样 Centroid 计算<b>马氏距离 (Mahalanobis Distance)</b> 实现未知样本分类。</p>
+
+                <!-- Interactive Results Visualizer -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    
+                    <!-- Left: Interactive Charts Switcher -->
+                    <div class="lg:col-span-7 bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <h3 class="text-sm font-bold text-slate-200">
+                                <i class="fa-solid fa-chart-pie text-brand-400"></i> 分类混淆矩阵 (Confusion Matrix)
+                            </h3>
+                            <div class="flex gap-2">
+                                <button id="btn-show-group2" onclick="renderConfusionMatrix('group2')" class="px-3 py-1 rounded text-xs font-semibold bg-brand-600 text-white transition">Group II (体外: 98%)</button>
+                                <button id="btn-show-group3" onclick="renderConfusionMatrix('group3')" class="px-3 py-1 rounded text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white transition">Group III (体内: 95%)</button>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Chart Box -->
+                        <div class="relative h-64 w-full flex items-center justify-center">
+                            <canvas id="matrixChart"></canvas>
+                        </div>
+
+                        <div id="matrix-explanation" class="text-xs text-slate-400 bg-slate-950 p-3 rounded-lg border border-slate-800">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Key Statistical Insights -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800">
+                            <div class="text-xs font-bold text-slate-400 uppercase">精确度统计结果 (Accuracy Summary)</div>
+                            
+                            <div class="mt-4 space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1">
+                                        <span class="text-slate-300">Group II (In Vitro 肺+水混合)</span>
+                                        <span class="text-emerald-400 font-mono">98.0% (43/44)</span>
+                                    </div>
+                                    <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-emerald-500 h-full rounded-full" style="width: 98%"></div>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 mt-1">仅 1 例长风公园(CF)样本被误判为曹杨公园(CY)。</p>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1">
+                                        <span class="text-slate-300">Group III (In Vivo 实测溺死大鼠)</span>
+                                        <span class="text-teal-400 font-mono">95.0% (38/40)</span>
+                                    </div>
+                                    <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-teal-500 h-full rounded-full" style="width: 95%"></div>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 mt-1">仅 2 例长风公园(CF)样本被误判为天山公园(TS)；死后浸泡对照组肺内硅藻为0。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-2">
+                            <div class="font-bold text-brand-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-map-pin"></i> 为什么同区不同公园湖泊能被精准区分？
+                            </div>
+                            <p class="text-slate-400 text-[11px]">
+                                虽然同处上海普陀区且地理距离相近，但各公园湖泊的营养盐 (氮、磷、硅)、pH值、水温及微环境差异导致<b>优势硅藻组合存在显著特异性</b>：长风(CF)以 <code class="text-brand-300 font-mono">(2,4,1)</code> 和 <code class="text-brand-300 font-mono">(1,1,2)</code> 为主；中山(ZS)以 <code class="text-brand-300 font-mono">(1,1,7)</code> 占绝对优势 (51.2%)。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 5: Academic/Industrial Impact & Future Opportunities -->
+        <section id="step-5" class="step-card hidden space-y-6">
+            <div class="glass-panel p-6 md:p-8 rounded-2xl border border-brand-500/20">
+                <div class="flex items-center gap-3 text-brand-400 font-semibold mb-2">
+                    <span class="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center border border-brand-500/30">05</span>
+                    <span class="uppercase tracking-widest text-xs">价值与前沿产业前景</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">学术价值、产业化路径与 AI + 硅藻检测融合</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <!-- Card 1: Academic Value -->
+                    <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-3">
+                        <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                            <i class="fa-solid fa-book-bookmark text-lg"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-white">学术价值</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            提出了针对法医推断任务的高效“粗粒度特征工程”。证明了无须追求极其精细的种属归属，仅通过低倍镜几何构型映射即可捕获足量的生态位特异性信号。
+                        </p>
+                    </div>
+
+                    <!-- Card 2: AI Synergy -->
+                    <div class="bg-slate-900/80 p-5 rounded-xl border border-emerald-500/30 space-y-3 bg-emerald-950/10">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                            <i class="fa-solid fa-robot text-lg"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-emerald-400">AI + Diatom 自动化突破</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            该三维向量化模型天然契合深度学习识别（如卷积神经网络 CNN, <b>DiatomNet v1.0</b>）。AI 无需训练识别数千种复杂生物学种属，只需对 5对称/14轮廓/7纹理 进行多标签分类，大幅降低AI标注与训练成本！
+                        </p>
+                    </div>
+
+                    <!-- Card 3: Industrial Opportunity -->
+                    <div class="bg-slate-900/80 p-5 rounded-xl border border-purple-500/30 space-y-3">
+                        <div class="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                            <i class="fa-solid fa-briefcase text-lg"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-white">产业与投资机会</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            <b>便携式法医现场检测终端：</b>开发低成本集成的光学数字扫描仪+嵌入式算法，使基层一线民警在现场数小时内完成水样与尸体试样自动比对；建构区域水系动态数据库。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Strategic Roadmap -->
+                <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 mt-4">
+                    <h4 class="text-xs font-bold text-slate-300 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-compass text-brand-400"></i> 未来研究与技术机会拓展 (Future Roadmap)
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div class="flex gap-3 bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <i class="fa-solid fa-water text-cyan-400 text-base mt-0.5"></i>
+                            <div>
+                                <span class="font-bold text-slate-200">连续性流动水系 (Continuous Water Systems)</span>
+                                <p class="text-[11px] text-slate-400 mt-0.5">在河流、溪流等具有水流漂移效应的连续水域中，进一步验证水体漂移与下游混合对硅藻图谱的影响。</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <i class="fa-solid fa-clock-rotate-left text-amber-400 text-base mt-0.5"></i>
+                            <div>
+                                <span class="font-bold text-slate-200">时空时序数据库 (Temporal Dynamics)</span>
+                                <p class="text-[11px] text-slate-400 mt-0.5">不同季节、降雨与温度变化会导致藻类种群演化，建立含有时间维度的区域动态硅藻基线数据库。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 6: Critical Limitations Analysis -->
+        <section id="step-6" class="step-card hidden space-y-6">
+            <div class="glass-panel p-6 md:p-8 rounded-2xl border border-rose-500/20">
+                <div class="flex items-center gap-3 text-rose-400 font-semibold mb-2">
+                    <span class="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center border border-rose-500/30">06</span>
+                    <span class="uppercase tracking-widest text-xs">批判性思考</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">论文的局限性、潜在不足与外推风险</h2>
+
+                <p class="text-xs text-slate-300 mb-6">作为一项 Pilot Study（初步探索性研究），虽然论文展示了出色的分类结果，但从严谨的法医司法鉴定角度来看，仍存在以下值得深入探讨与批判的局限：</p>
+
+                <!-- 4 Major Limitations Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <div class="bg-slate-900/80 p-5 rounded-xl border border-rose-500/30 space-y-2">
+                        <div class="flex items-center gap-2 text-rose-400 font-bold text-sm">
+                            <i class="fa-solid fa-triangle-exclamation"></i> 1. 静止水体假定 vs. 真实流动河流
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            实验采样仅涵盖上海市普陀区 4 个孤立的公园<b>封闭湖泊</b>。湖泊水体流动性小，硅藻群落极为稳定。然而真实落水案件大量发生在<b>流动江河 (Rivers/Streams)</b> 中，受上下游水流混合、降雨冲刷影响，边界远比湖泊模糊，外推推断存在风险。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/80 p-5 rounded-xl border border-amber-500/30 space-y-2">
+                        <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                            <i class="fa-solid fa-eye-slash"></i> 2. 特征粗化带来的“同编码异种”分类盲区
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            将大量复杂的硅藻种属归并压缩为仅 14外形×7纹理 的有限组合。若两个不同水域刚好存在两种<b>生物学种属不同但 (S,O,P) 形态编码完全一致</b>的硅藻，该方法将完全失去区分力，导致错判。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/80 p-5 rounded-xl border border-yellow-500/30 space-y-2">
+                        <div class="flex items-center gap-2 text-yellow-400 font-bold text-sm">
+                            <i class="fa-solid fa-paw"></i> 3. 动物模型 (Rats) 与人体尸体的现实生理差异
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            实验使用健康 SD 大鼠，溺死后浸泡 24 小时即解剖。真实案件中，尸体常经历数天甚至数周的腐败、组织自溶、水流拖拽以及死后入水 (Postmortem Immersion) 复杂情况，肺泡阻隔效应与过滤效应可能发生变化。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/80 p-5 rounded-xl border border-blue-500/30 space-y-2">
+                        <div class="flex items-center gap-2 text-blue-400 font-bold text-sm">
+                            <i class="fa-solid fa-earth-americas"></i> 4. 样本规模与地域封闭性
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            试点研究的地理范围局限于同一城市的单个行政区。在跨区域、大地理尺度或极端水质（如高盐度海口、强酸碱工业废域）中的适用性仍需大规模多中心实验验证。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Defense checklist -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-400">
+                    <span class="text-brand-400 font-bold"><i class="fa-solid fa-gavel"></i> 法庭质证风险防范提示：</span> 
+                    在将此法作为法庭证据提交前，法医鉴定人需额外补充“已知现场与落水疑点水域的硅藻交叉重复度分析”，避免因特征编码重叠导致假阳性判断。
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 7: Personal Learning & Application Transfer Guide -->
+        <section id="step-7" class="step-card hidden space-y-6">
+            <div class="glass-panel p-6 md:p-8 rounded-2xl border border-brand-500/20">
+                <div class="flex items-center gap-3 text-brand-400 font-semibold mb-2">
+                    <span class="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center border border-brand-500/30">07</span>
+                    <span class="uppercase tracking-widest text-xs">知识迁移与吃透指南</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">如何将这篇论文的思想迁移到你的工作与研究中？</h2>
+
+                <!-- 2-Column Strategy -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Left: Mindset Transfer -->
+                    <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-4">
+                        <h3 class="text-sm font-bold text-brand-400 flex items-center gap-2">
+                            <i class="fa-solid fa-lightbulb"></i> 最值得重点吸收的核心思想与方法迁移
+                        </h3>
+
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">
+                                <span class="font-bold text-slate-200 block mb-1">1. “任务导向”的特征工程降维 (Task-Oriented Feature Engineering)</span>
+                                <p class="text-slate-400"><b>迁移应用：</b>在面对高复杂度对象（如文本分类、图像识别、工业故障诊断）时，不要盲目追求微观全量分类。先思考最终任务（如案发现场推断），将高维特征解耦为少量低维正交几何向量。</p>
+                            </div>
+
+                            <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">
+                                <span class="font-bold text-slate-200 block mb-1">2. 严格的“环境-体外-体内”三阶验证范式</span>
+                                <p class="text-slate-400"><b>迁移应用：</b>构建机器学习或临床诊断模型时，参考 Group I (基线环境) -> Group II (体外干扰混合) -> Group III (真实体内机制) 的渐进式实验设计，逐层排除基质干扰。</p>
+                            </div>
+
+                            <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">
+                                <span class="font-bold text-slate-200 block mb-1">3. 几何 Centroid + 马氏距离的轻量级判别算法</span>
+                                <p class="text-slate-400"><b>迁移应用：</b>无需复杂深度学习大模型，通过基础多元统计（PCA 提取主成分 + 计算到类中心的马氏距离）即可在小样本低算力场景下实现极高准度。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Prerequisites Knowledge Tree -->
+                    <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-4">
+                        <h3 class="text-sm font-bold text-teal-400 flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap"></i> 彻底吃透本文需补充的前置知识树
+                        </h3>
+
+                        <div class="space-y-3 text-xs">
+                            <div class="flex items-start gap-3 p-3 bg-slate-950 rounded-lg border border-slate-800">
+                                <div class="p-2 bg-blue-500/10 rounded text-blue-400 shrink-0 font-bold">基础 01</div>
+                                <div>
+                                    <span class="font-bold text-slate-200">法医硅藻学与检验技术 (Forensic Limnology)</span>
+                                    <p class="text-slate-400 text-[11px] mt-0.5">理解硅藻借由肺泡毛细血管屏障进入大体循环（肝、肾、骨髓）的生理解剖学机制及死后入水鉴别。</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3 p-3 bg-slate-950 rounded-lg border border-slate-800">
+                                <div class="p-2 bg-teal-500/10 rounded text-teal-400 shrink-0 font-bold">基础 02</div>
+                                <div>
+                                    <span class="font-bold text-slate-200">多元统计学 (Multivariate Statistics)</span>
+                                    <p class="text-slate-400 text-[11px] mt-0.5">主成分分析 (PCA) 的方差累积贡献率计算；马氏距离相对于欧氏距离在协方差相关性消除上的优势。</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3 p-3 bg-slate-950 rounded-lg border border-slate-800">
+                                <div class="p-2 bg-purple-500/10 rounded text-purple-400 shrink-0 font-bold">基础 03</div>
+                                <div>
+                                    <span class="font-bold text-slate-200">生物图像 AI 分类 (DiatomNet / CNN)</span>
+                                    <p class="text-slate-400 text-[11px] mt-0.5">卷积神经网络多标签分类 (Multi-label Classification) 与全片图像 (WSI) 自动寻焦扫描技术。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Action Box -->
+                <div class="bg-gradient-to-r from-brand-900/50 to-teal-900/50 p-5 rounded-xl border border-brand-500/30 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h4 class="text-sm font-bold text-white">准备好将该算法应用到你的课题或项目中了吗？</h4>
+                        <p class="text-xs text-slate-300 mt-1">你可以尝试用 Python (scikit-learn) 快速复现本文的 PCA + Mahalanobis 距离逻辑！</p>
+                    </div>
+                    <button onclick="changeStep(1)" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-lg shrink-0">
+                        重新回顾全流程 <i class="fa-solid fa-arrow-rotate-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Controls & Keyboard Shortcut Bar -->
+    <footer class="glass-panel border-t border-slate-800 py-3 px-4 text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center gap-4">
+                <span id="step-indicator" class="font-bold text-brand-400 font-mono">步骤 1 / 7</span>
+                <span class="hidden sm:inline text-slate-600">|</span>
+                <span class="hidden sm:inline">快捷键: <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-slate-300 font-mono">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-slate-300 font-mono">→</kbd> 切换步骤, <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-slate-300 font-mono">Space</kbd> 下一步, <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-slate-300 font-mono">P</kbd> 播放/暂停</span>
+            </div>
+            <div class="text-slate-500 text-[11px]">
+                基于论文 Int J Legal Med (2025) 制作的交互式精读指南
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- State Management ---
+        let currentStep = 1;
+        const totalSteps = 7;
+        let isAutoPlaying = false;
+        let autoPlayTimer = null;
+        let matrixChartInstance = null;
+
+        const stepTitles = [
+            "研究背景与痛点",
+            "3D形态编码系统",
+            "实验设计与消化",
+            "结果与算法验证",
+            "价值与AI前景",
+            "局限与批判分析",
+            "迁移与知识吸收"
+        ];
+
+        // --- Diatom Vector Archetypes Knowledge Base ---
+        const archetypeDescriptions = {
+            "(2, 4, 1)": "长风公园 (CF) 优势藻种 (占比33.4%)：双轴对称、针形外廓、无纹理。",
+            "(1, 1, 2)": "长风/曹杨共有优势藻种 (CF 30.3%, CY 26.8%)：辐射对称、圆形外廓、边沿锯齿纹。",
+            "(1, 1, 7)": "中山公园 (ZS) 绝对主导藻种 (占比51.2%)：辐射对称、圆形外廓、同心圆纹理。",
+            "(2, 3, 5)": "天山公园 (TS) 优势藻种 (占比44.9%)：双轴对称、纺锤外廓、十字脊纹理。",
+            "(2, 5, 3)": "曹杨公园 (CY) 优势藻种 (占比21.9%)：双轴对称、棒状外廓、平行条纹。",
+            "custom": "自定义三维向量映射模式：低倍镜下实时向量计算中..."
+        };
+
+        // --- Initialization on Load ---
+        window.onload = function() {
+            renderDots();
+            showStep(currentStep);
+            updateDiatomBuilder();
+            setupKeyboardListeners();
+        };
+
+        // --- Step Navigation Logic ---
+        function renderDots() {
+            const container = document.getElementById('step-dots-container');
+            container.innerHTML = '';
+            for (let i = 1; i <= totalSteps; i++) {
+                const btn = document.createElement('button');
+                btn.className = `px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5 shrink-0 ${i === currentStep ? 'bg-brand-500/20 text-brand-400 border border-brand-500/40 font-bold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'}`;
+                btn.onclick = () => goToStep(i);
+                btn.innerHTML = `<span class="w-4 h-4 rounded-full font-mono text-[10px] flex items-center justify-center ${i === currentStep ? 'bg-brand-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-400'}">${i}</span> ${stepTitles[i-1]}`;
+                container.appendChild(btn);
+            }
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step-card').forEach(card => card.classList.add('hidden'));
+            const targetCard = document.getElementById(`step-${step}`);
+            if (targetCard) {
+                targetCard.classList.remove('hidden');
+            }
+
+            document.getElementById('step-indicator').innerText = `步骤 ${step} / ${totalSteps}: ${stepTitles[step-1]}`;
+            renderDots();
+
+            // Special initializers for step-dependent widgets
+            if (step === 4) {
+                setTimeout(() => renderConfusionMatrix('group2'), 50);
+            }
+        }
+
+        function changeStep(delta) {
+            currentStep += delta;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+            showStep(currentStep);
+        }
+
+        function goToStep(step) {
+            currentStep = step;
+            showStep(currentStep);
+        }
+
+        function resetAll() {
+            if (isAutoPlaying) toggleAutoPlay();
+            currentStep = 1;
+            showStep(1);
+        }
+
+        // --- Auto Play Engine ---
+        function toggleAutoPlay() {
+            isAutoPlaying = !isAutoPlaying;
+            const btnText = document.getElementById('play-text');
+            const btnIcon = document.getElementById('play-icon');
+
+            if (isAutoPlaying) {
+                btnText.innerText = "暂停播放";
+                btnIcon.className = "fa-solid fa-pause text-amber-400";
+                autoPlayTimer = setInterval(() => {
+                    if (currentStep < totalSteps) {
+                        changeStep(1);
+                    } else {
+                        currentStep = 1;
+                        showStep(1);
+                    }
+                }, 8000); // 8 seconds per step
+            } else {
+                btnText.innerText = "自动播放";
+                btnIcon.className = "fa-solid fa-play text-brand-400";
+                clearInterval(autoPlayTimer);
+            }
+        }
+
+        // --- Keyboard Controls ---
+        function setupKeyboardListeners() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    e.preventDefault();
+                    changeStep(1);
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    changeStep(-1);
+                } else if (e.key === 'r' || e.key === 'R') {
+                    resetAll();
+                } else if (e.key === 'p' || e.key === 'P') {
+                    toggleAutoPlay();
+                }
+            });
+        }
+
+        // --- Interactive 3D Vector Visual Synthesizer (Step 2) ---
+        function updateDiatomBuilder() {
+            const sym = document.getElementById('select-sym').value;
+            const out = document.getElementById('select-out').value;
+            const pat = document.getElementById('select-pat').value;
+
+            // Text Labels Update
+            const symTexts = {
+                "1": "1: 辐射对称 (Radial)",
+                "2": "2: 双轴对称 (Double-axis)",
+                "3": "3: 对称颠倒 (Inversion)",
+                "4": "4: 单轴对称 (Single-axis)",
+                "5": "5: 不对称 (Asymmetry)"
+            };
+            const outTexts = {
+                "1": "1: 圆形 (Circle)", "2": "2: 椭圆形 (Ellipse)", "3": "3: 纺锤形 (Spindle)",
+                "4": "4: 针形 (Needle)", "5": "5: 棒状 (Rod)", "6": "6: 弧形 (Curve)",
+                "7": "7: 正方形 (Square)", "8": "8: 柳叶形 (Willow leaf)", "9": "9: 舟形 (Navicular)",
+                "10": "10: 花生形 (Peanut)", "11": "11: 糖果形 (Candy)", "12": "12: 水滴形 (Drop)",
+                "13": "13: 双杆形 (Double-bar)", "14": "14: 飞镖形 (Dart)"
+            };
+            const patTexts = {
+                "1": "1: 无纹理 (Empty)", "2": "2: 边缘锯齿纹 (Serrated)", "3": "3: 横条纹 (Strip)",
+                "4": "4: 纵脊纹 (Vertical Divider)", "5": "5: 十字脊纹 (Cross Divider)",
+                "6": "6: 篱笆状纹 (Fence-like)", "7": "7: 同心圆纹 (Concentric Circle)"
+            };
+
+            document.getElementById('val-sym').innerText = symTexts[sym];
+            document.getElementById('val-out').innerText = outTexts[out];
+            document.getElementById('val-pat').innerText = patTexts[pat];
+
+            const vecKey = `(${sym}, ${out}, ${pat})`;
+            document.getElementById('vector-tag').innerText = vecKey;
+
+            const desc = archetypeDescriptions[vecKey] || archetypeDescriptions["custom"];
+            document.getElementById('vector-description').innerText = desc;
+
+            // Render Procedural SVG Diatom
+            renderDiatomSVG(sym, out, pat);
+        }
+
+        function renderDiatomSVG(sym, out, pat) {
+            const container = document.getElementById('diatom-svg-container');
+            
+            // Outer Shape Paths based on Outline Index (1-14)
+            let shapeSVG = '';
+            if (out === '1') { // Circle
+                shapeSVG = `<circle cx="100" cy="80" r="50" stroke="#38bdf8" stroke-width="3" fill="none" />`;
+            } else if (out === '2') { // Ellipse
+                shapeSVG = `<ellipse cx="100" cy="80" rx="65" ry="38" stroke="#38bdf8" stroke-width="3" fill="none" />`;
+            } else if (out === '3') { // Spindle
+                shapeSVG = `<path d="M 20 80 Q 100 20 180 80 Q 100 140 20 80 Z" stroke="#38bdf8" stroke-width="3" fill="none" />`;
+            } else if (out === '4') { // Needle
+                shapeSVG = `<line x1="15" y1="140" x2="185" y2="20" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" />`;
+            } else if (out === '5') { // Rod
+                shapeSVG = `<rect x="30" y="65" width="140" height="30" rx="10" stroke="#38bdf8" stroke-width="3" fill="none" />`;
+            } else if (out === '6') { // Curve
+                shapeSVG = `<path d="M 30 120 Q 100 20 170 120" stroke="#38bdf8" stroke-width="4" fill="none" stroke-linecap="round" />`;
+            } else if (out === '7') { // Square
+                shapeSVG = `<rect x="50" y="30" width="100" height="100" rx="6" stroke="#38bdf8" stroke-width="3" fill="none" />`;
+            } else if (out === '10') { // Peanut
+                shapeSVG = `<path d="M 30 80 C 50 40 150 40 170 80 C 150 120 50 120 30 80 Z" stroke="#38bdf8" stroke-width="3" fill="none" />`;
+            } else { // Generic Navicular / Willow / Default
+                shapeSVG = `<path d="M 25 80 Q 100 25 175 80 Q 100 135 25 80 Z" stroke="#38bdf8" stroke-width="3" fill="none" />`;
+            }
+
+            // Pattern Overlays based on Pattern Index (1-7)
+            let patternSVG = '';
+            if (pat === '2') { // Serrated
+                patternSVG = `<circle cx="100" cy="80" r="42" stroke="#10b981" stroke-width="2" stroke-dasharray="3,3" fill="none" />`;
+            } else if (pat === '3') { // Strip
+                patternSVG = `<path d="M 40 60 H 160 M 35 70 H 165 M 35 80 H 165 M 35 90 H 165 M 40 100 H 160" stroke="#10b981" stroke-width="1.5" opacity="0.7" />`;
+            } else if (pat === '4') { // Vertical Divider
+                patternSVG = `<line x1="100" y1="20" x2="100" y2="140" stroke="#10b981" stroke-width="2" stroke-dasharray="4,2" />`;
+            } else if (pat === '5') { // Cross Divider
+                patternSVG = `<line x1="100" y1="20" x2="100" y2="140" stroke="#10b981" stroke-width="2" /><line x1="30" y1="80" x2="170" y2="80" stroke="#10b981" stroke-width="2" />`;
+            } else if (pat === '6') { // Fence-like
+                patternSVG = `<line x1="100" y1="25" x2="100" y2="135" stroke="#10b981" stroke-width="2" /><path d="M 50 60 H 150 M 40 80 H 160 M 50 100 H 150" stroke="#10b981" stroke-width="1.5" opacity="0.6" />`;
+            } else if (pat === '7') { // Concentric Circle
+                patternSVG = `<circle cx="100" cy="80" r="28" stroke="#10b981" stroke-width="2" fill="none" /><circle cx="100" cy="80" r="12" stroke="#10b981" stroke-width="1.5" fill="none" />`;
+            }
+
+            container.innerHTML = `
+                <svg width="200" height="160" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <g filter="url(#glow)">
+                        ${shapeSVG}
+                        ${patternSVG}
+                    </g>
+                </svg>
+            `;
+        }
+
+        // --- Chart.js Confusion Matrix Renderer (Step 4) ---
+        function renderConfusionMatrix(groupType) {
+            const ctx = document.getElementById('matrixChart').getContext('2d');
+            const btn2 = document.getElementById('btn-show-group2');
+            const btn3 = document.getElementById('btn-show-group3');
+            const exp = document.getElementById('matrix-explanation');
+
+            if (matrixChartInstance) {
+                matrixChartInstance.destroy();
+            }
+
+            let matrixData, labels, titleText, explanationHtml;
+
+            labels = ['长风 (CF)', '中山 (ZS)', '天山 (TS)', '曹杨 (CY)'];
+
+            if (groupType === 'group2') {
+                btn2.className = "px-3 py-1 rounded text-xs font-semibold bg-brand-600 text-white transition shadow";
+                btn3.className = "px-3 py-1 rounded text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white transition";
+                
+                // Group II In Vitro Data: CF (10 correct, 1 CY misclass), ZS (11), TS (11), CY (11)
+                matrixData = [
+                    [10, 0, 0, 1], // Pred CF, ZS, TS, CY
+                    [0, 11, 0, 0],
+                    [0, 0, 11, 0],
+                    [0, 0, 0, 11]
+                ];
+                titleText = "Group II (In Vitro 肺组织+水样) 预测矩阵";
+                explanationHtml = `<span class="text-emerald-400 font-bold">Group II 准确率 98.0% (43/44)：</span> 仅 1 例长风公园 (CF) 样本被微小混淆误判为曹杨公园 (CY)，其余 33 个样本全部 100% 正确匹配。`;
+            } else {
+                btn3.className = "px-3 py-1 rounded text-xs font-semibold bg-brand-600 text-white transition shadow";
+                btn2.className = "px-3 py-1 rounded text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white transition";
+
+                // Group III In Vivo Data: CF (8 correct, 2 TS misclass), ZS (10), TS (10), CY (10)
+                matrixData = [
+                    [8, 0, 2, 0],
+                    [0, 10, 0, 0],
+                    [0, 0, 10, 0],
+                    [0, 0, 0, 10]
+                ];
+                titleText = "Group III (In Vivo 真实溺死大鼠) 预测矩阵";
+                explanationHtml = `<span class="text-teal-400 font-bold">Group III 准确率 95.0% (38/40)：</span> 真实溺水呼吸吸入后，仅 2 例长风 (CF) 溺死大鼠被误判为天山 (TS)。中山(ZS)、天山(TS)与曹杨(CY)全部正确识别。`;
+            }
+
+            exp.innerHTML = explanationHtml;
+
+            // Flatten matrix into Bubble/Bar heatmap simulation representation for Chart.js
+            const datasets = [];
+            const colors = ['#0284c7', '#10b981', '#f59e0b', '#8b5cf6'];
+
+            for (let i = 0; i < 4; i++) {
+                datasets.push({
+                    label: `实际: ${labels[i]}`,
+                    data: matrixData[i],
+                    backgroundColor: colors[i]
+                });
+            }
+
+            matrixChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94a3b8', font: { size: 10 } }
+                        },
+                        title: {
+                            display: true,
+                            text: titleText,
+                            color: '#f8fafc',
+                            font: { size: 12, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: '预测推理落水地点 (Predicted Site)', color: '#64748b', font: { size: 10 } },
+                            ticks: { color: '#cbd5e1' },
+                            grid: { color: '#334155' }
+                        },
+                        y: {
+                            title: { display: true, text: '样本数量 (Sample Count)', color: '#64748b', font: { size: 10 } },
+                            ticks: { color: '#cbd5e1', stepSize: 2 },
+                            grid: { color: '#334155' },
+                            min: 0,
+                            max: 12
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
