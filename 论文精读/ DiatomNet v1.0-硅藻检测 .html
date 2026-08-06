@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiatomNet v1.0 深度讲解：溺死法医诊断的 AI 革新</title>
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent-color: #0284c7;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header Layout */
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            color: white;
+            padding: 1.25rem 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title-area h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .title-area p {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 0.2rem;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-light);
+            width: 16.66%;
+            transition: width 0.4s ease;
+        }
+
+        /* Main Content Container */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 1.5rem auto;
+            padding: 0 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation Steps Bar */
+        .step-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .step-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 0.75rem 0.5rem;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .step-btn .step-num {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .step-btn .step-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .step-btn.active {
+            border-color: var(--primary-light);
+            background-color: #eff6ff;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.15);
+        }
+
+        .step-btn.active .step-num,
+        .step-btn.active .step-label {
+            color: var(--primary-color);
+        }
+
+        /* Slide Display Area */
+        .slide-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .slide-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        .slide-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography & Components Inside Slides */
+        .slide-header {
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 0.75rem;
+        }
+
+        .slide-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .slide-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .info-card {
+            background-color: #f8fafc;
+            border-left: 4px solid var(--primary-light);
+            padding: 1.25rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1rem;
+        }
+
+        .info-card.success { border-left-color: var(--success-color); background-color: #f0fdf4; }
+        .info-card.warning { border-left-color: var(--warning-color); background-color: #fffbeb; }
+        .info-card.danger  { border-left-color: var(--danger-color);  background-color: #fef2f2; }
+
+        .info-card h4 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .info-card p, .info-card li {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .info-card ul {
+            padding-left: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Flow Process Diagrams */
+        .process-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .process-step {
+            background: white;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            min-width: 110px;
+        }
+
+        .process-arrow {
+            color: var(--text-muted);
+            font-weight: bold;
+            padding: 0 0.25rem;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.88rem;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .highlight-num {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Footer Controls Bar */
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .ctrl-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .ctrl-btn:hover:not(:disabled) {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .ctrl-btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .ctrl-btn.primary:hover:not(:disabled) {
+            background-color: #1d4ed8;
+        }
+
+        .ctrl-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .keyboard-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .key-cap {
+            background: #e2e8f0;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.75rem;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .process-flow { flex-direction: column; gap: 0.5rem; }
+            .process-arrow { transform: rotate(90deg); }
+            .keyboard-hint { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="title-area">
+                <h1>DiatomNet v1.0 论文深度交互讲解</h1>
+                <p>Automatic Diatom Testing for Drowning Diagnosis in Forensically Biomedical Application[cite: 1]</p>
+            </div>
+            <div style="text-align: right;">
+                <span id="step-counter" style="font-size: 0.9rem; font-weight: 600; background: rgba(255,255,255,0.15); padding: 0.3rem 0.8rem; border-radius: 20px;">Step 1 / 6</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <main>
+        <!-- Step Navigation -->
+        <nav class="step-nav" id="step-nav">
+            <button class="step-btn active" onclick="goToStep(0)">
+                <span class="step-num">Step 1</span>
+                <span class="step-label">研究目标与背景</span>
+            </button>
+            <button class="step-btn" onclick="goToStep(1)">
+                <span class="step-num">Step 2</span>
+                <span class="step-label">核心创新与架构</span>
+            </button>
+            <button class="step-btn" onclick="goToStep(2)">
+                <span class="step-num">Step 3</span>
+                <span class="step-label">实验验证与结果</span>
+            </button>
+            <button class="step-btn" onclick="goToStep(3)">
+                <span class="step-num">Step 4</span>
+                <span class="step-label">学术价值与应用</span>
+            </button>
+            <button class="step-btn" onclick="goToStep(4)">
+                <span class="step-num">Step 5</span>
+                <span class="step-label">局限性与批判思考</span>
+            </button>
+            <button class="step-btn" onclick="goToStep(5)">
+                <span class="step-num">Step 6</span>
+                <span class="step-label">吸收迁移与复习</span>
+            </button>
+        </nav>
+
+        <!-- Slide Presentation Container -->
+        <div class="slide-container">
+            
+            <!-- Slide 1: 研究目标与痛点 -->
+            <div class="slide-content active" id="slide-0">
+                <div class="slide-header">
+                    <h2 class="slide-title">📌 Step 1: 研究目标与拟解决的法医实际问题</h2>
+                    <p class="slide-subtitle">深入剖析溺死鉴定中的现实困境与硅藻检验的自动化需求[cite: 1]</p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="info-card warning">
+                        <h4>1. 拟解决的法医实际问题 (Real-World Dilemma)</h4>
+                        <ul>
+                            <li><strong>诊断难点：</strong>溺死（Drowning）是法医学中极具挑战的死因鉴定之一[cite: 1]。缺乏目击者时，普通尸表特征（如泡沫、肺水肿）易因腐败而消失，或在心衰、药物中毒死者中同样出现[cite: 1]。</li>
+                            <li><strong>硅藻检验（Diatom Test）：</strong>溺水时硅藻随水进入肺泡并经血循环进入肝、肾、脑、骨髓等封闭器官，是证明“生前入水”的核心证据[cite: 1]。</li>
+                            <li><strong>核心痛点：</strong>传统酸蚀/酶解后，法医需要在显微镜下搜寻极少量的硅藻，<strong>极其耗时费力（单片耗时数小时）</strong>，且易受视觉疲劳影响[cite: 1]。</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card danger">
+                        <h4>2. 复杂杂质背景干扰 (Complex Impurity Background)</h4>
+                        <ul>
+                            <li><strong>真实样本杂质：</strong>吸烟、尘肺病或生活在严重空气污染环境中的受害者，肺组织中沉积大量<strong>碳素颗粒（Carbon Pigments）</strong>[cite: 1]。</li>
+                            <li><strong>水中泥沙沉积：</strong>淹溺环境常夹杂大量<strong>沙粒沉积物（Sand Sediments）</strong>[cite: 1]。</li>
+                            <li><strong>干扰后果：</strong>这些杂质无法通过强酸或热过氧化氢完全消除，在显微镜下与硅藻重叠掩盖，导致高漏诊率和假阴性争端[cite: 1]。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-card success" style="margin-top: 1rem;">
+                    <h4>3. 学术研究与产业发展的双重意义</h4>
+                    <p><strong>学术意义：</strong>打破以往AI硅藻识别仅在“干净理想背景”或小图范围（Proof of Concept）测试的局限，探索深度学习在极高背景噪音下的泛化边界与可解释机制[cite: 1]。<br>
+                    <strong>产业/司法意义：</strong>开发一套可直接接入全扫描病理切片机（WSI）的落地软件系统（DiatomNet v1.0），建立标准化检验与辅助报告流程，大幅提升司法鉴定效率与证据再现性[cite: 1]。</p>
+                </div>
+            </div>
+
+            <!-- Slide 2: 核心创新与架构 -->
+            <div class="slide-content" id="slide-1">
+                <div class="slide-header">
+                    <h2 class="slide-title">💡 Step 2: 核心创新、算法模型与系统设计</h2>
+                    <p class="slide-subtitle">全片扫描（WSI）、切片分类 vs 目标检测的抉择与迁移学习机制[cite: 1]</p>
+                </div>
+
+                <div class="info-card">
+                    <h4>1. DiatomNet v1.0 交互式 7 步工程工作流</h4>
+                    <div class="process-flow">
+                        <div class="process-step">1. 用户登录<br><small>(数据安全与隐私)</small></div>
+                        <span class="process-arrow">→</span>
+                        <div class="process-step">2. 案件录入<br><small>(关联QR码/照片)</small></div>
+                        <span class="process-arrow">→</span>
+                        <div class="process-step">3. ROI 去噪确定<br><small>(滑动条阈值分割)</small></div>
+                        <span class="process-arrow">→</span>
+                        <div class="process-step">4. AI 自动识别<br><small>(GPU 批处理秒级识别)</small></div>
+                        <span class="process-arrow">→</span>
+                        <div class="process-step">5. 人工快捷复核<br><small>(快捷键全选/修正)</small></div>
+                        <span class="process-arrow">→</span>
+                        <div class="process-step">6. 图像裁剪提取<br><small>(高分辨率快照)</small></div>
+                        <span class="process-arrow">→</span>
+                        <div class="process-step">7. 报告自动生成<br><small>(一键导出司法报告)</small></div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="info-card warning">
+                        <h4>2. 为什么选择“切片分类”而非“目标检测”？(设计动机)</h4>
+                        <ul>
+                            <li><strong>传统目标检测（YOLO/RetinaNet）的缺陷：</strong>需生成大量Region Proposals，在高倍数全片扫描（WSI）下计算量极大；且大多采用较浅的Backbone以维持速度，面对高密度泥沙/碳粉杂质时极易出现<strong>欠拟合（Underfitting）</strong>[cite: 1]。</li>
+                            <li><strong>DiatomNet 创新方案：</strong>将全片切割为 255×255 像素无重叠网格切片（Tile），直接送入高容量的 <strong>InceptionV3 卷积神经网络</strong> 进行二分类[cite: 1]。借助 GPU 批处理，几秒内即可筛查数万张切片，避免了繁重的候选框计算[cite: 1]。</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card success">
+                        <h4>3. “脏数据”迁移学习 (Transfer Learning) & 可解释性</h4>
+                        <ul>
+                            <li><strong>基础预训练：</strong>先前模型基于 ~40,000 张清晰背景切片训练[cite: 1]。</li>
+                            <li><strong>迁移微调（Model III）：</strong>仅引入 ~6,000 张含碳粉、沙粒的真实“脏数据”，进行迁移学习，大幅节省标注成本并使模型快速适应杂质背景[cite: 1]。</li>
+                            <li><strong>GBP（Guided Backpropagation）显著图：</strong>通过梯度归因证明增强模型能够准确聚焦于硅藻的硅质壁形态，自动忽略周围的暗色碳粉与无规则沙粒[cite: 1]。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: 实验验证与结果 -->
+            <div class="slide-content" id="slide-2">
+                <div class="slide-header">
+                    <h2 class="slide-title">📊 Step 3: 实验设计、数据集与关键结果验证</h2>
+                    <p class="slide-subtitle">独立测试集指标与真实案例随机对照试验（RCT）[cite: 1]</p>
+                </div>
+
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                    实验基于 18 例溺死案件的 306 张肺组织涂片（400x 数字化全片扫描），划分为碳素组（136张）和沙粒组（170张），并按杂质密度分为 I 度（较轻）和 II 度（重度）[cite: 1]。
+                </p>
+
+                <div class="grid-2">
+                    <div>
+                        <h4 style="font-size: 0.95rem; margin-bottom: 0.4rem; color: var(--primary-color);">1. 独立测试集表现对比 (Independent Testing)</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>模型类型</th>
+                                    <th>召回率 (Recall)</th>
+                                    <th>精确率 (Precision)</th>
+                                    <th>F1 Score</th>
+                                    <th>AUC_2</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>原始清晰模型 (Original)</td>
+                                    <td>0.817[cite: 1]</td>
+                                    <td>0.905[cite: 1]</td>
+                                    <td>0.858[cite: 1]</td>
+                                    <td>0.936[cite: 1]</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>强化模型 Model III (迁移学习)</strong></td>
+                                    <td><span class="highlight-num">0.968</span>[cite: 1]</td>
+                                    <td><span class="highlight-num">0.969</span>[cite: 1]</td>
+                                    <td><span class="highlight-num">0.968</span>[cite: 1]</td>
+                                    <td><span class="highlight-num">0.991</span>[cite: 1]</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">*注：原始模型在重度沙粒组中召回率跌至 0.754，而 Model III 在各类杂质下均表现极其稳定[cite: 1]。</p>
+                    </div>
+
+                    <div>
+                        <h4 style="font-size: 0.95rem; margin-bottom: 0.4rem; color: var(--primary-color);">2. 真实涂片随机对照试验 (RCT vs 人工技术员)</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>评估对象 / 杂质类型</th>
+                                    <th>Recall</th>
+                                    <th>Precision</th>
+                                    <th>F1-Score</th>
+                                    <th>单片平均耗时</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>碳素组 - 资深技术员</td>
+                                    <td>0.90[cite: 1]</td>
+                                    <td>0.93[cite: 1]</td>
+                                    <td>0.91[cite: 1]</td>
+                                    <td>~1.63 小时/片[cite: 1]</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>碳素组 - Model III</strong></td>
+                                    <td>0.83[cite: 1]</td>
+                                    <td>0.90[cite: 1]</td>
+                                    <td><strong>0.86</strong>[cite: 1]</td>
+                                    <td><span class="highlight-num">~0.45 小时/片</span>[cite: 1]</td>
+                                </tr>
+                                <tr>
+                                    <td>沙粒组 - 资深技术员</td>
+                                    <td>0.86[cite: 1]</td>
+                                    <td>0.87[cite: 1]</td>
+                                    <td>0.86[cite: 1]</td>
+                                    <td>~1.87 小时/片[cite: 1]</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>沙粒组 - Model III</strong></td>
+                                    <td>0.83[cite: 1]</td>
+                                    <td>0.86[cite: 1]</td>
+                                    <td><strong>0.84</strong>[cite: 1]</td>
+                                    <td><span class="highlight-num">~0.51 小时/片</span>[cite: 1]</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="info-card success" style="margin-top: 1rem;">
+                    <h4>核心实验结论</h4>
+                    <p>在真实极高杂质涂片上，DiatomNet v1.0 的 F1 值（0.84 - 0.86）<strong>已高度接近资深法医技术员（0.86 - 0.91）</strong>[cite: 1]；同时将检验耗时减少了 <strong>60% - 70%</strong>（从近 6 小时缩短至 1.5 小时以内），且免疫人眼的疲劳漏诊风险[cite: 1]。</p>
+                </div>
+            </div>
+
+            <!-- Slide 4: 学术价值与产业前景 -->
+            <div class="slide-content" id="slide-3">
+                <div class="slide-header">
+                    <h2 class="slide-title">🚀 Step 4: 学术价值、产业落地与未来技术/投资机会</h2>
+                    <p class="slide-subtitle">建立法医 AI 评估范式与智慧法医发展蓝图[cite: 1]</p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="info-card success">
+                        <h4>1. 学术价值与行业评估标准建立</h4>
+                        <ul>
+                            <li><strong>提出了法医AI标准建议：</strong>论文明确指出不能仅靠交叉验证（Cross-Validation）或理想独立测试（测试集F1=0.968），必须引入<strong>真实案例 RCT 随机对照试验</strong>（真实片F1=0.85）作为法医AI上市前验证的金标准[cite: 1]。</li>
+                            <li><strong>打破学术与实践鸿沟：</strong>绝大多数 AI 硅藻研究仅停留在代码和 Demo 阶段，本研究实现了从算法设计、图形界面封装（Drupal+Python）到司法鉴定科学研究院实地试用的全流程落地[cite: 1]。</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card warning">
+                        <h4>2. 潜在产业意义与应用落地</h4>
+                        <ul>
+                            <li><strong>标准化司法证据链：</strong>AI 识别结果结合高清数字病理切片（SVS 格式），可实现证据的永久保存、远程会诊与法庭质证再现[cite: 1]。</li>
+                            <li><strong>解放法医劳动力：</strong>技术员只需在系统筛选出的候选切片中进行二次勾选确认（<5 分钟），极大地提高了鉴定所的案件吞吐量[cite: 1]。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-card" style="margin-top: 1rem;">
+                    <h4>3. 未来值得探索的路线与技术/投资机会</h4>
+                    <ul>
+                        <li><strong>方向一：GUI 内集成的在线增量学习模块（Active Learning）</strong>—— 允许基层法医在人工复核时将误判样本一键“回馈”给模型进行本地微调，解决不同地区硅藻物种差异问题[cite: 1]。</li>
+                        <li><strong>方向二：5G + 云端智慧法医检验平台</strong>—— 结合超高速数字扫描仪，将基层法医单位的数字化切片实时上传至计算中心，实现异地秒级自动化诊断与报告生成[cite: 1]。</li>
+                        <li><strong>方向三：多光谱/荧光 WSI 与自动物种鉴别（Species Profiling）</strong>—— 结合物种分类推断溺水地点（溺死水域溯源），为侦查破案提供更丰富的线索[cite: 1]。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Slide 5: 局限性与批判性思考 -->
+            <div class="slide-content" id="slide-4">
+                <div class="slide-header">
+                    <h2 class="slide-title">🔍 Step 5: 论文局限性、不足与批判性思考</h2>
+                    <p class="slide-subtitle">保持学术审慎：方法假设、实验偏差与尚需补充的证据[cite: 1]</p>
+                </div>
+
+                <div class="grid-3">
+                    <div class="info-card danger">
+                        <h4>1. 数据分布失衡导致的性能落差</h4>
+                        <p><strong>现象：</strong>模型在独立测试集上达到 <strong>F1=0.968</strong>，但在真实全片 RCT 试验中跌至 <strong>F1=0.84-0.86</strong>[cite: 1]。<br>
+                        <strong>原因分析：</strong>独立测试集正负切片比例均衡（1:1）；而真实全扫描切片中，无硅藻的背景切片数量极其庞大（极端正负失衡），导致假阳性累积，暴露了模型的真实泛化瓶颈[cite: 1]。</p>
+                    </div>
+
+                    <div class="info-card warning">
+                        <h4>2. 软件交互与架构缺乏“微调模块”</h4>
+                        <p><strong>缺陷：</strong>DiatomNet v1.0 虽然集成了友好的 Drupal GUI，但<strong>未设计开放的模型更新/微调模块</strong>[cite: 1]。<br>
+                        <strong>风险：</strong>如果其他实验室遇到了未见过的杂质类型或特殊硅藻种类，非计算机背景的法医无法直接在软件内更新权重，系统面临“静态退化”风险[cite: 1]。</p>
+                    </div>
+
+                    <div class="info-card danger">
+                        <h4>3. 扫描倍率（400x）对微小物种的限制</h4>
+                        <p><strong>权衡利弊：</strong>系统采用 400x 光学扫描仪以保证单片 10 分钟内的极速扫描[cite: 1]。<br>
+                        <strong>隐患：</strong>400x 放大倍率可能遗漏直径小于 5μm 的极其微小的硅藻碎片，或无法进行种属级别（Species-level）的精细纹理分辨，可能需要结合扫描电镜（SEM）作为补充[cite: 1]。</p>
+                    </div>
+                </div>
+
+                <div class="info-card" style="margin-top: 1rem;">
+                    <h4>外推风险与未来验证需求</h4>
+                    <p>目前样本均来自上海地区（司法鉴定科学研究院）的肺组织样本[cite: 1]。由于不同水域（如高盐海域、静止湖泊）的硅藻群落和泥沙成分差异巨大，该模型在跨地区、跨扫描仪型号（如滨松、菲利普扫描仪）下的<strong>多中心泛化能力（Multi-center Generalization）</strong>仍需补充更多临床案例数据支持[cite: 1]。</p>
+                </div>
+            </div>
+
+            <!-- Slide 6: 吸收迁移与复习指南 -->
+            <div class="slide-content" id="slide-5">
+                <div class="slide-header">
+                    <h2 class="slide-title">🎯 Step 6: 学习吸收、实战迁移与背景知识清单</h2>
+                    <p class="slide-subtitle">如何将本文的思维与框架直接迁移到你的科研与项目中[cite: 1]</p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="info-card success">
+                        <h4>1. 最值得重点吸收的核心思想与方法</h4>
+                        <ul>
+                            <li><strong>高噪大图场景的“切片网格分类”思维：</strong>在面对超大分辨率图像（如 WSI、卫星遥感图）且目标小、背景噪点极高时，不要盲目套用 YOLO 等目标检测；采用“网格分块 + 高容量分类网格 + GPU 批处理”往往更稳健[cite: 1]。</li>
+                            <li><strong>脏数据迁移学习（Dirty-Data Transfer Learning）：</strong>当模型在特定恶劣环境下性能骤降时，不需要从头标注几万张图，只需收集几千张“恶劣环境脏数据”进行迁移微调即可实现性能跃升[cite: 1]。</li>
+                            <li><strong>可解释性 GBP 显著图验证：</strong>将 GBP 热力图作为模型上线前的必要诊断工具，确保 AI 学习的是真实物理特征而非背景噪声[cite: 1]。</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card warning">
+                        <h4>2. 前置知识库与补充学习路线</h4>
+                        <ul>
+                            <li><strong>法医病理学基础：</strong>溺死机制、器官硅藻分布律、强酸/热 H₂O₂ 消化提取法[cite: 1]。</li>
+                            <li><strong>数字病理学与 WSI 图像处理：</strong>SVS/TIFF 高分辨率图像金字塔结构、OpenSlide 库的使用、ROI 阈值分割与去噪算法[cite: 1]。</li>
+                            <li><strong>深度学习与评估范式：</strong>InceptionV3 架构、Softmax 交叉熵损失、Guided Backpropagation 可解释性归因算法、PR 曲线与 AUC_2 评估指标[cite: 1]。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-card success" style="margin-top: 1rem;">
+                    <h4>直接可迁移的项目实践模板</h4>
+                    <p>如果你正在做医疗图像分类、工业表面瑕疵检测或法医图像识别项目，可以完全套用本文的评估框架：<br>
+                    <code>基础预训练模型</code> → <code>极端场景脏数据迁移微调</code> → <code>独立测试集计算 Recall/Precision/F1</code> → <code>真实场景 RCT 双盲人机比对</code>[cite: 1]。</p>
+                </div>
+            </div>
+
+            <!-- Footer Navigation Controls -->
+            <div class="controls-bar">
+                <div class="btn-group">
+                    <button class="ctrl-btn" id="prev-btn" onclick="changeStep(-1)">⬅️ 上一步</button>
+                    <button class="ctrl-btn" id="next-btn" onclick="changeStep(1)">下一步 ➡️</button>
+                </div>
+
+                <div class="keyboard-hint">
+                    <span>快捷键:</span>
+                    <span><span class="key-cap">←</span> <span class="key-cap">→</span> 切换步骤</span>
+                    <span><span class="key-cap">Space</span> 自动播放/暂停</span>
+                    <span><span class="key-cap">R</span> 重置</span>
+                </div>
+
+                <div class="btn-group">
+                    <button class="ctrl-btn" id="play-btn" onclick="togglePlay()">▶️ 自动播放</button>
+                    <button class="ctrl-btn" onclick="resetSteps()">🔄 重置</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // State variables
+        let currentStep = 0;
+        const totalSteps = 6;
+        let isPlaying = false;
+        let playInterval = null;
+
+        // UI elements
+        const progressEl = document.getElementById('progress-bar');
+        const counterEl = document.getElementById('step-counter');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const playBtn = document.getElementById('play-btn');
+
+        // Step Navigation Logic
+        function updateUI() {
+            // Update Step Slides
+            for (let i = 0; i < totalSteps; i++) {
+                const slide = document.getElementById(`slide-${i}`);
+                const navBtn = document.querySelectorAll('.step-btn')[i];
+                if (i === currentStep) {
+                    slide.classList.add('active');
+                    navBtn.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                    navBtn.classList.remove('active');
+                }
+            }
+
+            // Update Progress Bar & Counter
+            const progressPercent = ((currentStep + 1) / totalSteps) * 100;
+            progressEl.style.width = `${progressPercent}%`;
+            counterEl.textContent = `Step ${currentStep + 1} / ${totalSteps}`;
+
+            // Button Disable States
+            prevBtn.disabled = (currentStep === 0);
+            nextBtn.disabled = (currentStep === totalSteps - 1);
+        }
+
+        function goToStep(stepIndex) {
+            if (stepIndex >= 0 && stepIndex < totalSteps) {
+                currentStep = stepIndex;
+                updateUI();
+            }
+        }
+
+        function changeStep(delta) {
+            goToStep(currentStep + delta);
+        }
+
+        function resetSteps() {
+            pause();
+            goToStep(0);
+        }
+
+        // Auto Play Feature
+        function togglePlay() {
+            if (isPlaying) {
+                pause();
+            } else {
+                play();
+            }
+        }
+
+        function play() {
+            isPlaying = true;
+            playBtn.textContent = '⏸️ 暂停';
+            playBtn.classList.add('primary');
+            playInterval = setInterval(() => {
+                if (currentStep < totalSteps - 1) {
+                    changeStep(1);
+                } else {
+                    goToStep(0);
+                }
+            }, 8000); // 8 seconds per slide
+        }
+
+        function pause() {
+            isPlaying = false;
+            playBtn.textContent = '▶️ 自动播放';
+            playBtn.classList.remove('primary');
+            if (playInterval) {
+                clearInterval(playInterval);
+                playInterval = null;
+            }
+        }
+
+        // Keyboard Controls Listener
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                changeStep(1);
+            } else if (e.key === 'ArrowLeft') {
+                changeStep(-1);
+            } else if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlay();
+            } else if (e.key === 'r' || e.key === 'R') {
+                resetSteps();
+            }
+        });
+
+        // Initialize UI
+        updateUI();
+    </script>
+</body>
+</html>
