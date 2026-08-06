@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>论文精读 · DiatomNet v1.0 自动硅藻检测</title>
+<style>
+:root{--bg:#faf8f5;--card:#fff;--text:#2d2a26;--text-muted:#7a746d;--accent:#c44f1c;--accent2:#2e6b8f;--accent3:#5a8a4a;--border:#e8e4df;--shadow:0 1px 3px rgba(0,0,0,.06);--shadow-lg:0 4px 16px rgba(0,0,0,.08);--radius:10px;--step-1:#c44f1c;--step-2:#2e6b8f;--step-3:#5a8a4a;--step-4:#8b5e9e;--step-5:#c7882e;--highlight:#fff3cd;--font-sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;--font-serif:'Noto Serif SC','Source Han Serif SC','Songti SC',Georgia,serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+#app{max-width:900px;margin:0 auto;padding:20px 24px 80px}
+.hero{text-align:center;padding:48px 0 32px;border-bottom:2px solid var(--border);margin-bottom:32px}
+.hero .journal{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-weight:600}
+.hero h1{font-family:var(--font-serif);font-size:clamp(16px,3.2vw,20px);font-weight:700;margin:12px 0 8px;line-height:1.5;color:#1a1815}
+.hero .meta{font-size:14px;color:var(--text-muted)}.hero .meta strong{color:var(--accent)}
+.controls{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:16px 0;position:sticky;top:0;background:var(--bg);z-index:100;border-bottom:1px solid var(--border);margin-bottom:24px}
+.controls button{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--border);border-radius:20px;background:var(--card);color:var(--text);font-size:13px;cursor:pointer;transition:all .2s;font-family:var(--font-sans)}
+.controls button:hover{border-color:var(--accent);color:var(--accent)}.controls button:active{transform:scale(.97)}
+.controls button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.controls button.mode-btn{background:#fef9f0;border-color:#e8c876;color:#8b6914;font-weight:600}
+.controls .kb-hint{font-size:12px;color:var(--text-muted);padding:4px 10px;border:1px dashed var(--border);border-radius:12px}
+.progress-wrap{margin-bottom:32px}.progress-steps{display:flex;justify-content:space-between;position:relative}
+.progress-steps::before{content:'';position:absolute;top:16px;left:8%;right:8%;height:2px;background:var(--border);z-index:0}
+.progress-step{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:1;cursor:pointer;transition:all .3s}
+.progress-step .dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;background:var(--border);transition:all .3s}
+.progress-step.active .dot{transform:scale(1.15);box-shadow:0 2px 8px rgba(0,0,0,.15)}.progress-step.done .dot{opacity:.7}
+.progress-step .label{font-size:11px;color:var(--text-muted);text-align:center;max-width:80px;line-height:1.3}
+.progress-step.active .label{color:var(--accent);font-weight:600}
+.step-1 .dot,.step-1.active .dot,.step-1.done .dot{background:var(--step-1)}
+.step-2 .dot,.step-2.active .dot,.step-2.done .dot{background:var(--step-2)}
+.step-3 .dot,.step-3.active .dot,.step-3.done .dot{background:var(--step-3)}
+.step-4 .dot,.step-4.active .dot,.step-4.done .dot{background:var(--step-4)}
+.step-5 .dot,.step-5.active .dot,.step-5.done .dot{background:var(--step-5)}
+.step-section{display:none}.step-section.visible{display:block}
+.step-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.step-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
+.step-header h2{font-size:20px;font-weight:700}.step-header .time{font-size:13px;color:var(--text-muted);margin-left:auto;flex-shrink:0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px;box-shadow:var(--shadow);transition:all .3s;position:relative}
+.card h3{font-size:16px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card.reveal-item{opacity:0;transform:translateY(8px);transition:all .5s ease}
+.card.reveal-item.visible-card{opacity:1;transform:translateY(0)}
+.card.current-card{border-color:var(--accent);box-shadow:0 0 0 2px rgba(196,79,28,.12),var(--shadow-lg)}
+.think-zone{padding:16px 18px;background:#fdfcfa;border-radius:8px;border:1px solid #eee9e0;margin-bottom:14px}
+.think-zone .prompt{font-size:15px;line-height:1.8;color:var(--text)}
+.think-zone .task-list{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--text-muted);line-height:2}
+.think-zone .task-list li{padding:2px 0}.think-zone .task-list li strong{color:var(--text)}
+.hint-wrap{margin-top:12px}.hint-toggle{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--accent2);cursor:pointer;user-select:none;padding:4px 10px;border-radius:12px;border:1px dashed var(--accent2);transition:all .2s}
+.hint-toggle:hover{background:#f0f6fa}.hint-content{display:none;margin-top:8px;padding:10px 14px;background:#f0f6fa;border-radius:6px;font-size:13px;color:var(--accent2);border-left:3px solid var(--accent2)}.hint-content.open{display:block}
+.answer-zone{max-height:0;overflow:hidden;opacity:0;transition:max-height .6s ease,opacity .4s ease,margin .4s ease;margin-top:0}
+.answer-zone.revealed{max-height:8000px;opacity:1;margin-top:14px}
+.reveal-btn-wrap{text-align:center;margin-top:6px}
+.reveal-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 28px;border:none;border-radius:24px;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-sans);transition:all .25s;box-shadow:0 2px 8px rgba(196,79,28,.25);animation:pulse-hint 2s infinite}
+.reveal-btn:hover{background:#a83e14;transform:translateY(-1px);box-shadow:0 4px 14px rgba(196,79,28,.35)}
+.reveal-btn:active{transform:scale(.96)}.reveal-btn.done{background:var(--accent3);animation:none;box-shadow:0 1px 4px rgba(90,138,74,.2);pointer-events:none}
+@keyframes pulse-hint{0%,100%{box-shadow:0 2px 8px rgba(196,79,28,.25)}50%{box-shadow:0 4px 18px rgba(196,79,28,.45)}}
+.info-box{padding:14px 18px;border-radius:8px;margin:12px 0;font-size:14px}
+.info-box.note{border-left:4px solid var(--accent2);background:#f0f6fa}.info-box.warn{border-left:4px solid var(--accent);background:#fff0ed}.info-box.success{border-left:4px solid var(--accent3);background:#f0f7ed}
+.info-box .title{font-weight:700;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.term{color:var(--accent);font-weight:600;cursor:help;border-bottom:1px dashed var(--accent);position:relative}
+.term:hover::after{content:attr(data-def);position:absolute;bottom:calc(100%+8px);left:50%;transform:translateX(-50%);background:#1a1815;color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:400;max-width:300px;z-index:200;pointer-events:none}
+.gap-highlight{background:var(--highlight);padding:2px 6px;border-radius:4px;font-weight:600}
+.template{background:#fefdf9;border:1px dashed #d4cbb8;border-radius:var(--radius);padding:20px;margin:16px 0}
+.template .t-label{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px}
+.template .t-line{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;font-size:14px}
+.template .t-line .t-key{color:var(--accent);font-weight:600;white-space:nowrap}
+.template .t-line .t-val{color:var(--text-muted);border-bottom:1px dotted #ccc;flex:1;min-height:18px}
+.template .t-line input.t-inline{flex:1;border:none;border-bottom:1.5px dashed #d4cbb8;background:transparent;font-size:14px;font-family:var(--font-sans);padding:2px 4px;color:var(--text);min-width:120px}
+.template .t-line input.t-inline:focus{outline:none;border-bottom-color:var(--accent);border-bottom-style:solid}
+.template .t-line input.t-inline::placeholder{color:#c5bfb2;font-style:italic}
+.user-input-area{margin-top:12px}.user-input-area textarea{width:100%;min-height:60px;padding:12px 14px;border:1.5px dashed #d4cbb8;border-radius:8px;font-size:14px;font-family:var(--font-sans);line-height:1.7;resize:vertical;background:#fffef9;color:var(--text);transition:all .2s}
+.user-input-area textarea:focus{outline:none;border-color:var(--accent);border-style:solid;box-shadow:0 0 0 3px rgba(196,79,28,.08);background:#fff}
+.user-input-area textarea::placeholder{color:#c5bfb2;font-style:italic}
+.user-input-area .input-hint{font-size:11px;color:#c5bfb2;margin-top:4px;text-align:right}.user-input-area .input-hint.saved{color:var(--accent3)}
+.substep{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid #f0ede8}.substep:last-child{border-bottom:none}
+.substep .ss-num{width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.substep .ss-content{flex:1}.substep .ss-content h4{font-size:15px;margin-bottom:4px}.substep .ss-content p{font-size:14px;color:var(--text-muted);line-height:1.6}
+.checklist{list-style:none}.checklist li{padding:6px 0;font-size:14px;display:flex;align-items:flex-start;gap:8px}
+.checklist li::before{content:'☐';font-size:16px;color:var(--accent);flex-shrink:0}
+.key-insight{background:linear-gradient(135deg,#fef9f0,#fdf5e6);border:1.5px solid #e8c876;border-radius:var(--radius);padding:18px 22px;margin:16px 0}
+.key-insight .ki-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--step-5);margin-bottom:6px}
+.key-insight .ki-text{font-size:15px;line-height:1.7}
+.data-table{width:100%;font-size:13px;border-collapse:collapse;margin-top:8px}
+.data-table th{padding:8px;text-align:left;border-bottom:1px solid var(--border);background:#faf9f7;font-weight:600}
+.data-table td{padding:8px;border-bottom:1px solid #f0ede8;vertical-align:top}
+.funnel{text-align:center;padding:10px 0}.funnel .level{display:inline-block;padding:8px 20px;margin:4px;border-radius:20px;font-size:13px;max-width:420px}
+.funnel .arrow-down{display:block;margin:2px auto;color:var(--text-muted);font-size:16px}
+.funnel .l-bg{background:#f0f6fa;border:1px solid #c8dae8}.funnel .l-gap{background:#fff0ed;border:1px solid #f0c8b8}
+.funnel .l-goal{background:#f0f7ed;border:2px solid var(--accent3);font-weight:700}
+.bottom-nav{display:flex;justify-content:space-between;padding:24px 0;gap:12px}
+.bottom-nav button{padding:10px 24px;border:1.5px solid var(--border);border-radius:24px;background:var(--card);cursor:pointer;font-size:14px;transition:all .2s;font-family:var(--font-sans)}
+.bottom-nav button:hover{border-color:var(--accent);color:var(--accent)}.bottom-nav button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.glossary-bar{position:fixed;right:0;top:0;bottom:0;width:320px;background:#fff;border-left:1px solid var(--border);box-shadow:-2px 0 12px rgba(0,0,0,.06);transform:translateX(100%);transition:transform .3s ease;z-index:300;overflow-y:auto;padding:24px}
+.glossary-bar.open{transform:translateX(0)}.glossary-bar h3{font-size:16px;margin-bottom:16px}
+.glossary-bar .term-entry{padding:8px 0;border-bottom:1px solid #f0ede8}.glossary-bar .term-entry strong{font-size:14px;color:var(--accent)}.glossary-bar .term-entry p{font-size:13px;color:var(--text-muted);margin-top:2px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1815;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;z-index:400;opacity:0;transition:opacity .3s;pointer-events:none}.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="app">
+<a href="./diatomnet-v1-综述选题.html" style="display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--accent2);margin-bottom:16px;text-decoration:none;">← 切换到综述选题模式</a>
+
+<div class="hero">
+<div class="journal">Computer Methods and Programs in Biomedicine 232 (2023) 107434</div>
+<h1>DiatomNet v1.0: A novel approach for automatic diatom testing for drowning diagnosis in forensically biomedical application</h1>
+<div class="meta">Ji Zhang, Duarte Nuno Vieira, Qi Cheng, …, <strong>Ping Huang*</strong> · 司法鉴定科学研究院 / 复旦大学</div>
+</div>
+
+<div class="controls" id="controls">
+<button onclick="prevCard()">◀ 上一张</button><button onclick="revealCurrentAnswer()" class="primary">💡 揭晓答案</button><button onclick="nextCard()">▶ 下一张</button>
+<button onclick="revealAllInStep()">📋 全部揭晓</button><button onclick="jumpNextSection()">▼ 下一节</button><button onclick="resetAll()">↺ 重置</button>
+<span class="kb-hint">← → Space Enter A R G 1-5</span>
+<button onclick="toggleMode()" class="mode-btn" id="modeBtn">🧠 逐题思考</button><button onclick="toggleGlossary()">📖 术语表</button>
+</div>
+
+<div class="progress-wrap"><div class="progress-steps" id="progressSteps">
+<div class="progress-step step-1 active" data-step="1" onclick="jumpToStep(1)"><div class="dot">1</div><div class="label">结构扫描</div></div>
+<div class="progress-step step-2" data-step="2" onclick="jumpToStep(2)"><div class="dot">2</div><div class="label">引言精读</div></div>
+<div class="progress-step step-3" data-step="3" onclick="jumpToStep(3)"><div class="dot">3</div><div class="label">方法精读</div></div>
+<div class="progress-step step-4" data-step="4" onclick="jumpToStep(4)"><div class="dot">4</div><div class="label">结果精读</div></div>
+<div class="progress-step step-5" data-step="5" onclick="jumpToStep(5)"><div class="dot">5</div><div class="label">讨论精读</div></div>
+</div></div>
+
+<!-- STEP 1 -->
+<div class="step-section visible" id="step1">
+<div class="step-header"><div class="step-num" style="background:var(--step-1)">1</div><h2>📍 第一步：结构扫描</h2><span class="time">⏱ 10-15 分钟</span></div>
+
+<div class="card reveal-item" id="c1-1">
+<h3>📌 1.1 读标题</h3>
+<div class="think-zone">
+<p class="prompt"><span class="emoji">🧐</span> <strong>你的任务：</strong>DiatomNet v1.0——这个标题告诉你什么？</p>
+<p style="font-size:15px;font-weight:700;color:var(--accent);margin-top:10px;padding:8px 14px;background:#fff;border-radius:6px;border:1px solid var(--border);">"DiatomNet v1.0: A novel approach for automatic diatom testing for drowning diagnosis in forensically biomedical application"</p>
+<ul class="task-list"><li><strong>DiatomNet</strong>——Net后缀暗示什么技术路线？</li><li><strong>v1.0</strong>——说明软件的什么阶段？</li><li><strong>automatic</strong>——对比"手动"意味着什么？</li><li>这篇论文和前一篇硅藻论文(Ma 2025)是什么关系？</li></ul>
+<div class="hint-wrap"><span class="hint-toggle" onclick="toggleHint(this)">🕵️ 提示</span><div class="hint-content">Net=神经网络。v1.0=第一个正式版本。这篇是<strong>软件产品</strong>论文，不是方法探索——它把前期(Zhou 2019, Zhang 2021)的CNN算法封装成了可用的GUI软件。</div></div>
+</div>
+<div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+<div class="answer-zone">
+<table class="data-table">
+<tr><td style="font-weight:700;color:var(--accent);">DiatomNet</td><td>硅藻+神经网络——用<strong>CNN深度学习</strong>自动识别硅藻</td></tr>
+<tr><td style="font-weight:700;color:var(--accent);">v1.0</td><td>首个正式版本——从proof-of-concept到<strong>可部署软件</strong></td></tr>
+<tr><td style="font-weight:700;color:var(--accent);">automatic testing</td><td>自动检测——7步流程中除酸消化外<strong>全部自动化</strong></td></tr>
+<tr><td style="font-weight:700;color:var(--accent);">forensically biomedical</td><td>法医生物医学应用——不是环境科学的水质监测，而是<strong>溺死诊断</strong></td></tr></table>
+<div class="info-box warn" style="margin-top:8px;"><div class="title">💡 与前一篇硅藻论文的关系</div>Ma 2025=<strong>简化分类标准</strong>（用什么特征描述硅藻）；DiatomNet v1.0=<strong>自动化识别引擎</strong>（怎么让机器找到硅藻）。两者互补：分类标准+识别引擎=完整的自动化硅藻检验方案。</div>
+</div></div>
+
+<div class="card reveal-item" id="c1-2">
+<h3>📝 1.2 读摘要</h3>
+<div class="think-zone"><div class="template"><div class="t-label">📋 摘要三要素</div>
+<div class="t-line"><span class="t-key">Background/问题：</span><input class="t-inline" data-save="dn-1-2-q1" placeholder="……"></div>
+<div class="t-line"><span class="t-key">方法：</span><input class="t-inline" data-save="dn-1-2-q2" placeholder="……"></div>
+<div class="t-line"><span class="t-key">结果：</span><input class="t-inline" data-save="dn-1-2-q3" placeholder="……"></div></div></div>
+<div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+<div class="answer-zone">
+<div class="key-insight"><div class="ki-label">🔑 摘要核心</div><div class="ki-text"><strong>问题：</strong>硅藻人工镜检耗时费力，尤其在复杂背景（碳色素/泥沙）下<br><strong>方法：</strong>DiatomNet v1.0 GUI软件+CNN模型+迁移学习<br><strong>结果：</strong>增强模型recall/F1=0.968；真实玻片上F1=0.86（碳色素）和0.84（泥沙），略低于人工（0.91/0.86），但<strong>速度快2倍以上</strong>（<2h vs ~5h）</div></div>
+</div></div>
+
+<div class="card reveal-item" id="c1-3">
+<h3>📊 1.3 扫图和表</h3>
+<div class="think-zone"><p class="prompt"><span class="emoji">👀</span> <strong>你的任务：</strong>7张图+4张表，猜每张展示什么。</p></div>
+<div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+<div class="answer-zone"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;">
+<div style="background:#fdfcfa;padding:10px;border-radius:6px;"><strong>Fig 1:</strong> 登录+案件管理窗口GUI截图</div>
+<div style="background:#fdfcfa;padding:10px;border-radius:6px;"><strong>Fig 2:</strong> ROI分析+AI识别+手动确认+报告界面</div>
+<div style="background:#fdfcfa;padding:10px;border-radius:6px;"><strong>Fig 3-4:</strong> 杂质示例（碳色素/泥沙）+数据标注流程图</div>
+<div style="background:#fdfcfa;padding:10px;border-radius:6px;"><strong>Fig 5:</strong> 不同模型性能对比柱状图</div>
+<div style="background:#fdfcfa;padding:10px;border-radius:6px;"><strong>Fig 6-7:</strong> GBP热力图——模型"看"到了什么</div>
+<div style="background:#fdfcfa;padding:10px;border-radius:6px;"><strong>Tables 1-4:</strong> 训练参数/RCT结果/性能对比</div>
+</div></div>
+</div>
+
+<div class="card reveal-item" id="c1-4">
+<h3>🎯 1.4 结论最后一段</h3>
+<div class="think-zone"><p class="prompt"><span class="emoji">📖</span> <strong>你的任务：</strong>一句话概括这篇论文的核心贡献。</p></div>
+<div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+<div class="answer-zone"><div class="info-box success"><div class="title">✅ 一句话</div>"将前期的CNN硅藻识别算法封装成<strong>DiatomNet v1.0 GUI软件</strong>，用迁移学习应对复杂背景，实现了<strong>接近人工精度但快2倍以上</strong>的自动化硅藻检测。"</div></div></div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-section" id="step2">
+<div class="step-header"><div class="step-num" style="background:var(--step-2)">2</div><h2>📍 第二步：引言精读</h2><span class="time">⏱ 15-20 分钟</span></div>
+
+<div class="card reveal-item" id="c2-1">
+<h3>🔽 2.1 漏斗结构</h3>
+<div class="think-zone"><p class="prompt"><span class="emoji">🔍</span> <strong>你的任务：</strong>找Gap——为什么已有的AI硅藻方法不够？</p></div>
+<div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+<div class="answer-zone">
+<div class="funnel">
+<div class="level l-bg">大背景：溺死诊断难→硅藻检验是辅助证据→但人工镜检耗时费力</div><div class="arrow-down">↓</div>
+<div class="level l-bg">AI进展：已有CNN/YOLO/RetinaNet等方法→但在环境科学中，<strong>背景干净</strong></div><div class="arrow-down">↓</div>
+<div class="level l-bg">黄平组前期：Zhou(2019) InceptionV3全片扫描97.67%→Zhang(2021) 硅藻分类→但只是<strong>proof-of-concept</strong></div><div class="arrow-down">↓</div>
+<div class="level l-gap">⚠️ 三个Gap：① 现有AI只是概念验证，无<strong>可用软件</strong>；② 法医样本背景<strong>复杂</strong>（碳色素/泥沙）；③ SEM方法<strong>太贵太慢</strong></div><div class="arrow-down">↓</div>
+<div class="level l-goal">🎯 本文：DiatomNet v1.0 GUI软件 + 迁移学习应对复杂背景 + RCT验证</div>
+</div>
+</div></div>
+
+<div class="card reveal-item" id="c2-2">
+<h3>📖 2.2 关键论证链</h3>
+<div class="think-zone"><ul class="task-list"><li>环境科学中的AI硅藻 vs 法医学中的AI硅藻——区别在哪？</li><li>为什么迁移学习是关键？</li><li>"proof-of-concept → 可用软件"这一步为什么难？</li></ul></div>
+<div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+<div class="answer-zone">
+<div class="substep"><div class="ss-num" style="background:var(--step-2);">①</div><div class="ss-content"><h4>环境 vs 法医</h4><p>环境科学：水样中硅藻<strong>高度稀释、无重叠</strong>→简单背景。法医学：组织消化后残留<strong>碳色素（吸烟/尘肺）、泥沙</strong>→复杂背景→模型容易误判。</p></div></div>
+<div class="substep"><div class="ss-num" style="background:var(--accent);">②</div><div class="ss-content"><h4>迁移学习的价值</h4><p>原始模型用4万张"干净"图片训练→遇到复杂背景性能下降。迁移学习：只需<strong>几千张"脏"图片</strong>就能大幅提升。关键条件是<strong>源任务和目标任务相关</strong>（都是硅藻识别）。</p></div></div>
+<div class="substep"><div class="ss-num" style="background:var(--step-2);">③</div><div class="ss-content"><h4>从算法到软件的跨越</h4><p>算法=跑得通；软件=能用。DiatomNet v1.0做到：GUI+中英文+登录安全+案件管理+ROI分析+AI识别+手动确认+报告生成。30分钟完成一个玻片（扫描10min+分割8min+AI识别5min+确认5min）。</p></div></div>
+</div></div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-section" id="step3">
+<div class="step-header"><div class="step-num" style="background:var(--step-3)">3</div><h2>📍 第三步：方法精读</h2><span class="time">⏱ 15-20 分钟</span></div>
+
+<div class="card reveal-item" id="c3-1">
+<h3>🗂️ 3.1 软件架构 + 实验设计</h3>
+<div class="think-zone"><p class="prompt"><span class="emoji">🔍</span> <strong>你的任务：</strong>DiatomNet v1.0的7步流程是什么？"迁移学习"实验怎么设计的？</p></div>
+<div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+<div class="answer-zone">
+<div class="info-box note"><div class="title">🖥️ 7步工作流</div><p>登录→案件录入→ROI分析→<strong>AI自动识别</strong>→人工确认→图像提取→报告生成。除酸消化外全部自动化。</p></div>
+<div class="info-box note" style="margin-top:8px;"><div class="title">🧪 迁移学习实验</div>
+<p><strong>原始模型：</strong>InceptionV3，用~4万张"干净"硅藻图片训练<br><strong>新数据：</strong>3个数据库——纯硅藻 / 碳色素混合 / 泥沙混合<br><strong>Model I：</strong>原始+纯硅藻；<strong>Model II：</strong>原始+泥沙；<strong>Model III：</strong>原始+全部<br><strong>评估：</strong>独立测试 + RCT（与人工对照）</p></div>
+<div class="info-box warn" style="margin-top:8px;"><div class="title">💡 技术细节</div><p>400×扫描→svs数字切片→网格分割成tiles→CNN逐tile分类（硅藻/背景）→不预先裁剪单个硅藻——<strong>部分模糊/遮挡的硅藻也能识别</strong>。</p></div>
+</div></div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-section" id="step4">
+<div class="step-header"><div class="step-num" style="background:var(--step-4)">4</div><h2>📍 第四步：结果精读</h2><span class="time">⏱ 20-25 分钟</span></div>
+
+<div class="card reveal-item" id="c4-1">
+<h3>📊 4.1 模型训练+独立测试（Tables 1-3）</h3>
+<div class="think-zone"><ul class="task-list"><li>迁移学习训练需要多少epoch？</li><li>原始模型 vs 增强模型——差距多大？</li><li>碳色素和泥沙哪个更难？</li></ul></div>
+<div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+<div class="answer-zone">
+<table class="data-table"><tr><th>测试条件</th><th>原始模型F1</th><th>增强模型III F1</th></tr>
+<tr><td>碳色素I (<10%)</td><td>0.926</td><td><strong>0.968</strong></td></tr>
+<tr><td>碳色素II (>10%)</td><td>0.911</td><td><strong>0.973</strong></td></tr>
+<tr><td>泥沙I (<25%)</td><td>0.884</td><td><strong>0.986</strong></td></tr>
+<tr><td>泥沙II (>25%)</td><td>0.802</td><td><strong>0.983</strong></td></tr></table>
+<div class="key-insight" style="margin-top:10px;"><div class="ki-label">🔑 关键发现</div><div class="ki-text">原始模型对<strong>高密度泥沙</strong>最脆弱（F1=0.802），迁移学习后提升到0.983——仅需<strong>几千张新图片</strong>就能大幅提升。迁移学习的epoch只需25-69（从头训练需要更多）。</div></div>
+</div></div>
+
+<div class="card reveal-item" id="c4-2">
+<h3>🔬 4.2 RCT真实玻片对比（Table 4）</h3>
+<div class="think-zone"><ul class="task-list"><li>真实玻片上，AI和人工差距多少？</li><li>时间差多少？</li></ul></div>
+<div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+<div class="answer-zone">
+<table class="data-table"><tr><th>条件</th><th>Model III F1</th><th>人工 F1</th><th>AI时间</th><th>人工时间</th></tr>
+<tr><td>碳色素</td><td>0.86</td><td>0.91</td><td><strong>1.34-1.55h</strong></td><td>4.9-5.6h</td></tr>
+<tr><td>泥沙</td><td>0.84</td><td>0.86</td><td><strong>1.34-1.55h</strong></td><td>4.9-5.6h</td></tr></table>
+<div class="key-insight" style="margin-top:10px;"><div class="ki-label">⚖️ 核心trade-off</div><div class="ki-text">AI精度略低（F1差0.05-0.02），但<strong>速度快3倍</strong>。注意：独立测试中F1=0.968，但RCT真实玻片上降到0.85——因为真实玻片上<strong>背景图片远多于含硅藻图片</strong>，数据分布不均。</div></div>
+</div></div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step-section" id="step5">
+<div class="step-header"><div class="step-num" style="background:var(--step-5)">5</div><h2>📍 第五步：讨论精读</h2><span class="time">⏱ 15-20 分钟</span></div>
+
+<div class="card reveal-item" id="c5-1">
+<h3>💬 5.1 作者的核心观点</h3>
+<div class="think-zone"><ul class="task-list"><li>为什么CNN分类比目标检测(YOLO/RetinaNet)更适合？</li><li>作者对"交叉验证 vs 独立测试"有什么看法？</li><li>作者给法医AI研究者提了什么建议？</li></ul></div>
+<div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+<div class="answer-zone">
+<div class="info-box note"><ul style="font-size:14px;padding-left:20px;line-height:1.9;">
+<li><strong>分类 vs 检测：</strong>目标检测(YOLO等)需要大量region proposal→浅层CNN骨干→<strong>欠拟合</strong>。本文用<strong>网格分割+深度CNN分类</strong>→每tile独立判断→GPU并行处理>10000 tiles/秒。</li>
+<li><strong>交叉验证的陷阱：</strong>CNN模型参数多、数据量大→不需要交叉验证（那是给小模型如SVM/RF用的）。交叉验证可能<strong>虚高</strong>——Yu(2020)的独立测试recall显著低于4折CV。</li>
+<li><strong>六条建议：</strong>① 每类至少10000样本 ② 训练/验证/测试独立划分 ③ F1>0.90 ④ 精确率和召回率都要高 ⑤ RCT作为最终评估 ⑥ 持续扩充数据库。</li></ul></div>
+</div></div>
+
+<div class="card reveal-item" id="c5-2">
+<h3>🧠 5.2 批判性思考</h3>
+<div class="think-zone"><ul class="task-list"><li>DiatomNet v1.0的最大局限是什么？</li><li>和Ma 2025的简化分类方法能怎么结合？</li></ul><div class="user-input-area"><textarea data-save="dn-5-2-notes" placeholder="写下你的批判性分析……" rows="4"></textarea><div class="input-hint">✍️ 写完后揭晓</div></div></div>
+<div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓参考分析</button></div>
+<div class="answer-zone"><ul class="checklist" style="line-height:1.9;">
+<li><strong>局限：</strong>① 用户不能自己训练/更新模型（GUI无此功能，作者说后续版本加入）；② 仅支持400×扫描——足够检测但<strong>不能做物种级分类</strong>；③ 仅对比了人工，未对比其他AI方法；④ Windows only。</li>
+<li><strong>与Ma 2025结合：</strong>DiatomNet找到硅藻→自动提取→Ma的3D向量分类→生成地点推断报告。这是<strong>完整的自动化硅藻检验管线</strong>。你的综述可以写这个"AI硅藻检验全流程"。</li></ul></div></div>
+</div>
+
+<div class="bottom-nav"><button onclick="prevCard()">◀ 上一张</button><span style="font-size:13px;color:var(--text-muted);" id="stepIndicator">第 1/5 节</span><button class="primary" onclick="nextCard()">下一张 ▶</button></div>
+</div>
+
+<div class="glossary-bar" id="glossaryBar"><h3>📖 术语表</h3>
+<div class="term-entry"><strong>CNN</strong><p>卷积神经网络——深度学习模型，擅长图像识别。</p></div>
+<div class="term-entry"><strong>Transfer Learning</strong><p>迁移学习：用已训练模型在新任务上微调，只需少量新数据。</p></div>
+<div class="term-entry"><strong>InceptionV3</strong><p>Google的CNN架构，本文用作骨干网络。</p></div>
+<div class="term-entry"><strong>GBP Heatmap</strong><p>导向反向传播热力图——可视化CNN"关注"图像哪些区域。</p></div>
+<div class="term-entry"><strong>RCT</strong><p>随机对照试验——本文中指AI与人工在真实玻片上的对比。</p></div>
+<div class="term-entry"><strong>ROI</strong><p>感兴趣区域——数字切片中需要分析的含组织区域。</p></div>
+<div class="term-entry"><strong>F1 Score</strong><p>精确率和召回率的调和平均——平衡指标。</p></div>
+<div class="term-entry"><strong>Diatom Frustule</strong><p>硅藻的硅质细胞壁——酸消化后唯一残留的结构。</p></div>
+<div class="term-entry"><strong>Carbon Pigment</strong><p>碳色素——吸烟/尘肺/空气污染导致，肺组织中常见干扰物。</p></div>
+<div class="term-entry"><strong>Drupal</strong><p>PHP内容管理框架——DiatomNet的GUI基于此构建。</p></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>let currentStep=1,currentCardIdx=0,globalMode='think',cardStates={};const totalSteps=5;function init(){document.querySelectorAll('.card.reveal-item').forEach(c=>{cardStates[c.id]={revealed:false}});loadAllInputs();attachAutoSave();showStep(1);setCurrentCard(0);updateProgress();updateStepIndicator()}function showStep(n){for(let s=1;s<=totalSteps;s++){const el=document.getElementById('step'+s);if(el)el.classList.toggle('visible',s===n)}currentStep=n;currentCardIdx=0;updateProgress();updateStepIndicator();highlightCurrentCard();scrollToCard()}function getStepCards(n){const el=document.getElementById('step'+n);return el?Array.from(el.querySelectorAll('.card.reveal-item')):[]}function setCurrentCard(i){currentCardIdx=i;highlightCurrentCard();updateStepIndicator()}function highlightCurrentCard(){getStepCards(currentStep).forEach((c,i)=>{c.classList.toggle('visible-card',true);c.classList.toggle('current-card',i===currentCardIdx)})}function scrollToCard(){const cards=getStepCards(currentStep);if(cards[currentCardIdx])cards[currentCardIdx].scrollIntoView({behavior:'smooth',block:'center'})}function nextCard(){const cards=getStepCards(currentStep);if(currentCardIdx<cards.length-1){setCurrentCard(currentCardIdx+1);scrollToCard()}else if(currentStep<totalSteps){showStep(currentStep+1);setCurrentCard(0)}else{showToast('✅ 全部完成！')}}function prevCard(){if(currentCardIdx>0){setCurrentCard(currentCardIdx-1);scrollToCard()}else if(currentStep>1){showStep(currentStep-1);const c=getStepCards(currentStep);setCurrentCard(c.length-1);scrollToCard()}}function jumpNextSection(){if(currentStep<totalSteps){showStep(currentStep+1);setCurrentCard(0)}}function jumpToStep(n){showStep(n);setCurrentCard(0)}function revealAnswer(btn){const card=btn.closest('.card.reveal-item');const az=card.querySelector('.answer-zone');if(az)az.classList.add('revealed');btn.classList.add('done');btn.textContent='✓ 已揭晓';cardStates[card.id]={revealed:true}}function revealCurrentAnswer(){const cards=getStepCards(currentStep);const card=cards[currentCardIdx];if(!card)return;const btn=card.querySelector('.reveal-btn');if(btn&&!btn.classList.contains('done')){revealAnswer(btn);showToast('答案已揭晓 ✓')}else{showToast('已经揭晓了')}}function revealAllInStep(){let count=0;getStepCards(currentStep).forEach(card=>{const az=card.querySelector('.answer-zone');const btn=card.querySelector('.reveal-btn');if(az&&!az.classList.contains('revealed')){az.classList.add('revealed');if(btn){btn.classList.add('done');btn.textContent='✓ 已揭晓'}cardStates[card.id]={revealed:true};count++}});showToast(count>0?`已揭晓 ${count} 个答案`:'全部已揭晓')}function toggleMode(){if(globalMode==='think'){globalMode='all';document.getElementById('modeBtn').textContent='👁️ 全部揭晓';revealEverything()}else{globalMode='think';document.getElementById('modeBtn').textContent='🧠 逐题思考';hideEverything()}}function revealEverything(){document.querySelectorAll('.card.reveal-item').forEach(card=>{const az=card.querySelector('.answer-zone');const btn=card.querySelector('.reveal-btn');if(az)az.classList.add('revealed');if(btn){btn.classList.add('done');btn.textContent='✓ 已揭晓'}cardStates[card.id]={revealed:true}})}function hideEverything(){document.querySelectorAll('.card.reveal-item').forEach(card=>{const az=card.querySelector('.answer-zone');const btn=card.querySelector('.reveal-btn');if(az)az.classList.remove('revealed');if(btn){btn.classList.remove('done');btn.textContent='💡 揭晓答案'}cardStates[card.id]={revealed:false}})}function resetAll(){hideEverything();clearAllSavedInputs();showStep(1);setCurrentCard(0);showToast('🔄 已重置');window.scrollTo({top:0,behavior:'smooth'})}function toggleHint(el){const c=el.nextElementSibling;if(c)c.classList.toggle('open')}function toggleGlossary(){document.getElementById('glossaryBar').classList.toggle('open')}function updateProgress(){document.querySelectorAll('.progress-step').forEach(s=>{const n=parseInt(s.dataset.step);s.classList.remove('active','done');if(n<currentStep)s.classList.add('done');if(n===currentStep)s.classList.add('active')})}function updateStepIndicator(){const el=document.getElementById('stepIndicator');const c=getStepCards(currentStep);if(el)el.textContent=`第 ${currentStep}/${totalSteps} 节 · 卡片 ${currentCardIdx+1}/${c.length}`}let toastTimer;function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2000)}const SAVE_PREFIX='dn-';function attachAutoSave(){document.querySelectorAll('textarea[data-save],input.t-inline[data-save]').forEach(el=>{el.addEventListener('input',debounce(function(){saveInput(this)},500))})}function saveInput(el){localStorage.setItem(SAVE_PREFIX+el.dataset.save,el.value);const hint=el.closest('.user-input-area')?.querySelector('.input-hint');if(hint){hint.classList.add('saved');hint.textContent='✓ 已自动保存';setTimeout(()=>{if(hint){hint.classList.remove('saved');hint.textContent='✍️ 写完后揭晓答案对比'}},1500)}}function loadAllInputs(){document.querySelectorAll('[data-save]').forEach(el=>{const v=localStorage.getItem(SAVE_PREFIX+el.dataset.save);if(v&&(el.tagName==='TEXTAREA'||el.tagName==='INPUT'))el.value=v})}function clearAllSavedInputs(){document.querySelectorAll('[data-save]').forEach(el=>{localStorage.removeItem(SAVE_PREFIX+el.dataset.save);if(el.tagName==='TEXTAREA'||el.tagName==='INPUT')el.value=''})}function debounce(fn,d){let t;return function(...a){clearTimeout(t);t=setTimeout(()=>fn.apply(this,a),d)}}document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;switch(e.key){case'ArrowRight':case' ':e.preventDefault();nextCard();break;case'ArrowLeft':e.preventDefault();prevCard();break;case'Enter':e.preventDefault();revealCurrentAnswer();break;case'ArrowDown':e.preventDefault();e.shiftKey?jumpNextSection():revealCurrentAnswer();break;case'a':case'A':if(!e.ctrlKey&&!e.metaKey){e.preventDefault();revealAllInStep()}break;case't':case'T':if(!e.ctrlKey&&!e.metaKey){e.preventDefault();toggleMode()}break;case'r':case'R':if(!e.ctrlKey&&!e.metaKey){e.preventDefault();resetAll()}break;case'g':case'G':if(!e.ctrlKey&&!e.metaKey){e.preventDefault();toggleGlossary()}break;case'1':case'2':case'3':case'4':case'5':if(!e.ctrlKey&&!e.metaKey){e.preventDefault();jumpToStep(parseInt(e.key))}break}});init();</script>
+</body>
+</html>
