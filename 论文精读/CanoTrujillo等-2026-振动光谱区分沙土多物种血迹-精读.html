@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>精读 · 振动光谱区分沙土多物种血迹的物种与性别</title>
+<style>
+:root {
+  --bg: #faf8f5; --card: #ffffff; --text: #2d2a26; --text-muted: #7a746d;
+  --accent: #c44f1c; --accent2: #2e6b8f; --accent3: #5a8a4a; --border: #e8e4df;
+  --shadow: 0 1px 3px rgba(0,0,0,.06); --shadow-lg: 0 4px 16px rgba(0,0,0,.08);
+  --radius: 10px; --step-1: #c44f1c; --step-2: #2e6b8f; --step-3: #5a8a4a;
+  --step-4: #8b5e9e; --step-5: #c7882e; --highlight: #fff3cd;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', Georgia, serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+#app{max-width:900px;margin:0 auto;padding:20px 24px 80px}
+.hero{text-align:center;padding:48px 0 32px;border-bottom:2px solid var(--border);margin-bottom:32px}
+.hero .journal{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-weight:600}
+.hero h1{font-family:var(--font-serif);font-size:clamp(17px,3.5vw,22px);font-weight:700;margin:12px 0 8px;line-height:1.5;color:#1a1815}
+.hero .meta{font-size:14px;color:var(--text-muted)}
+.hero .meta strong{color:var(--accent)}
+.controls{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:16px 0;position:sticky;top:0;background:var(--bg);z-index:100;border-bottom:1px solid var(--border);margin-bottom:24px}
+.controls button{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--border);border-radius:20px;background:var(--card);color:var(--text);font-size:13px;cursor:pointer;transition:all .2s;font-family:var(--font-sans)}
+.controls button:hover{border-color:var(--accent);color:var(--accent)}
+.controls button:active{transform:scale(.97)}
+.controls button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.controls button.primary:hover{opacity:.9}
+.controls button.mode-btn{background:#fef9f0;border-color:#e8c876;color:#8b6914;font-weight:600}
+.controls .kb-hint{font-size:12px;color:var(--text-muted);padding:4px 10px;border:1px dashed var(--border);border-radius:12px}
+.progress-wrap{margin-bottom:32px}
+.progress-steps{display:flex;justify-content:space-between;position:relative}
+.progress-steps::before{content:'';position:absolute;top:16px;left:8%;right:8%;height:2px;background:var(--border);z-index:0}
+.progress-step{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:1;cursor:pointer;transition:all .3s}
+.progress-step .dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;background:var(--border);transition:all .3s}
+.progress-step.active .dot{transform:scale(1.15);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.progress-step.done .dot{opacity:.7}
+.progress-step .label{font-size:11px;color:var(--text-muted);text-align:center;max-width:80px;line-height:1.3}
+.progress-step.active .label{color:var(--accent);font-weight:600}
+.step-1 .dot,.step-1.active .dot,.step-1.done .dot{background:var(--step-1)}
+.step-2 .dot,.step-2.active .dot,.step-2.done .dot{background:var(--step-2)}
+.step-3 .dot,.step-3.active .dot,.step-3.done .dot{background:var(--step-3)}
+.step-4 .dot,.step-4.active .dot,.step-4.done .dot{background:var(--step-4)}
+.step-5 .dot,.step-5.active .dot,.step-5.done .dot{background:var(--step-5)}
+.step-section{display:none}
+.step-section.visible{display:block}
+.step-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.step-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
+.step-header h2{font-size:20px;font-weight:700}
+.step-header .time{font-size:13px;color:var(--text-muted);margin-left:auto;flex-shrink:0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px;box-shadow:var(--shadow);transition:all .3s;position:relative}
+.card h3{font-size:16px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card h3 .icon{font-size:20px}
+.card.reveal-item{opacity:0;transform:translateY(8px);transition:all .5s ease}
+.card.reveal-item.visible-card{opacity:1;transform:translateY(0)}
+.card.current-card{border-color:var(--accent);box-shadow:0 0 0 2px rgba(196,79,28,.12),var(--shadow-lg)}
+.think-zone{padding:16px 18px;background:#fdfcfa;border-radius:8px;border:1px solid #eee9e0;margin-bottom:14px}
+.think-zone .prompt{font-size:15px;line-height:1.8;color:var(--text)}
+.think-zone .prompt .emoji{font-size:18px}
+.think-zone .task-list{margin:10px 0 0 0;padding-left:20px;font-size:14px;color:var(--text-muted);line-height:2}
+.think-zone .task-list li{padding:2px 0}
+.think-zone .task-list li strong{color:var(--text)}
+.hint-wrap{margin-top:12px}
+.hint-toggle{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--accent2);cursor:pointer;user-select:none;padding:4px 10px;border-radius:12px;border:1px dashed var(--accent2);transition:all .2s}
+.hint-toggle:hover{background:#f0f6fa}
+.hint-content{display:none;margin-top:8px;padding:10px 14px;background:#f0f6fa;border-radius:6px;font-size:13px;color:var(--accent2);border-left:3px solid var(--accent2)}
+.hint-content.open{display:block}
+.answer-zone{max-height:0;overflow:hidden;opacity:0;transition:max-height .6s ease,opacity .4s ease,margin .4s ease;margin-top:0}
+.answer-zone.revealed{max-height:8000px;opacity:1;margin-top:14px}
+.reveal-btn-wrap{text-align:center;margin-top:6px}
+.reveal-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 28px;border:none;border-radius:24px;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-sans);transition:all .25s;box-shadow:0 2px 8px rgba(196,79,28,.25);animation:pulse-hint 2s infinite}
+.reveal-btn:hover{background:#a83e14;transform:translateY(-1px);box-shadow:0 4px 14px rgba(196,79,28,.35)}
+.reveal-btn:active{transform:scale(.96)}
+.reveal-btn.done{background:var(--accent3);animation:none;box-shadow:0 1px 4px rgba(90,138,74,.2);pointer-events:none}
+@keyframes pulse-hint{0%,100%{box-shadow:0 2px 8px rgba(196,79,28,.25)}50%{box-shadow:0 4px 18px rgba(196,79,28,.45)}}
+.info-box{padding:14px 18px;border-radius:8px;margin:12px 0;font-size:14px}
+.info-box.note{border-left:4px solid var(--accent2);background:#f0f6fa}
+.info-box.warn{border-left:4px solid var(--accent);background:#fff0ed}
+.info-box.success{border-left:4px solid var(--accent3);background:#f0f7ed}
+.info-box .title{font-weight:700;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.term{color:var(--accent);font-weight:600;cursor:help;border-bottom:1px dashed var(--accent);position:relative}
+.term:hover::after{content:attr(data-def);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1a1815;color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:400;max-width:300px;z-index:200;pointer-events:none}
+.gap-highlight{background:var(--highlight);padding:2px 6px;border-radius:4px;font-weight:600}
+.template{background:#fefdf9;border:1px dashed #d4cbb8;border-radius:var(--radius);padding:20px;margin:16px 0}
+.template .t-label{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px}
+.template .t-line{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;font-size:14px}
+.template .t-line .t-key{color:var(--accent);font-weight:600;white-space:nowrap}
+.template .t-line .t-val{color:var(--text-muted);border-bottom:1px dotted #ccc;flex:1;min-height:18px}
+.template .t-line input.t-inline{flex:1;border:none;border-bottom:1.5px dashed #d4cbb8;background:transparent;font-size:14px;font-family:var(--font-sans);padding:2px 4px;color:var(--text);min-width:120px}
+.template .t-line input.t-inline:focus{outline:none;border-bottom-color:var(--accent);border-bottom-style:solid}
+.template .t-line input.t-inline::placeholder{color:#c5bfb2;font-style:italic}
+.user-input-area{margin-top:12px}
+.user-input-area textarea{width:100%;min-height:60px;padding:12px 14px;border:1.5px dashed #d4cbb8;border-radius:8px;font-size:14px;font-family:var(--font-sans);line-height:1.7;resize:vertical;background:#fffef9;color:var(--text);transition:all .2s}
+.user-input-area textarea:focus{outline:none;border-color:var(--accent);border-style:solid;box-shadow:0 0 0 3px rgba(196,79,28,.08);background:#fff}
+.user-input-area textarea::placeholder{color:#c5bfb2;font-style:italic}
+.user-input-area .input-hint{font-size:11px;color:#c5bfb2;margin-top:4px;text-align:right}
+.user-input-area .input-hint.saved{color:var(--accent3)}
+.trans-block{margin:10px 0}
+.trans-orig{font-style:italic;color:var(--text-muted);padding:8px 12px;border-left:3px solid var(--border);margin-bottom:6px;font-size:14px}
+.trans-cn{color:var(--text);font-size:14px;padding:8px 12px;background:#fefdf9;border-radius:6px}
+.substep{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid #f0ede8}
+.substep:last-child{border-bottom:none}
+.substep .ss-num{width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.substep .ss-content{flex:1}
+.substep .ss-content h4{font-size:15px;margin-bottom:4px}
+.substep .ss-content p{font-size:14px;color:var(--text-muted);line-height:1.6}
+.checklist{list-style:none}
+.checklist li{padding:6px 0;font-size:14px;display:flex;align-items:flex-start;gap:8px}
+.checklist li::before{content:'☐';font-size:16px;color:var(--accent);flex-shrink:0}
+.key-insight{background:linear-gradient(135deg,#fef9f0,#fdf5e6);border:1.5px solid #e8c876;border-radius:var(--radius);padding:18px 22px;margin:16px 0}
+.key-insight .ki-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--step-5);margin-bottom:6px}
+.key-insight .ki-text{font-size:15px;line-height:1.7}
+.data-table{width:100%;font-size:13px;border-collapse:collapse;margin-top:8px}
+.data-table th{padding:8px;text-align:left;border-bottom:1px solid var(--border);background:#faf9f7;font-weight:600}
+.data-table td{padding:8px;border-bottom:1px solid #f0ede8;vertical-align:top}
+.funnel{text-align:center;padding:10px 0}
+.funnel .level{display:inline-block;padding:8px 20px;margin:4px;border-radius:20px;font-size:13px;max-width:420px}
+.funnel .arrow-down{display:block;margin:2px auto;color:var(--text-muted);font-size:16px}
+.funnel .l-bg{background:#f0f6fa;border:1px solid #c8dae8}
+.funnel .l-gap{background:#fff0ed;border:1px solid #f0c8b8}
+.funnel .l-goal{background:#f0f7ed;border:2px solid var(--accent3);font-weight:700}
+.bottom-nav{display:flex;justify-content:space-between;padding:24px 0;gap:12px}
+.bottom-nav button{padding:10px 24px;border:1.5px solid var(--border);border-radius:24px;background:var(--card);cursor:pointer;font-size:14px;transition:all .2s;font-family:var(--font-sans)}
+.bottom-nav button:hover{border-color:var(--accent);color:var(--accent)}
+.bottom-nav button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.glossary-bar{position:fixed;right:0;top:0;bottom:0;width:320px;background:#fff;border-left:1px solid var(--border);box-shadow:-2px 0 12px rgba(0,0,0,.06);transform:translateX(100%);transition:transform .3s ease;z-index:300;overflow-y:auto;padding:24px}
+.glossary-bar.open{transform:translateX(0)}
+.glossary-bar h3{font-size:16px;margin-bottom:16px}
+.glossary-bar .term-entry{padding:8px 0;border-bottom:1px solid #f0ede8}
+.glossary-bar .term-entry strong{font-size:14px;color:var(--accent)}
+.glossary-bar .term-entry p{font-size:13px;color:var(--text-muted);margin-top:2px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1815;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;z-index:400;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hero">
+    <div class="journal">Forensic Science International · 2026 · 388:113082</div>
+    <h1>振动光谱法区分沙土中多物种血迹的物种与性别<br><span style="font-size:.55em;color:#7a746d;font-weight:400">Forensic approach for distinguishing species and sex of multispecies bloodstains in soil and sand by vibrational spectroscopy</span></h1>
+    <div class="meta">Cano-Trujillo, Montalvo, García-Ruiz, Toledo-González · <strong>DOI: 10.1016/j.forsciint.2026.113082</strong></div>
+  </div>
+
+  <div class="controls">
+    <button class="primary" onclick="jumpToStep(1)">📖 开始精读</button>
+    <button class="mode-btn" id="modeBtn" onclick="toggleMode()">👁️ 全部揭晓</button>
+    <button onclick="resetAll()">🔄 重置</button>
+    <button onclick="toggleGlossary()">📚 术语表 (G)</button>
+    <span class="kb-hint" id="stepIndicator">第 1/5 节 · 卡片 1/4</span>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-steps">
+      <div class="progress-step step-1" data-step="1" onclick="jumpToStep(1)"><div class="dot">1</div><div class="label">结构扫描</div></div>
+      <div class="progress-step step-2" data-step="2" onclick="jumpToStep(2)"><div class="dot">2</div><div class="label">引言精读</div></div>
+      <div class="progress-step step-3" data-step="3" onclick="jumpToStep(3)"><div class="dot">3</div><div class="label">方法精读</div></div>
+      <div class="progress-step step-4" data-step="4" onclick="jumpToStep(4)"><div class="dot">4</div><div class="label">结果精读</div></div>
+      <div class="progress-step step-5" data-step="5" onclick="jumpToStep(5)"><div class="dot">5</div><div class="label">讨论精读</div></div>
+    </div>
+  </div>
+
+  <!-- ============ STEP 1: 结构扫描 ============ -->
+  <div class="step-section visible" id="step1">
+    <div class="step-header"><div class="step-num" style="background:var(--step-1)">1</div><h2>结构扫描</h2><span class="time">10-15 min</span></div>
+
+    <div class="card reveal-item" id="card-1-1">
+      <h3><span class="icon">🔤</span>标题拆解</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 先不看正文，逐词拆解这个标题，猜猜每个部分在讲什么：</p>
+        <ul class="task-list">
+          <li><strong>"Forensic approach"</strong> —— 法医学方法，意味着什么应用场景？</li>
+          <li><strong>"multispecies bloodstains"</strong> —— 为什么要把"多物种"单独强调？</li>
+          <li><strong>"soil and sand"</strong> —— 这两个基质有什么共同特点，让分析变难？</li>
+          <li><strong>"vibrational spectroscopy"</strong> —— 你猜是哪两种技术？（提示：互补的两种振动光谱）</li>
+        </ul>
+        <div class="hint-wrap"><span class="hint-toggle" onclick="toggleHint(this)">💡 提示：物种+性别两个目标、两种光谱技术、两种复杂基质</span><div class="hint-content">这篇研究的关键词是：人类 vs 动物（犬、猫）血迹的鉴别 + 供体性别鉴别，基质是犯罪现场常见的沙和土，技术是 ATR-FTIR 与拉曼光谱（互补的振动光谱技术）。</div></div>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">术语拆解</div>
+          <strong>Forensic approach</strong>：面向犯罪现场检验的实用方法，强调<strong>非破坏性</strong>（样品保留给后续 DNA 分析）、快速、可用于现场筛查。<br>
+          <strong>multispecies bloodstains</strong>：人/犬/猫三种物种的血迹。物种鉴别在刑事（排除/纳入人类血迹）、动物虐待、野生动物犯罪、肇事逃逸中都关键——因为动物血可能使"人血预试验"出现假阳性。<br>
+          <strong>soil and sand</strong>：复杂环境基质（本身被视作"污染物"），常见于野外/沿海暴力犯罪、掩埋现场。基质信号会掩盖血迹信号，是本研究最大的技术挑战。<br>
+          <strong>vibrational spectroscopy</strong>：指 <span class="term" data-def="衰减全反射-傅里叶变换红外光谱：基于分子偶极矩变化，探测红外吸收">ATR-FTIR</span> + <span class="term" data-def="拉曼光谱：基于分子极化率变化，探测散射光，对血红蛋白敏感">Raman</span>。两者互补（IR 活跃的振动在 Raman 可能弱，反之亦然），组合可得到更完整的光谱指纹。
+        </div>
+        <div class="info-box warn"><div class="title">一句话理解</div>这是一篇"技术可行性验证"（proof-of-concept）论文：在沙/土这种会掩盖血迹信号的复杂基质上，用两种互补光谱 + 化学计量学，尝试区分血迹的物种和性别。</div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-1-2">
+      <h3><span class="icon">📝</span>摘要填空</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 用自己的话补全摘要三要素（先写，再揭晓对比）：</p>
+        <ul class="task-list">
+          <li><strong>问题（Problem）</strong>：传统人血预试验在动物血存在时有什么缺陷？复杂基质（沙/土）带来什么额外困难？</li>
+          <li><strong>方法（Method）</strong>：用了什么技术组合？如何构建判别模型？</li>
+          <li><strong>结论（Conclusion）</strong>：哪种技术表现更好？作者对结果的态度（注意"preliminary"）？</li>
+        </ul>
+        <div class="user-input-area">
+          <textarea data-save="card-1-2-notes" placeholder="✍️ 在这里写下你的三要素概括…"></textarea>
+          <div class="input-hint">✍️ 写完后揭晓答案对比</div>
+        </div>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">摘要三要素（参考答案）</div>
+          <strong>问题</strong>：犯罪现场血迹必须准确鉴定物种来源；动物血（犬/猫）可使针对人血的预试验出现假阳性；沙/土等复杂基质干扰分析；且需保留小样本给后续 DNA 分析 → 需要非破坏性方法。<br>
+          <strong>方法</strong>：ATR-FTIR + 拉曼显微光谱 + 化学计量学（OPLS-DA 判别模型），检测和区分沙/土上的人、犬、猫血迹；并进一步探索供体性别鉴别。<br>
+          <strong>结论</strong>：总体上 ATR-FTIR 光谱结合 OPLS-DA 的物种区分能力优于拉曼；性别鉴别中拉曼判别性能有限。作者强调：供体数少，结果应视为初步（preliminary），需更大样本验证。
+        </div>
+        <div class="trans-block"><div class="trans-orig">"The aim of this work was to explore the combined use of ATR-FTIR, Raman microspectroscopy, and chemometrics for detecting and identifying human, dog, and cat bloodstains on sand and soil."</div><div class="trans-cn">本工作旨在探索 ATR-FTIR、拉曼显微光谱与化学计量学联用，用于检测和识别沙/土基质上的人、犬、猫血迹。</div></div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-1-3">
+      <h3><span class="icon">📊</span>扫图表</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 论文有 6 张主图（Fig.1-6），先只看图题猜趋势：</p>
+        <ul class="task-list">
+          <li><strong>Fig.1</strong>：中性基质上三种血迹的光谱 → 肉眼能区分吗？</li>
+          <li><strong>Fig.2/3</strong>：沙/土上的光谱 → 基质信号会怎样"淹没"血迹信号？</li>
+          <li><strong>Fig.4</strong>：OPLS-DA 三维散点图（沙/土、两种技术）→ 聚类是否分开？</li>
+          <li><strong>Fig.5/6</strong>：性别判别（中性/复杂基质）→ 哪种技术分离更清晰？</li>
+        </ul>
+        <div class="hint-wrap"><span class="hint-toggle" onclick="toggleHint(this)">💡 提示：重点看"哪个基质更难"和"哪种技术更强"</span><div class="hint-content">论文结论：沙比土更难区分（模型 Q2 更低）；ATR-FTIR 整体优于拉曼；土壤上拉曼几乎检测不到血迹信号。</div></div>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">每张图一句话</div>
+          <strong>Fig.1</strong>：中性基质（玻璃/铝箔）上，三种血迹的 IR 谱几乎重合（仅峰强度差异），拉曼谱在 1200-1300、1315-1400、1500-1640 cm⁻¹ 区域有肉眼可见的细微差异 → <strong>肉眼不可靠，必须上化学计量学</strong>。<br>
+          <strong>Fig.2</strong>：沙上 IR 谱被石英+方解石主导（650-1400 cm⁻¹ 指纹区被覆盖），血带从 1400 cm⁻¹ 以上可见；拉曼谱沙的 464/1086 cm⁻¹ 强峰显著。<br>
+          <strong>Fig.3</strong>：土上 IR 谱同样被硅酸盐主导，但蛋白/脂质血带（1500、1645、2850-2920 cm⁻¹）仍可检出；<strong>拉曼谱完全被基质淹没，检测不到可靠血带</strong>。<br>
+          <strong>Fig.4</strong>：OPLS-DA 散点图显示三类物种在沙/土上均能形成独立聚类；但沙的模型 Q2 较低（0.684/0.478），土的模型更稳健（0.698/0.664）。<br>
+          <strong>Fig.5</strong>：中性基质上性别判别——IR 模型（R2Y 0.951-0.990, Q2 0.909-0.944）远优于拉曼模型（Q2 0.357-0.826，犬最弱）。<br>
+          <strong>Fig.6</strong>：复杂基质上性别判别——只有 ATR-FTIR 实现了中等分离（Q2 0.658-0.692），拉曼 Q2 普遍 &lt;0.5 失效。
+        </div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-1-4">
+      <h3><span class="icon">🎯</span>结论最后一段自测</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 不翻正文，根据你已读到的信息，预测作者在 Conclusion 会给出哪三个核心结论？</p>
+        <ul class="task-list">
+          <li>技术层面：哪种技术是首选？</li>
+          <li>基质层面：沙 vs 土，哪个更难？为什么？</li>
+          <li>展望层面：下一步要做什么（注意 donor 数量这个硬伤）？</li>
+        </ul>
+        <div class="user-input-area">
+          <textarea data-save="card-1-4-notes" placeholder="✍️ 写下你的预测…"></textarea>
+          <div class="input-hint">✍️ 写完后揭晓对比</div>
+        </div>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">作者的核心结论（自检对照）</div>
+          <strong>① 技术首选</strong>：在本研究条件下，ATR-FTIR 表现比拉曼显微光谱更稳定一致，推荐用于复杂基质上的血迹分析；便携式光谱设备的可用性提示了现场筛查的潜力。<br>
+          <strong>② 基质难度</strong>：沙上的判别比土更困难（尽管土上拉曼完全失效）。沙的模型参数（Q2 0.478-0.684）是所有模型中最低的，反映其异质性和复杂性。<br>
+          <strong>③ 展望</strong>：需要扩大每物种/性别的供体数量以评估个体间变异；扩展基质类型和环境条件；优化拉曼采集参数（如 1064 nm 激光减少荧光）。<br>
+          <strong>⚠️ 核心态度</strong>：整篇反复强调 "proof-of-concept" 和 "preliminary" —— 每个物种每种性别只有 1 个供体，无法推广到群体水平。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ STEP 2: 引言精读 ============ -->
+  <div class="step-section" id="step2">
+    <div class="step-header"><div class="step-num" style="background:var(--step-2)">2</div><h2>引言精读</h2><span class="time">15-20 min</span></div>
+
+    <div class="card reveal-item" id="card-2-1">
+      <h3><span class="icon">🕳️</span>漏斗结构分析</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 引言按"漏斗"推进，找出四层结构：</p>
+        <ul class="task-list">
+          <li><strong>宽背景</strong>：为什么血迹是暴力犯罪现场最重要的物证之一？</li>
+          <li><strong>收窄到问题</strong>：传统预试验有什么局限？</li>
+          <li><strong>文献缺口（Gap）</strong>：现有光谱研究没做什么？</li>
+          <li><strong>本研究目标</strong>：作者具体要做什么？</li>
+        </ul>
+        <div class="hint-wrap"><span class="hint-toggle" onclick="toggleHint(this)">💡 提示：找 "importantly, none of these previous studies…" 这句话</span><div class="hint-content">Gap 句在引言中段：现有研究大多用玻璃/铝箔/纱布，从未考虑过沙和土这种复杂基质。</div></div>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="funnel">
+          <div class="level l-bg">🌍 宽背景：血迹是暴力犯罪现场最常见、信息量最大的生物物证（DNA/毒理/血型/现场重建）</div>
+          <span class="arrow-down">▼</span>
+          <div class="level l-bg">🐾 收窄：物种来源鉴别关键——动物血可致人血预试验假阳性；涉及动物虐待、野生动物犯罪、肇事逃逸</div>
+          <span class="arrow-down">▼</span>
+          <div class="level l-gap">📌 Gap：现有光谱研究多在玻璃/铝箔/纱布上进行，<span class="gap-highlight">从未考虑沙/土等复杂基质</span>；且多单用一种技术</div>
+          <span class="arrow-down">▼</span>
+          <div class="level l-goal">🎯 目标：ATR-FTIR + 拉曼 + OPLS-DA，在沙/土上鉴别 人/犬/猫 血迹的物种与性别（proof-of-concept）</div>
+        </div>
+        <div class="info-box note"><div class="title">Gap 句原文</div><div class="trans-orig">"Importantly, none of these previous studies considered bloodstains deposited on complex substrates such as sand and soil."</div><div class="trans-cn">重要的是，此前的研究都没有考虑沉积在沙和土这类复杂基质上的血迹。</div></div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-2-2">
+      <h3><span class="icon">📖</span>逐段精读</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 回答每段的核心问题：</p>
+        <ul class="task-list">
+          <li><strong>段1-2</strong>：血迹分析为什么重要？动物血迹在哪些案件中关键？</li>
+          <li><strong>段3</strong>：传统预试验的局限是什么？为什么需要光谱方法？</li>
+          <li><strong>段4-5</strong>：ATR-FTIR 和拉曼的原理差异？为什么"互补"？</li>
+          <li><strong>段6-8</strong>：前人做了什么？还缺什么？</li>
+        </ul>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="substep"><div class="ss-num" style="background:var(--step-2)">1</div><div class="ss-content"><h4>血迹证据的地位</h4><p>血迹是暴力犯罪现场最常见的生物证据。一滴血即可提供：DNA 分析、毒理学、血型与抗体谱、现场重建、法庭证词。物种鉴定可引导侦查方向（纳入/排除非人类血迹）。动物血迹在动物虐待、野生动物/环境犯罪、肇事逃逸（hit-and-run）等案件中关键。</p></div></div>
+        <div class="substep"><div class="ss-num" style="background:var(--step-2)">2</div><div class="ss-content"><h4>传统预试验的局限</h4><p>基于抗原或酶活性的预试验：部分灵敏、特异、便携，但①可能假阳性；②非专家难以判读；③费时昂贵；④部分动物（因血红蛋白结构相似）会对人血测试产生假阳性。且预试验会消耗/污染样本——而样本需保留给 DNA 分析。</p></div></div>
+        <div class="substep"><div class="ss-num" style="background:var(--step-2)">3</div><div class="ss-content"><h4>两种光谱的原理与互补性</h4><p><strong>ATR-FTIR</strong>：红外照射，基于分子偶极矩变化 → 探测吸收。反映整体组成（蛋白、脂质、碳水、水）。<strong>拉曼</strong>：单色激光照射，基于分子极化率变化 → 探测散射。对血红蛋白、纤维蛋白特别敏感。IR 活跃的振动在拉曼可能弱/不活跃，反之亦然 → 组合得到更完整指纹。</p></div></div>
+        <div class="substep"><div class="ss-num" style="background:var(--step-2)">4</div><div class="ss-content"><h4>前人工作与缺口</h4><p>已有研究多在玻璃、铝箔、纱布上区分人/犬/猫血迹（Mistek、Lednev、Fujihara、McLaughlin 等）；多数单用一种技术；De Wael 用了三种技术但没做化学计量学。<span class="gap-highlight">缺口：复杂基质（沙/土）+ 两种技术直接对比 + 化学计量学</span>。沙/土常见于掩埋、农村/沿海暴力犯罪，且基质信号会掩盖血迹谱带。</p></div></div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-2-3">
+      <h3><span class="icon">🗒️</span>笔记模板</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 用模板整理引言要点（先自己填，再揭晓参考笔记）：</p>
+        <div class="template">
+          <div class="t-label">引言笔记模板</div>
+          <div class="t-line"><span class="t-key">研究问题：</span><input class="t-inline" data-save="card-2-3-q1" placeholder="一句话概括"></div>
+          <div class="t-line"><span class="t-key">核心 Gap：</span><input class="t-inline" data-save="card-2-3-q2" placeholder="前人没做什么"></div>
+          <div class="t-line"><span class="t-key">技术理由：</span><input class="t-inline" data-save="card-2-3-q3" placeholder="为什么用这两种技术"></div>
+          <div class="t-line"><span class="t-key">我的疑问：</span><input class="t-inline" data-save="card-2-3-q4" placeholder="想进一步了解什么"></div>
+        </div>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">参考笔记</div>
+          <strong>研究问题</strong>：能否用非破坏性光谱（ATR-FTIR+拉曼）在沙/土基质上区分人/犬/猫血迹的物种与性别？<br>
+          <strong>核心 Gap</strong>：①无前人研究处理沙/土复杂基质上的血迹；②无研究直接对比两种技术+化学计量学在此场景的表现；③动物血迹性别鉴别完全空白。<br>
+          <strong>技术理由</strong>：互补（偶极矩 vs 极化率）；非破坏性（样本保留给 DNA）；快速、可现场化（便携设备存在）；无需试剂。<br>
+          <strong>可追问</strong>：血液浓度 250 µL/g 在真实现场算什么量级？真实掩埋现场的土（有机质/荧光背景）会不会更糟？<span class="term" data-def="每克基质加入的血液微升数：本实验约 2.5×10^5 ppm（体积/质量）">250 ppm</span> 血量的异质性如何影响采样？
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ STEP 3: 方法精读 ============ -->
+  <div class="step-section" id="step3">
+    <div class="step-header"><div class="step-num" style="background:var(--step-3)">3</div><h2>方法精读</h2><span class="time">15-20 min</span></div>
+
+    <div class="card reveal-item" id="card-3-1">
+      <h3><span class="icon">🧩</span>方法分块 + 核心流程</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 方法部分分几块？画出从"样本→光谱→模型"的完整流程：</p>
+        <ul class="task-list">
+          <li>样本怎么来的（人/犬/猫各几个供体？男女各几？）</li>
+          <li>4 种基质是什么？血迹怎么制备？</li>
+          <li>两种光谱的采集参数？</li>
+          <li>数据预处理链条？用什么软件建模？</li>
+          <li>模型质量怎么验证（4 种方法）？</li>
+        </ul>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="substep"><div class="ss-num" style="background:var(--step-3)">1</div><div class="ss-content"><h4>样本设计（关键：每个性别仅1个供体）</h4><p>人：2 名 21 岁健康供体（1男1女），EDTA 抗凝管采集（西班牙 INTCF 规范）。犬/猫：各 1 雄 1 雌（成年、非发情期、临床健康），兽医采集。伦理批准（UAH CEIP/HU/2021/1/002 等）。<strong>⚠️ 每个物种每种性别只有 1 个供体</strong> —— 故意最小化个体间变异，聚焦"信号能否从基质背景中分离出来"。</p></div></div>
+        <div class="substep"><div class="ss-num" style="background:var(--step-3)">2</div><div class="ss-content"><h4>四种基质 + 血迹制备</h4><p><strong>中性基质</strong>：玻璃片（ATR-FTIR 用，不干扰）、铝箔（拉曼用，无背景散射）。<strong>复杂基质</strong>：沙滩沙（西班牙瓦伦西亚 Malvarrosa 海滩，主成分石英）+ 土壤（阿尔卡拉大学校园田间，主成分黏土/粉砂）。制备：中性基质滴 10 µL 血；复杂基质每 2 g 基质混 500 µL 血（250 µL/g），搅拌 5 min 至均匀，通风橱内干燥 24 h（不控温湿、避直射光）。</p></div></div>
+        <div class="substep"><div class="ss-num" style="background:var(--step-3)">3</div><div class="ss-content"><h4>光谱采集</h4><p><strong>ATR-FTIR</strong>：Nicolet iS10 + Smart iTR 金刚石晶体，吸光度模式，650-4000 cm⁻¹，4 cm⁻¹ 分辨率，64 次扫描；每次用 2-丙醇清洁晶体，采集前测背景。<strong>拉曼</strong>：Thermo DXR 拉曼显微镜，780 nm 激光 10 mW，50× 物镜（50 µm 针孔），40 次曝光×3 s，100-3000 cm⁻¹。</p></div></div>
+        <div class="substep"><div class="ss-num" style="background:var(--step-3)">4</div><div class="ss-content"><h4>预处理 + 建模</h4><p>IR：SNV（标准化）→ 基线校正（最小值归零）→ Savitzky-Golay 平滑（2 阶多项式，7 点窗）。Raman：SNV → AsLS 基线校正（平滑因子 10000，非对称因子 0.001）→ SG 平滑。建模：<span class="term" data-def="正交偏最小二乘判别分析：PLS回归+正交信号校正，分离与类别相关的预测变异和无关的正交变异">OPLS-DA</span>（SIMCA 18.1），两类模型：①按物种（混合男女）②按性别（每物种单独）。</p></div></div>
+        <div class="substep"><div class="ss-num" style="background:var(--step-3)">5</div><div class="ss-content"><h4>四重验证</h4><p>① <strong>R2X/R2Y/Q2</strong>：拟合优度/预测能力（Q2&gt;0.5 合理，&gt;0.7 稳健，&lt;0.3 差）；② <strong>ROC/AUC</strong>：判别能力（AUC≈1 优秀）；③ <strong>CV-ANOVA</strong>：p&lt;0.05 说明分离显著非随机；④ <strong>置换检验（500次）</strong>：Q2 截距 &lt;0 且置换 R2 低于原始 → 无过拟合。</p></div></div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-3-2">
+      <h3><span class="icon">⚗️</span>实验设计核心问答</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 思考这几个实验设计问题（先自己答）：</p>
+        <ul class="task-list">
+          <li><strong>Q1</strong>：为什么每个性别只用一个供体？这是优点还是缺点？</li>
+          <li><strong>Q2</strong>：为什么先在中性基质上测，再上复杂基质？</li>
+          <li><strong>Q3</strong>：为什么沙和土各只选一种？</li>
+          <li><strong>Q4</strong>：拉曼在土上检测不到血带，为什么还报告这个"失败"结果？</li>
+        </ul>
+        <div class="user-input-area">
+          <textarea data-save="card-3-2-notes" placeholder="✍️ 写下你对 Q1-Q4 的回答…"></textarea>
+          <div class="input-hint">✍️ 写完后揭晓答案</div>
+        </div>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="substep"><div class="ss-num" style="background:var(--step-3)">1</div><div class="ss-content"><h4>Q1 单供体设计</h4><p>作者意图：最小化个体间生物学变异，直接检验"物种/性别特异信号能否从沙土背景中分离"——这是<strong>概念验证</strong>的第一步。缺点（作者自己也承认）：无法评估群体层面的可推广性；性别判别结果不能外推。这是全篇最大的局限。</p></div></div>
+        <div class="substep"><div class="ss-num" style="background:var(--step-3)">2</div><div class="ss-content"><h4>Q2 先中性后复杂</h4><p>中性基质（玻璃/铝箔）上先做"无干扰"的光谱特征归属（哪些峰属于哪种蛋白/成分），建立基准；再上复杂基质时才能区分"哪些是血迹信号、哪些是基质信号"。这是光谱归属的必要步骤。</p></div></div>
+        <div class="substep"><div class="ss-num" style="background:var(--step-3)">3</div><div class="ss-content"><h4>Q3 各一种基质</h4><p>刻意控制基质变量：若用多种沙/土，基质成分差异会成为混杂因素，无法判断差异来自血迹还是基质。先证明可行性，再扩展基质多样性（这是 future work）。</p></div></div>
+        <div class="substep"><div class="ss-num" style="background:var(--step-3)">4</div><div class="ss-content"><h4>Q4 报告"失败"结果</h4><p>科学上重要：告诉同行"拉曼在土壤上不行"避免了他人重复踩坑；也支撑了"ATR-FTIR 为首选"的结论。负面结果同样是贡献——这在方法学论文中尤其有价值。</p></div></div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-3-3">
+      <h3><span class="icon">📚</span>术语解释</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 先自查，能否解释这些术语？然后揭晓：</p>
+        <ul class="task-list">
+          <li>OPLS-DA 与 PLS-DA 的区别？</li>
+          <li>Q2 和 R2Y 分别衡量什么？</li>
+          <li>SNV、AsLS、Savitzky-Golay 各解决什么问题？</li>
+          <li>置换检验为什么能查过拟合？</li>
+        </ul>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">术语精解</div>
+          <strong>OPLS-DA</strong>：PLS 回归 + 正交信号校正（OSC）。把 X 变异分成两部分——与 Y 相关的"预测变异"和与 Y 无关的"正交变异"（如基质噪声），剔除后者后判别更清晰。当光谱差异微妙、肉眼不可见时特别有效。<br>
+          <strong>Q2 vs R2Y</strong>：R2Y = 模型解释的 Y（类别）变异比例（拟合度）；Q2 = 交叉验证下的预测能力（对新样本的泛化能力）。R2Y 高而 Q2 低 = 过拟合信号。<br>
+          <strong>SNV</strong>：每条光谱减去均值除以标准差 → 消除光程/散射强度差异。AsLS：非对称最小二乘，拟合并扣除荧光基线（拉曼专用）。Savitzky-Golay：多项式平滑去噪声，保留峰形。<br>
+          <strong>置换检验</strong>：把类别标签随机打乱 500 次重建模。若原始模型 Q2 显著高于随机标签模型的 Q2（且 Q2 截距&lt;0），说明分类能力来自真实化学差异而非偶然。
+        </div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-3-4">
+      <h3><span class="icon">🗒️</span>方法笔记模板</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 用自己的话复述方法（填空）：</p>
+        <div class="template">
+          <div class="t-label">方法笔记</div>
+          <div class="t-line"><span class="t-key">样本：</span><input class="t-inline" data-save="card-3-4-q1" placeholder="谁的血？多少供体？"></div>
+          <div class="t-line"><span class="t-key">制备：</span><input class="t-inline" data-save="card-3-4-q2" placeholder="血迹怎么造？血量多少？"></div>
+          <div class="t-line"><span class="t-key">技术：</span><input class="t-inline" data-save="card-3-4-q3" placeholder="两种光谱关键参数"></div>
+          <div class="t-line"><span class="t-key">建模：</span><input class="t-inline" data-save="card-3-4-q4" placeholder="预处理+模型+验证"></div>
+        </div>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">参考笔记</div>
+          <strong>样本</strong>：人×2（1男1女，21岁）、犬×2、猫×2（各1公1母）；EDTA 抗凝。<br>
+          <strong>制备</strong>：中性基质 10 µL 血滴；沙/土每 2 g 混 500 µL 血（250 µL/g），搅拌 5 min，干燥 24 h。<br>
+          <strong>技术</strong>：ATR-FTIR 650-4000 cm⁻¹ / 4 cm⁻¹ / 64 scans；拉曼 780 nm / 10 mW / 40×3 s / 100-3000 cm⁻¹。<br>
+          <strong>建模</strong>：IR（SNV→基线→SG平滑）；Raman（SNV→AsLS→SG平滑）→ OPLS-DA（SIMCA 18.1）→ ROC/AUC + CV-ANOVA + 500次置换检验。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ STEP 4: 结果精读 ============ -->
+  <div class="step-section" id="step4">
+    <div class="step-header"><div class="step-num" style="background:var(--step-4)">4</div><h2>结果精读</h2><span class="time">20-25 min</span></div>
+
+    <div class="card reveal-item" id="card-4-1">
+      <h3><span class="icon">🔬</span>结果 3.1：中性基质上的光谱特征</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 展示了什么？关键发现？说明了什么？</p>
+        <ul class="task-list">
+          <li>三种血迹的 IR 谱能不能肉眼区分？</li>
+          <li>拉曼谱在哪些区域有肉眼差异？</li>
+          <li>为什么作者说"必须用化学计量学"？</li>
+        </ul>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">结果要点</div>
+          <strong>IR（玻璃上）</strong>：三种血迹谱带几乎一致（Amide I 1644 / II 1530 / III 1238 / A 3288 cm⁻¹ 等），只有强度差异 → 肉眼无法区分，与 De Wael、Mistek-Morabito &amp; Lednev 的结论一致。<br>
+          <strong>拉曼（铝箔上）</strong>：1200-1300、1315-1400、1500-1640 cm⁻¹ 区域有细微差异；人血在 ~1230 cm⁻¹（Hb 带）、1364 cm⁻¹ 比动物强；犬/猫谱形相似。总体上人血谱强度 &gt; 犬 &gt; 猫（Hb 浓度差异，人 Hb 最高）。<br>
+          <strong>说明</strong>：肉眼差异太微妙，必须用 OPLS-DA 这类多变量方法捕捉全谱系统性变异。这也解释了为什么模型 R2 高而原始谱几乎相同。
+        </div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-4-2">
+      <h3><span class="icon">🏖️</span>结果 3.2：沙/土上的光谱特征</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 沙和土各自的主导成分是什么？血迹信号还能看到吗？</p>
+        <ul class="task-list">
+          <li>沙的 IR 谱被什么主导？血带在哪个波数范围仍可见？</li>
+          <li>土的 IR 谱呢？为什么 ATR-FTIR 还能检出血？</li>
+          <li>拉曼在土上为什么彻底失效？</li>
+        </ul>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">结果要点</div>
+          <strong>沙</strong>：主成分石英（SiO₂）+方解石（CaCO₃）。IR 中 650-1400 cm⁻¹ 指纹区被基质主导，血带在 1400-3300 cm⁻¹ 可见（Amide I 1644、脂质 2872/2954、Amide A 3278）。拉曼中石英 464/1086 cm⁻¹ 强峰突出，血带仍部分可见。<br>
+          <strong>土</strong>：主成分黏土/粉砂（硅酸盐、伊利石、高岭石、方解石、白云石）。IR 中血带（Amide II 1523、Amide I 1645、脂质 2852/2919、Amide A 3277）仍可检出 → <strong>ATR-FTIR 在土上有效</strong>。<br>
+          <strong>拉曼在土上失效</strong>：基质带完全主导，找不到可靠的血带。原因：①有效血量低（250 µL/g，干燥+吸收后颗粒尺度上局部血量极低）；②土的多孔吸收性；③干血与土颜色相近，难以定位血富集区选点。<br>
+          <div class="key-insight"><div class="ki-label">关键洞察</div><div class="ki-text">尽管土上拉曼看不见血带，OPLS-DA 载荷图（Fig. S2）显示判别实际由 <strong>Hb 相关谱带的细微系统变异</strong>驱动，而非基质贡献 —— 说明化学计量学能"看到"肉眼和仪器都看不到的信号。</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-4-3">
+      <h3><span class="icon">📈</span>物种判别模型（OPLS-DA）</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 对比四个物种判别模型的性能，回答：</p>
+        <ul class="task-list">
+          <li>哪个基质更难（Q2 最低）？哪个技术整体更强？</li>
+          <li>沙上的 AUC 为什么比 Q2 显示的好看？怎么解读这种"矛盾"？</li>
+          <li>土的拉曼模型 Q2 0.664 但光谱里看不到血带——这可信吗？</li>
+        </ul>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <table class="data-table">
+          <tr><th>模型</th><th>R2X</th><th>R2Y</th><th>Q2</th><th>AUC (猫/犬/人)</th><th>CV-ANOVA</th></tr>
+          <tr><td>中性 IR（玻璃）</td><td>0.974</td><td>0.960</td><td><b>0.948</b></td><td>1.000 全部</td><td>F=299.4, p&lt;0.001</td></tr>
+          <tr><td>中性 Raman（铝箔）</td><td>0.969</td><td>0.703</td><td>0.571</td><td>0.995/0.998/0.998</td><td>F=19.7, p&lt;0.001</td></tr>
+          <tr><td>沙 IR</td><td>0.995</td><td>0.783</td><td>0.684</td><td>0.859/0.710/0.682</td><td>F=18.8, p&lt;0.001</td></tr>
+          <tr><td>沙 Raman</td><td>0.950</td><td>0.725</td><td>0.478</td><td>0.990/0.982/0.999</td><td>F=8.5, p&lt;0.001</td></tr>
+          <tr><td>土 IR</td><td>0.996</td><td>0.846</td><td><b>0.698</b></td><td>1.000/0.996/1.000</td><td>F=13.7, p&lt;0.001</td></tr>
+          <tr><td>土 Raman</td><td>0.941</td><td>0.804</td><td>0.664</td><td>0.999 全部</td><td>F=24.2, p&lt;0.001</td></tr>
+        </table>
+        <div class="info-box note"><div class="title">解读</div>
+          <strong>① 沙最难</strong>：沙的两个模型 Q2（0.684/0.478）是最低的，反映其异质性和基质干扰。<strong>② ATR-FTIR 整体优于拉曼</strong>：每个基质上 IR 模型的 R2Y/Q2 都高于 Raman。<strong>③ AUC vs Q2 的"矛盾"</strong>：沙拉曼模型 Q2 只有 0.478（差），但 AUC 高达 0.98-0.999（好）。AUC 衡量的是"该数据集内"的判别能力（分类器在现有样本上的表现），Q2 是交叉验证的泛化预测力——供体极少时 AUC 容易虚高，Q2 更保守。作者据此称沙拉曼模型"predictive stability"有限。<strong>④ 土拉曼模型可信</strong>：虽然肉眼/仪器看不到血带，但载荷图证明判别由 Hb 谱带驱动，且 Q2 0.664 &gt; 0.5 合理、置换检验通过——多变量分析确实捕捉到了隐藏在基质信号下的血带变异。
+        </div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-4-4">
+      <h3><span class="icon">⚧️</span>性别判别（结果 3.3）</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 性别判别结果如何？为什么拉曼表现差？</p>
+        <ul class="task-list">
+          <li>中性基质上：IR 模型和 Raman 模型的差距多大？</li>
+          <li>复杂基质上：只有哪种技术实现了分离？</li>
+          <li>性别差异的生理基础是什么（为什么男/女血谱有差异）？</li>
+        </ul>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">结果要点</div>
+          <strong>中性基质</strong>：IR 模型 R2Y 0.951-0.990、Q2 0.909-0.944（稳健），AUC=1.000；Raman 模型 Q2 0.357-0.826 不稳定（犬最差 0.357），但 AUC 仍高（人 0.995，犬猫 1.000）—— 同物种判别一样的"Q2 保守、AUC 虚高"现象。<br>
+          <strong>复杂基质</strong>：仅 ATR-FTIR 实现中等分离（人 Q2 0.658、犬 0.688、猫 0.692，AUC≈0.999）；Raman 模型 Q2 普遍 &lt;0.5，判别能力有限。<br>
+          <strong>生理基础</strong>：雄性红细胞数、血细胞比容、Hb 浓度更高（睾酮促进红细胞生成；女性月经失血降低比容）；女性白细胞数更高。Hb 相关差异在犬/猫等哺乳动物同样存在。但作者强调：单供体/性别 → 结果仅为可行性证明。
+        </div>
+        <div class="info-box warn"><div class="title">⚠️ 严谨提醒</div>性别判别是"strictly preliminary"：每个物种每性别 1 个供体，模型可能学到的是"这个人的特征"而非"这个性别的特征"。阅读或引用时必须注意这一层。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ STEP 5: 讨论精读 ============ -->
+  <div class="step-section" id="step5">
+    <div class="step-header"><div class="step-num" style="background:var(--step-5)">5</div><h2>讨论精读</h2><span class="time">15-20 min</span></div>
+
+    <div class="card reveal-item" id="card-5-1">
+      <h3><span class="icon">🏗️</span>讨论结构</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 作者如何组织讨论？核心论证链条是什么？</p>
+        <ul class="task-list">
+          <li>作者如何解释"沙比土难"？</li>
+          <li>为什么说"真实现场血量更多时方法只会更好"？</li>
+          <li>作者如何为"土上拉曼失效"辩护/定位？</li>
+        </ul>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">讨论逻辑链</div>
+          <strong>沙 vs 土</strong>：沙的模型最差（Q2 0.478-0.684），可能因为沙的异质性/颗粒特性；土的模型反而更稳（尽管拉曼看不到血带）——判别由 Hb 细微变异驱动（载荷图证明）。<br>
+          <strong>"只会更好"论证</strong>：真实犯罪现场血量通常远大于本实验的 250 µL/g；如果能用这么少的血都能区分，血量更充足时只会更好。这个论证把 proof-of-concept 的价值放大了。<br>
+          <strong>土上拉曼失效的定位</strong>：归因于低有效血量+土的高吸收/异质性+干血与土颜色相近难选点；不回避，反而成为"推荐 ATR-FTIR"的论据；并给出改进方向（1064 nm 激光减少荧光、不同工作距离物镜）。
+        </div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-5-2">
+      <h3><span class="icon">🔍</span>核心概念深度解析：为什么 ATR-FTIR 优于拉曼？</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 综合全文，总结 ATR-FTIR 优于拉曼的技术原因：</p>
+        <ul class="task-list">
+          <li>信噪比/荧光问题：拉曼在环境样本上容易遇到什么？</li>
+          <li>采样方式差异：ATR 测的是"接触面积内所有物质"，拉曼显微测的是"显微镜选的点"——在异质基质上哪个更稳？</li>
+          <li>对蛋白/脂质等"整体组成"的敏感度差异？</li>
+        </ul>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">技术优势分解</div>
+          <strong>① 荧光干扰</strong>：拉曼对荧光极其敏感（尤其环境样品/有机质），780 nm 激发虽已降低荧光但仍受限制；IR 无此问题。<strong>② 采样稳健性</strong>：ATR-FTIR 的信号来自与金刚石晶体接触区域的所有物质（平均化效果好）；拉曼显微需要人为选择"血多的地方"——在异质基质（尤其土）上选点困难且主观。<strong>③ 信号来源</strong>：IR 反映蛋白/脂质/碳水/水的整体组成，冗余度高、抗噪；拉曼以 Hb/纤维蛋白为主，依赖单一强信号源。<strong>④ 结果一致性</strong>：所有模型中 IR 的 R2Y/Q2 都高于 Raman，且 CV-ANOVA F 值更高（更显著）。结论：<strong>复杂基质上首选 ATR-FTIR</strong>，拉曼更适合干净/富集样本。
+        </div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-5-3">
+      <h3><span class="icon">🧠</span>批判性思考清单</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 用批判眼光审视这篇论文：</p>
+        <ul class="task-list">
+          <li>单供体/性别设计的结论外推风险有多大？</li>
+          <li>沙/土各只测一种，能否代表"复杂基质"？</li>
+          <li>AUC 高但 Q2 低——该信哪个？对新手有什么陷阱？</li>
+          <li>拉曼在土上"没检出"是方法不行还是操作（选点）问题？</li>
+          <li>如果用你的法医学知识，最想追问作者什么问题？</li>
+        </ul>
+        <div class="user-input-area">
+          <textarea data-save="card-5-3-notes" placeholder="✍️ 写下你的批判性思考…"></textarea>
+          <div class="input-hint">✍️ 写完后揭晓参考清单</div>
+        </div>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box warn"><div class="title">批判清单（参考）</div>
+          <strong>① 外推风险</strong>：每物种每性别 1 供体 → 无法区分"物种/性别信号"与"个体信号"。这是全篇最致命局限，任何"性别鉴别准确率"引用都必须带这个 caveat。<br>
+          <strong>② 基质代表性</strong>：1 种沙（石英型）+ 1 种土（黏土/粉砂型）。真实现场沙土成分千差万别（碳酸盐型、有机质型、污染型），荧光背景可能完全不同。<br>
+          <strong>③ Q2 vs AUC</strong>：AUC 在类内（数据内）判别上乐观；Q2 是交叉验证泛化指标，更保守可信。报告"98% 准确率"而忽略 Q2 是常见陷阱。<br>
+          <strong>④ 拉曼失效的归因</strong>：作者归因于血量+吸收+选点难。但 780 nm 激光、50 µm 针孔等参数也影响信噪比——改进参数（1064 nm、不同物镜）是作者自己提出的方向。<br>
+          <strong>⑤ 可追问问题</strong>：真实掩埋现场的血液降解（随时间/微生物/湿度）会怎样改变谱带？陈旧血迹（数周-数月）还能区分物种吗？混合血迹（多人/人+动物）呢？便携式设备与实验室设备的性能差距？这些正是后续研究空间。
+        </div>
+      </div>
+    </div>
+
+    <div class="card reveal-item" id="card-5-4">
+      <h3><span class="icon">📌</span>作者自述局限 + 我的总结</h3>
+      <div class="think-zone">
+        <p class="prompt"><span class="emoji">❓</span> 最后：作者承认了哪些局限？这篇论文对你（法医学专业）最有用的一点是什么？</p>
+        <div class="user-input-area">
+          <textarea data-save="card-5-4-notes" placeholder="✍️ 写下你的收获…"></textarea>
+          <div class="input-hint">✍️ 写完后揭晓</div>
+        </div>
+      </div>
+      <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+      <div class="answer-zone">
+        <div class="info-box note"><div class="title">作者自述局限</div>
+          ① 供体数量有限（无法覆盖年龄/激素状态/饮食/生活方式/健康等个体差异）；② 各一种沙和土（天然沙土成分差异大）；③ 拉曼在土壤等强吸收基质上痕量灵敏度有限；④ 性别判别仅为初步概念验证。
+        </div>
+        <div class="info-box success"><div class="title">读后总结（我的视角）</div>
+          这篇论文的价值在于：<strong>① 填补了"复杂基质（沙/土）上光谱血迹物种鉴别"的空白</strong>；② 提供了"ATR-FTIR 为首选"的明确技术建议；③ 展示了化学计量学（OPLS-DA）如何"看穿"基质掩盖——即使光谱肉眼不可辨，多变量模型仍能提取物种特异信号；④ 诚实报告负面结果（土上拉曼失效）与方法论陷阱（AUC vs Q2）。对法医实践的意义：为现场血迹的"先判物种、再决定采样"提供了非破坏性筛查思路，保护样本留给 DNA 分析。局限同样明确：概念验证规模，距离实战还需扩大供体、基质、降解条件研究。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button onclick="prevCard()">← 上一张</button>
+    <button class="primary" onclick="nextCard()">下一张 →</button>
+  </div>
+</div>
+
+<div class="glossary-bar" id="glossaryBar">
+  <h3>📚 术语表</h3>
+  <div class="term-entry"><strong>ATR-FTIR</strong><p>衰减全反射-傅里叶变换红外光谱。红外光在晶体-样品界面全反射，探测样品偶极矩变化引起的吸收，反映蛋白/脂质/碳水整体组成。</p></div>
+  <div class="term-entry"><strong>Raman 光谱</strong><p>单色激光照射样品，探测分子极化率变化引起的非弹性散射。对血红蛋白、纤维蛋白敏感，但易受荧光干扰。</p></div>
+  <div class="term-entry"><strong>OPLS-DA</strong><p>正交偏最小二乘判别分析。PLS 回归+正交信号校正，分离预测变异与正交变异，用于光谱分类。</p></div>
+  <div class="term-entry"><strong>Q2</strong><p>交叉验证预测能力（0-1）。&gt;0.5 合理，&gt;0.7 稳健，&lt;0.3 差。比 R2Y 更能反映泛化能力。</p></div>
+  <div class="term-entry"><strong>R2Y</strong><p>模型对类别变量 Y 的解释比例（拟合度）。高 R2Y + 低 Q2 = 过拟合征兆。</p></div>
+  <div class="term-entry"><strong>AUC</strong><p>ROC 曲线下面积。衡量类内判别能力，1.0 = 完美，0.5 = 随机。供体少时易虚高。</p></div>
+  <div class="term-entry"><strong>CV-ANOVA</strong><p>交叉验证方差分析。检验模型分离是否统计显著（p&lt;0.05）。</p></div>
+  <div class="term-entry"><strong>置换检验</strong><p>随机打乱类别标签重建模 500 次，比较 Q2 分布，检验是否过拟合（Q2 截距&lt;0 为佳）。</p></div>
+  <div class="term-entry"><strong>SNV</strong><p>标准正态变量校正：每条光谱减均值除标准差，消除散射/光程差异。</p></div>
+  <div class="term-entry"><strong>AsLS</strong><p>非对称最小二乘基线校正：拟合并扣除荧光基线（拉曼预处理用）。</p></div>
+  <div class="term-entry"><strong>Savitzky-Golay</strong><p>多项式平滑滤波，去噪声的同时保留峰形与峰位。</p></div>
+  <div class="term-entry"><strong>Amide I/II/III/A</strong><p>蛋白质酰胺键的特征振动带（IR ~1644/1530/1238/3288 cm⁻¹），血迹 IR 谱的核心标记。</p></div>
+  <div class="term-entry"><strong>Hb（血红蛋白）</strong><p>血液拉曼信号的主要贡献者；浓度物种间有差异（人&gt;犬&gt;猫），是判别的基础之一。</p></div>
+  <div class="term-entry"><strong>DEA / AB 血型系统</strong><p>犬红细胞抗原系统 / 猫 AB 血型系统（与人 ABO+Rh 不同），物种间血型系统差异影响谱学特征。</p></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let currentStep=1,currentCardIdx=0,globalMode='think',cardStates={};
+const totalSteps=5;
+function init(){
+document.querySelectorAll('.card.reveal-item').forEach(c=>{cardStates[c.id]={revealed:false}});
+loadAllInputs();attachAutoSave();showStep(1);setCurrentCard(0);updateProgress();updateStepIndicator();
+}
+function showStep(n){
+for(let s=1;s<=totalSteps;s++){const el=document.getElementById('step'+s);if(el)el.classList.toggle('visible',s===n);}
+currentStep=n;currentCardIdx=0;updateProgress();updateStepIndicator();highlightCurrentCard();scrollToCard();
+}
+function getStepCards(n){const el=document.getElementById('step'+n);return el?Array.from(el.querySelectorAll('.card.reveal-item')):[];}
+function setCurrentCard(i){currentCardIdx=i;highlightCurrentCard();updateStepIndicator();}
+function highlightCurrentCard(){getStepCards(currentStep).forEach((c,i)=>{c.classList.toggle('visible-card',true);c.classList.toggle('current-card',i===currentCardIdx);});}
+function scrollToCard(){const cards=getStepCards(currentStep);if(cards[currentCardIdx])cards[currentCardIdx].scrollIntoView({behavior:'smooth',block:'center'});}
+function nextCard(){const cards=getStepCards(currentStep);if(currentCardIdx<cards.length-1){setCurrentCard(currentCardIdx+1);scrollToCard();}else if(currentStep<totalSteps){showStep(currentStep+1);setCurrentCard(0);}else{showToast('✅ 全部完成！');}}
+function prevCard(){if(currentCardIdx>0){setCurrentCard(currentCardIdx-1);scrollToCard();}else if(currentStep>1){showStep(currentStep-1);const c=getStepCards(currentStep);setCurrentCard(c.length-1);scrollToCard();}}
+function jumpNextSection(){if(currentStep<totalSteps){showStep(currentStep+1);setCurrentCard(0);}}
+function jumpToStep(n){showStep(n);setCurrentCard(0);}
+function revealAnswer(btn){const card=btn.closest('.card.reveal-item');const az=card.querySelector('.answer-zone');if(az)az.classList.add('revealed');btn.classList.add('done');btn.textContent='✓ 已揭晓';cardStates[card.id]={revealed:true};}
+function revealCurrentAnswer(){const cards=getStepCards(currentStep);const card=cards[currentCardIdx];if(!card)return;const btn=card.querySelector('.reveal-btn');if(btn&&!btn.classList.contains('done')){revealAnswer(btn);showToast('答案已揭晓 ✓');}else{showToast('已经揭晓了');}}
+function revealAllInStep(){let count=0;getStepCards(currentStep).forEach(card=>{const az=card.querySelector('.answer-zone');const btn=card.querySelector('.reveal-btn');if(az&&!az.classList.contains('revealed')){az.classList.add('revealed');if(btn){btn.classList.add('done');btn.textContent='✓ 已揭晓';}cardStates[card.id]={revealed:true};count++;}});showToast(count>0?`已揭晓 ${count} 个答案`:'全部已揭晓');}
+function toggleMode(){if(globalMode==='think'){globalMode='all';document.getElementById('modeBtn').textContent='🧠 逐题思考';revealEverything();}else{globalMode='think';document.getElementById('modeBtn').textContent='👁️ 全部揭晓';hideEverything();}}
+function revealEverything(){document.querySelectorAll('.card.reveal-item').forEach(card=>{const az=card.querySelector('.answer-zone');const btn=card.querySelector('.reveal-btn');if(az)az.classList.add('revealed');if(btn){btn.classList.add('done');btn.textContent='✓ 已揭晓';}cardStates[card.id]={revealed:true};});}
+function hideEverything(){document.querySelectorAll('.card.reveal-item').forEach(card=>{const az=card.querySelector('.answer-zone');const btn=card.querySelector('.reveal-btn');if(az)az.classList.remove('revealed');if(btn){btn.classList.remove('done');btn.textContent='💡 揭晓答案';}cardStates[card.id]={revealed:false};});}
+function resetAll(){hideEverything();clearAllSavedInputs();showStep(1);setCurrentCard(0);showToast('🔄 已重置');window.scrollTo({top:0,behavior:'smooth'});}
+function toggleHint(el){const c=el.nextElementSibling;if(c)c.classList.toggle('open');}
+function toggleGlossary(){document.getElementById('glossaryBar').classList.toggle('open');}
+function updateProgress(){document.querySelectorAll('.progress-step').forEach(s=>{const n=parseInt(s.dataset.step);s.classList.remove('active','done');if(n<currentStep)s.classList.add('done');if(n===currentStep)s.classList.add('active');});}
+function updateStepIndicator(){const el=document.getElementById('stepIndicator');const c=getStepCards(currentStep);if(el)el.textContent=`第 ${currentStep}/${totalSteps} 节 · 卡片 ${currentCardIdx+1}/${c.length}`;}
+let toastTimer;function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2000);}
+const SAVE_PREFIX='chihi-';
+function attachAutoSave(){document.querySelectorAll('textarea[data-save],input.t-inline[data-save]').forEach(el=>{el.addEventListener('input',debounce(function(){saveInput(this);},500));});}
+function saveInput(el){localStorage.setItem(SAVE_PREFIX+el.dataset.save,el.value);const hint=el.closest('.user-input-area')?.querySelector('.input-hint');if(hint){hint.classList.add('saved');hint.textContent='✓ 已自动保存';setTimeout(()=>{if(hint){hint.classList.remove('saved');hint.textContent='✍️ 写完后揭晓答案对比';}},1500);}}
+function loadAllInputs(){document.querySelectorAll('[data-save]').forEach(el=>{const v=localStorage.getItem(SAVE_PREFIX+el.dataset.save);if(v&&(el.tagName==='TEXTAREA'||el.tagName==='INPUT'))el.value=v;});}
+function clearAllSavedInputs(){document.querySelectorAll('[data-save]').forEach(el=>{localStorage.removeItem(SAVE_PREFIX+el.dataset.save);if(el.tagName==='TEXTAREA'||el.tagName==='INPUT')el.value='';});}
+function debounce(fn,d){let t;return function(...a){clearTimeout(t);t=setTimeout(()=>fn.apply(this,a),d);};}
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;switch(e.key){case'ArrowRight':case' ':e.preventDefault();nextCard();break;case'ArrowLeft':e.preventDefault();prevCard();break;case'Enter':e.preventDefault();revealCurrentAnswer();break;case'ArrowDown':e.preventDefault();e.shiftKey?jumpNextSection():revealCurrentAnswer();break;case'a':case'A':if(!e.ctrlKey&&!e.metaKey){e.preventDefault();revealAllInStep();}break;case't':case'T':if(!e.ctrlKey&&!e.metaKey){e.preventDefault();toggleMode();}break;case'r':case'R':if(!e.ctrlKey&&!e.metaKey){e.preventDefault();resetAll();}break;case'g':case'G':if(!e.ctrlKey&&!e.metaKey){e.preventDefault();toggleGlossary();}break;case'1':case'2':case'3':case'4':case'5':if(!e.ctrlKey&&!e.metaKey){e.preventDefault();jumpToStep(parseInt(e.key));}break;}});
+init();
+</script>
+</body>
+</html>
