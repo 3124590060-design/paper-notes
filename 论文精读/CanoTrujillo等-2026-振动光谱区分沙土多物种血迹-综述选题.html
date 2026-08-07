@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>综述选题 · 振动光谱区分沙土多物种血迹的物种与性别</title>
+<style>
+:root{--bg:#faf8f5;--card:#fff;--text:#2d2a26;--text-muted:#7a746d;--accent:#c44f1c;--accent2:#2e6b8f;--accent3:#5a8a4a;--border:#e8e4df;--shadow:0 1px 3px rgba(0,0,0,.06);--shadow-lg:0 4px 16px rgba(0,0,0,.08);--radius:10px;--font-sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;--font-serif:'Noto Serif SC','Source Han Serif SC','Songti SC',Georgia,serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.7}
+#app{max-width:960px;margin:0 auto;padding:20px 24px 80px}
+.hero{text-align:center;padding:36px 0 24px;border-bottom:2px solid var(--border);margin-bottom:28px}
+.hero .badge{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:#f0f7ed;color:var(--accent3);padding:4px 14px;border-radius:12px;margin-bottom:10px}
+.hero h1{font-family:var(--font-serif);font-size:clamp(16px,3vw,20px);font-weight:700;line-height:1.5;color:#1a1815;margin-bottom:6px}
+.hero .meta{font-size:13px;color:var(--text-muted)}
+.hero .meta strong{color:var(--accent)}
+.snapshot-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+@media(max-width:640px){.snapshot-grid{grid-template-columns:1fr}}
+.snap-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.snap-card .snap-label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:6px;font-weight:600}
+.snap-card .snap-value{font-size:14px;line-height:1.6}
+.snap-card.full{grid-column:1/-1}
+.paradigm-chain{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;padding:16px 0;margin:16px 0;font-size:13px}
+.paradigm-chain .node{padding:6px 14px;border-radius:16px;background:#f5f2ed;border:1px solid var(--border);font-weight:600;white-space:nowrap}
+.paradigm-chain .arrow{color:var(--accent);font-weight:700;font-size:16px}
+.paradigm-chain .node.highlight{background:#fff0ed;border-color:var(--accent);color:var(--accent)}
+.section{margin-bottom:28px}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.section-header .icon{font-size:22px}
+.section-header h2{font-size:18px;font-weight:700}
+.section-header .count{font-size:12px;color:var(--text-muted);margin-left:auto}
+.thread-list{display:flex;flex-direction:column;gap:12px}
+.thread-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);transition:all .2s;position:relative}
+.thread-card:hover{box-shadow:var(--shadow-lg)}
+.thread-card .thread-num{position:absolute;top:-10px;left:16px;width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.thread-card h3{font-size:15px;margin:4px 0 6px;padding-left:24px}
+.thread-tag{display:inline-block;font-size:11px;padding:2px 10px;border-radius:10px;font-weight:600;margin-right:6px;margin-bottom:8px}
+.tag-feasible{background:#f0f7ed;color:var(--accent3)}
+.tag-caution{background:#fff3cd;color:#8b6914}
+.tag-novel{background:#f0f6fa;color:var(--accent2)}
+.gap-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+.gap-table th{text-align:left;padding:10px 12px;background:#faf9f7;border-bottom:2px solid var(--border);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.gap-table td{padding:12px;border-bottom:1px solid #f0ede8;vertical-align:top;line-height:1.6}
+.gap-table tr:hover td{background:#fefdf9}
+.stars{color:#e8a420;font-size:14px;letter-spacing:2px}
+.reading-list{list-style:none}
+.reading-list li{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid #f0ede8;font-size:14px;transition:background .2s}
+.reading-list li:hover{background:#fefdf9}
+.reading-list .priority{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.priority-high{background:var(--accent)}.priority-mid{background:var(--accent2)}.priority-low{background:var(--text-muted)}
+.reading-list .paper-info{flex:1}
+.reading-list .paper-info .paper-title{font-weight:600}
+.reading-list .paper-info .paper-reason{font-size:12px;color:var(--text-muted);margin-top:2px}
+.toggle-btn{font-size:13px;color:var(--accent2);cursor:pointer;border:none;background:none;font-family:var(--font-sans);text-decoration:underline;text-underline-offset:3px;padding:4px 0}
+.toggle-btn:hover{color:var(--accent)}
+.detail-block{display:none;margin-top:10px}
+.detail-block.open{display:block}
+.footer-note{text-align:center;padding:32px 0;color:var(--text-muted);font-size:13px;border-top:1px solid var(--border);margin-top:40px}
+.backlink{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--accent2);margin-bottom:20px}
+.backlink:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hero">
+    <div class="badge">综述选题模式</div>
+    <h1>从《振动光谱区分沙土中多物种血迹的物种与性别》出发，能写什么综述？</h1>
+    <div class="meta">Cano-Trujillo et al., Forensic Science International 388 (2026) 113082 · <strong>DOI: 10.1016/j.forsciint.2026.113082</strong></div>
+  </div>
+
+  <!-- 1. 论文快照 -->
+  <div class="section">
+    <div class="section-header"><span class="icon">📸</span><h2>论文快照</h2></div>
+    <div class="snapshot-grid">
+      <div class="snap-card"><div class="snap-label">研究问题</div><div class="snap-value">能否用非破坏性振动光谱（ATR-FTIR + 拉曼）在沙/土复杂基质上区分人/犬/猫血迹的<b>物种</b>与<b>性别</b>？</div></div>
+      <div class="snap-card"><div class="snap-label">方法核心</div><div class="snap-value">2 人 + 2 犬 + 2 猫供体（各1男/公、1女/母）→ 4 基质（玻璃/铝箔/沙/土）→ 10 µL 滴样 + 250 µL/g 混样 → ATR-FTIR &amp; 拉曼 → SNV/AsLS/SG 预处理 → OPLS-DA + ROC/AUC + CV-ANOVA + 500次置换检验</div></div>
+      <div class="snap-card"><div class="snap-label">核心发现</div><div class="snap-value">① ATR-FTIR 整体优于拉曼（每个基质 Q2 更高）；② 沙比土更难判别；③ 土上拉曼检不出血带，但 OPLS-DA 仍能借 Hb 细微变异判别；④ 性别判别仅 ATR-FTIR 在复杂基质可行（初步）</div></div>
+      <div class="snap-card"><div class="snap-label">关键局限</div><div class="snap-value">每物种每性别仅 <b>1 个供体</b>；沙/土各仅 1 种；概念验证规模；新鲜血迹未涉降解/陈旧/混合血迹</div></div>
+      <div class="snap-card full"><div class="snap-label">这篇论文在文献中的位置</div><div class="snap-value">它把"光谱法血迹物种鉴别"从干净基质（玻璃/铝箔/纱布）推进到<b>复杂环境基质（沙/土）</b>，并首次尝试<b>动物血迹的性别判别</b>。属于"光谱法医化学计量学"这一快速成长方向的实证补充——前有 Mistek &amp; Lednev、McLaughlin、Fujihara 等的物种鉴别，后有高光谱成像、机器学习等新方法竞争。</div></div>
+    </div>
+  </div>
+
+  <!-- 2. 研究范式链 -->
+  <div class="section">
+    <div class="section-header"><span class="icon">⛓️</span><h2>研究范式链</h2><span class="count">红 = 本文新增环节</span></div>
+    <div class="paradigm-chain">
+      <span class="node">血迹物种鉴别需求</span><span class="arrow">→</span>
+      <span class="node">传统免疫/酶学预试验</span><span class="arrow">→</span>
+      <span class="node">光谱指纹（IR/Raman）</span><span class="arrow">→</span>
+      <span class="node">化学计量学判别（PCA/PLS-DA/OPLS-DA）</span><span class="arrow">→</span>
+      <span class="node highlight">复杂基质（沙/土）拓展</span><span class="arrow">→</span>
+      <span class="node highlight">物种+性别双目标</span><span class="arrow">→</span>
+      <span class="node">现场便携化部署</span>
+    </div>
+    <div class="info-box" style="padding:14px 18px;border-radius:8px;background:#f0f6fa;border-left:4px solid var(--accent2);margin:12px 0;font-size:14px">本文在范式链上的两个新增环节（红色）正是综述可以展开的"增量叙事"：<b>基质复杂性</b>与<b>多物种性别鉴别</b>。</div>
+  </div>
+
+  <!-- 3. 三条综述线索 -->
+  <div class="section">
+    <div class="section-header"><span class="icon">🧵</span><h2>三条综述线索</h2><span class="count">按可行性排序</span></div>
+    <div class="thread-list">
+
+      <div class="thread-card">
+        <div class="thread-num" style="background:var(--accent3)">1</div>
+        <h3>振动光谱（ATR-FTIR / 拉曼）在法医血迹物种鉴别中的应用进展</h3>
+        <span class="thread-tag tag-feasible">🟢 最可行</span>
+        <span class="thread-tag tag-novel">🔵 文献量大、体系成熟</span>
+        <div style="font-size:14px;margin-top:8px">
+          <div><b>可行性评分：</b><span class="stars">★★★★☆</span> <span style="color:var(--text-muted);font-size:12px">(竞争中等，但"复杂基质"角度新)</span></div>
+          <div style="margin-top:6px"><b>逻辑链：</b>血迹物种鉴别的法医需求 → 传统方法局限（假阳性/耗样） → 光谱指纹原理与互补性 → 各技术单独应用（IR、Raman、便携拉曼） → <span style="background:#fff0ed;padding:0 4px;border-radius:4px">复杂基质（沙/土/织物/木质）上的最新拓展</span> → 化学计量学方法演进（PCA→PLS-DA→OPLS-DA→ML） → 局限与展望（供体规模、降解、混合血迹、现场化）</div>
+          <div style="margin-top:6px"><b>需要读的论文量：</b>约 60-100 篇（本领域积累深厚，可从本文引文 [4,10-14,16,19-32] 顺藤摸瓜）</div>
+          <div style="margin-top:6px"><b>竞争程度：</b>中。已有类似综述（如 Fan et al. 2025 振动光谱法医生物物证综述），但聚焦"复杂基质"细分角度的不多</div>
+          <button class="toggle-btn" onclick="toggleDetail(this)">展开框架建议 ▾</button>
+          <div class="detail-block">
+            <div style="background:#fefdf9;border:1px dashed #d4cbb8;border-radius:8px;padding:14px;font-size:13px;margin-top:8px">
+              <b>建议框架：</b>① 引言（需求+方法学背景）② 光谱学原理与互补性 ③ 预处理与化学计量学方法谱系 ④ 中性基质上的物种鉴别研究 ⑤ <b>复杂基质上的进展（本文所在位置，重点章节）</b> ⑥ 性别与年龄等额外维度 ⑦ 混合血迹与降解样本 ⑧ 现场部署与便携设备 ⑨ 挑战与未来方向。可投 Forensic Science International / Journal of Forensic Sciences / 中文核心（法医学杂志）。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="thread-card">
+        <div class="thread-num" style="background:var(--accent2)">2</div>
+        <h3>非破坏性光谱技术在法医物证"先筛查后分析"工作流中的定位</h3>
+        <span class="thread-tag tag-caution">🟡 视角新、需跨界整合</span>
+        <div style="font-size:14px;margin-top:8px">
+          <div><b>可行性评分：</b><span class="stars">★★★☆☆</span> <span style="color:var(--text-muted);font-size:12px">(视角创新但需跨技术综述)</span></div>
+          <div style="margin-top:6px"><b>逻辑链：</b>生物物证"检材有限+需保样给 DNA"的矛盾 → 光谱法作为无损初筛（不消耗样品） → 与传统预试验（鲁米诺、联苯胺等）的对比 → 光谱在血迹/精斑/唾液等不同物证上的通用性与特异性 → 决策流程设计（何时用光谱、何时取样） → 便携设备与现场即时检测 → 监管/法庭可接受性 → 展望</div>
+          <div style="margin-top:6px"><b>需要读的论文量：</b>约 40-60 篇（跨血迹/精斑/唾液/皮肤接触痕等多类物证）</div>
+          <div style="margin-top:6px"><b>竞争程度：</b>低-中。从"工作流/决策"视角写的少，多为单一物证技术综述</div>
+          <button class="toggle-btn" onclick="toggleDetail(this)">展开框架建议 ▾</button>
+          <div class="detail-block">
+            <div style="background:#fefdf9;border:1px dashed #d4cbb8;border-radius:8px;padding:14px;font-size:13px;margin-top:8px">
+              <b>建议框架：</b>① 引言：物证有限性与保样原则 ② 无损筛查技术谱（光谱/高光谱/其他） ③ 各物证类型应用（血迹重点） ④ 与传统预试验比较（灵敏度/特异性/假阳性） ⑤ "先光谱后DNA"决策工作流 ⑥ 现场化与法庭应用 ⑦ 挑战与标准化。本文作为"复杂基质无损筛查"的典型范例嵌入第③④章。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="thread-card">
+        <div class="thread-num" style="background:var(--accent)">3</div>
+        <h3>动物法医学（兽医法医学）中的物证分析技术</h3>
+        <span class="thread-tag tag-caution">🟡 交叉学科、有差异化空间</span>
+        <div style="font-size:14px;margin-top:8px">
+          <div><b>可行性评分：</b><span class="stars">★★★☆☆</span> <span style="color:var(--text-muted);font-size:12px">(小众但有故事性，需英语文献+中文案例)</span></div>
+          <div style="margin-top:6px"><b>逻辑链：</b>动物在犯罪中的多重角色（受害者/施害者/"证人"） → 动物虐待与斗犬、野生动物走私、肇事逃逸 → 动物物证类型（血/毛/组织） → 物种鉴别的分子方法（DNA条形码） vs 光谱方法（非破坏、快） → 动物血迹对"人血预试验"的干扰问题 → 伦理与法律框架 → 展望（与野生动物保护法衔接）</div>
+          <div style="margin-top:6px"><b>需要读的论文量：</b>约 30-50 篇（兽医法医学+野生动物法医学文献）</div>
+          <div style="margin-top:6px"><b>竞争程度：</b>低。中文语境下尤其稀缺，差异化空间大</div>
+          <button class="toggle-btn" onclick="toggleDetail(this)">展开框架建议 ▾</button>
+          <div class="detail-block">
+            <div style="background:#fefdf9;border:1px dashed #d4cbb8;border-radius:8px;padding:14px;font-size:13px;margin-top:8px">
+              <b>建议框架：</b>① 引言：动物法医学的兴起与范畴 ② 动物物证的种类与取证 ③ 物种鉴别技术（分子 vs 光谱 vs 免疫） ④ 光谱法在动物血迹鉴别中的进展（本文为核心案例） ⑤ 人-动物血迹干扰与假阳性 ⑥ 法律应用与伦理 ⑦ 展望。可与综述线索1合并或独立成文。
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 4. 下一步阅读清单 -->
+  <div class="section">
+    <div class="section-header"><span class="icon">📚</span><h2>下一步阅读清单</h2><span class="count">按优先级</span></div>
+    <ul class="reading-list">
+      <li><span class="priority priority-high">1</span><div class="paper-info"><div class="paper-title">Mistek &amp; Lednev, Anal. Bioanal. Chem. 407 (2015) 7435-7442</div><div class="paper-reason">ATR-FTIR 区分人/犬/猫血迹的开山之作（本文引文[29]），物种鉴别的基线文献，必读。</div></div></li>
+      <li><span class="priority priority-high">2</span><div class="paper-info"><div class="paper-title">McLaughlin, Doty &amp; Lednev, Forensic Sci. Int. 238 (2014) 91-95</div><div class="paper-reason">拉曼光谱区分人/动物血迹（本文引文[22]），拉曼路线的代表工作。</div></div></li>
+      <li><span class="priority priority-high">3</span><div class="paper-info"><div class="paper-title">Fujihara et al., Int. J. Legal Med. 131 (2017) 319-322</div><div class="paper-reason">便携拉曼 + 11 种动物血迹鉴别（引文[27]），现场化方向的标杆。</div></div></li>
+      <li><span class="priority priority-mid">4</span><div class="paper-info"><div class="paper-title">Mistek-Morabito &amp; Lednev 扩展研究（8物种，引文[13/14]）</div><div class="paper-reason">多物种扩展 + ATR 晶体采样差异，了解方法学演进。</div></div></li>
+      <li><span class="priority priority-mid">5</span><div class="paper-info"><div class="paper-title">De Wael et al.（引文[20]）</div><div class="paper-reason">显微分光光度法+拉曼+ATR-FTIR 多技术对比但无化学计量学——与本文形成"有无多变量"对照。</div></div></li>
+      <li><span class="priority priority-mid">6</span><div class="paper-info"><div class="paper-title">Sikirzhytskaya et al.（引文[64]）</div><div class="paper-reason">30男+30女供体拉曼性别判别——本文性别部分的"更大样本"参照。</div></div></li>
+      <li><span class="priority priority-mid">7</span><div class="paper-info"><div class="paper-title">Wei et al., Spectrochim. Acta A 308 (2024) 123755（引文[24]）</div><div class="paper-reason">ATR-FTIR + 机器学习识别多种基质上的血迹——方法学新趋势。</div></div></li>
+      <li><span class="priority priority-low">8</span><div class="paper-info"><div class="paper-title">Fan et al., Forensic Sci. Med. Pathol. 21 (2025) 406-416（引文[23]）</div><div class="paper-reason">振动光谱法医生物物证综述——了解综述写法与文献全景，避免重复。</div></div></li>
+      <li><span class="priority priority-low">9</span><div class="paper-info"><div class="paper-title">Cooney et al., FSI Med. Pathol. 20 (2024) 490-499；Al-Alimi et al., Talanta 283 (2025)（引文[25,26]）</div><div class="paper-reason">高光谱成像等新兴竞争技术，综述中需要对比的"邻家方法"。</div></div></li>
+      <li><span class="priority priority-low">10</span><div class="paper-info"><div class="paper-title">RISEN 项目（EU H2020, grant 883116）相关产出</div><div class="paper-reason">本文所属的欧盟现场物证实时鉴定项目，了解应用落地方向与后续文献。</div></div></li>
+    </ul>
+  </div>
+
+  <!-- 5. 这篇论文对综述意味着什么 -->
+  <div class="section">
+    <div class="section-header"><span class="icon">💡</span><h2>这篇论文对综述意味着什么</h2></div>
+    <div class="snap-card" style="box-shadow:var(--shadow)">
+      <div class="snap-value" style="font-size:14px;line-height:1.8">
+        <b>① 它是"复杂基质"章节的锚点文献</b>——综述里讨论沙/土基质时，本文是最新且直接的证据，可作为章节开篇案例。<br>
+        <b>② 它提供了"技术对比"的现成数据表</b>——文中的 6 个 OPLS-DA 模型参数（R2X/R2Y/Q2/AUC）可直接整理进综述的对比表格。<br>
+        <b>③ 它的局限就是综述的"未来方向"章节</b>——单供体、单基质、无降解、无混合血迹，每一个都可以扩展成综述的展望段落。<br>
+        <b>④ 引用时注意</b>：结论带着 "preliminary / proof-of-concept" 限定，综述中应如实呈现，避免过度拔高。<br>
+        <b>⑤ 与中文文献的衔接</b>：可结合国内法医学界在拉曼光谱（如硅藻检测、心肌损伤鉴定）的工作，把"振动光谱法医应用"做成中外结合的综述——这是你的差异化优势。
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">综述选题模式 · 由 Hermes 基于论文全文生成 · 仅供学习参考</div>
+</div>
+
+<script>
+function toggleDetail(btn){
+  const block = btn.nextElementSibling;
+  if(block) block.classList.toggle('open');
+  btn.textContent = block && block.classList.contains('open') ? '收起框架建议 ▴' : '展开框架建议 ▾';
+}
+</script>
+</body>
+</html>
