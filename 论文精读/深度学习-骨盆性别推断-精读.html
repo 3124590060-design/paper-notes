@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>精读：深度学习在法医骨盆性别推断中的应用</title>
+<style>
+:root {
+  --bg: #0f1923; --surface: #1a2d3c; --surface2: #1e3a4a; --gold: #c9a96e;
+  --gold-light: #e0c88e; --text: #e8e0d0; --text-dim: #a0b0c0; --accent: #4a8c8c;
+  --red: #c0392b; --blue: #5d9ec9; --green: #5a9e6f; --card-radius: 10px;
+  --border: rgba(201,169,110,0.2); --font: -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.75; font-size: 15px; }
+.container { max-width: 880px; margin: 0 auto; padding: 20px 24px 80px; }
+header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+header h1 { font-size: 1.7em; color: var(--gold-light); margin-bottom: 10px; line-height: 1.4; }
+header .meta { color: var(--text-dim); font-size: .88em; }
+.step-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; position: sticky; top: 10px; z-index: 99; background: rgba(15,25,35,.92); padding: 10px 0; border-radius: 8px; }
+.step-nav a { color: var(--text-dim); text-decoration: none; padding: 6px 13px; border: 1px solid var(--border); border-radius: 6px; font-size: .82em; cursor: pointer; transition: .2s; }
+.step-nav a:hover, .step-nav a.active { color: var(--gold-light); border-color: var(--gold); background: rgba(201,169,110,.1); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--card-radius); padding: 24px 28px; margin-bottom: 20px; transition: .3s; }
+.card:hover { border-color: var(--gold); }
+.card h3 { color: var(--gold-light); font-size: 1.05em; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.card h3 .badge { background: var(--accent); color: #fff; font-size: .7em; padding: 2px 8px; border-radius: 4px; font-weight: normal; }
+.think-zone { background: var(--surface2); border-radius: 8px; padding: 16px 18px; margin-bottom: 14px; }
+.think-zone .prompt { color: var(--text); font-weight: 600; margin-bottom: 8px; font-size: .95em; }
+.task-list { list-style: none; padding-left: 0; margin-bottom: 10px; }
+.task-list li { padding: 4px 0 4px 20px; position: relative; color: var(--text-dim); font-size: .9em; }
+.task-list li::before { content: "▸"; position: absolute; left: 0; color: var(--gold); }
+.hint-wrap { font-size: .85em; color: var(--text-dim); cursor: pointer; margin: 8px 0; padding: 6px 10px; background: rgba(201,169,110,.06); border-radius: 6px; user-select: none; }
+.hint-wrap .hint-content { display: none; margin-top: 8px; font-style: italic; color: var(--gold-light); }
+.hint-wrap.open .hint-content { display: block; }
+textarea { width: 100%; min-height: 70px; background: rgba(0,0,0,.25); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 10px 12px; font-family: var(--font); font-size: .88em; resize: vertical; }
+textarea:focus { outline: none; border-color: var(--gold); }
+.reveal-btn-wrap { text-align: center; margin-bottom: 10px; }
+.reveal-btn { background: linear-gradient(135deg,var(--gold),#b8934f); color: #1a1a1a; border: none; padding: 8px 28px; border-radius: 20px; cursor: pointer; font-size: .9em; font-weight: 600; transition: .25s; }
+.reveal-btn:hover { box-shadow: 0 0 16px rgba(201,169,110,.35); transform: translateY(-1px); }
+.reveal-btn.revealed { background: var(--surface2); color: var(--gold-light); border: 1px solid var(--gold); }
+.answer-zone { display: none; background: linear-gradient(135deg,rgba(201,169,110,.06),rgba(74,140,140,.06)); border-left: 3px solid var(--gold); padding: 16px 18px; border-radius: 0 8px 8px 0; font-size: .92em; line-height: 1.8; }
+.answer-zone.show { display: block; }
+.answer-zone p { margin-bottom: 8px; }
+.answer-zone ul, .answer-zone ol { margin: 6px 0 6px 20px; }
+.key-insight { background: rgba(201,169,110,.15); border-left: 3px solid var(--gold); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-weight: 500; }
+.funnel { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 14px 0; font-size: .85em; }
+.funnel div { background: var(--surface2); padding: 10px 20px; border-radius: 6px; text-align: center; border: 1px solid var(--border); }
+.funnel .f1 { width: 95%; background: rgba(74,140,140,.2); }
+.funnel .f2 { width: 80%; background: rgba(74,140,140,.18); }
+.funnel .f3 { width: 60%; background: rgba(74,140,140,.15); }
+.funnel .f4 { width: 35%; background: rgba(201,169,110,.2); border-color: var(--gold); }
+.funnel .gap { color: var(--red); font-weight: bold; margin-top: 4px; }
+.glossary-bar { position: fixed; right: -420px; top: 0; width: 400px; height: 100vh; background: var(--surface); border-left: 2px solid var(--gold); padding: 24px 20px; overflow-y: auto; transition: right .35s; z-index: 999; }
+.glossary-bar.open { right: 0; }
+.glossary-bar h3 { color: var(--gold-light); margin-bottom: 16px; }
+.glossary-bar .term { margin-bottom: 14px; }
+.glossary-bar .term strong { color: var(--gold); display: block; font-size: .92em; }
+.glossary-bar .term span { color: var(--text-dim); font-size: .84em; }
+.glossary-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 998; display: none; }
+.glossary-overlay.show { display: block; }
+.glossary-hint { color: var(--text-dim); font-size: .75em; text-align: center; margin-top: 8px; }
+.toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--gold); color: var(--gold-light); padding: 8px 24px; border-radius: 20px; z-index: 1000; font-size: .9em; opacity: 0; transition: opacity .3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+footer { text-align: center; color: var(--text-dim); font-size: .78em; padding: 32px 0 20px; border-top: 1px solid var(--border); margin-top: 32px; }
+@media (max-width: 640px) {
+  .container { padding: 12px 14px 60px; } header h1 { font-size: 1.3em; } .card { padding: 16px 14px; }
+  .step-nav a { padding: 5px 8px; font-size: .73em; } .glossary-bar { width: 90vw; right: -95vw; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>深度学习在法医骨盆性别推断中的应用——基于汉族人群CT虚拟半骨盆模型</h1>
+  <p class="meta">Cao Y, Ma Y, Yang X, et al. <span>|</span> Forensic Sciences Research, 2022, 7(3), 540–549 <span>|</span> DOI: 10.1080/20961790.2021.2024369</p>
+  <p class="glossary-hint">按 <kbd>G</kbd> 打开术语表 · 按 <kbd>1-5</kbd> 跳章节 · 按 <kbd>A</kbd> 全部揭晓 · 按 <kbd>R</kbd> 重置</p>
+</header>
+
+<nav class="step-nav" id="stepNav">
+  <a onclick="scrollToSection('s1')">§1 结构扫描</a>
+  <a onclick="scrollToSection('s2')">§2 引言精读</a>
+  <a onclick="scrollToSection('s3')">§3 方法精读</a>
+  <a onclick="scrollToSection('s4')">§4 结果精读</a>
+  <a onclick="scrollToSection('s5')">§5 讨论精读</a>
+</nav>
+
+<!-- ===== STEP 1 ===== -->
+<section id="s1"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 1 · 结构扫描</h2>
+
+<div class="card" id="card-1-1">
+  <h3><span class="badge">1.1</span> 标题拆解</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 逐词拆解标题"Use of deep learning in forensic sex estimation of virtual pelvic models from the Han population"</p>
+    <ul class="task-list">
+      <li>"deep learning" 具体指什么算法？为什么不用传统机器学习？</li>
+      <li>"forensic sex estimation" 在法医人类学中的地位是什么？</li>
+      <li>"virtual pelvic models" 为什么用"虚拟"模型而非真实骨骼？</li>
+      <li>"Han population" 为什么强调汉族人群？</li>
+    </ul>
+    <div class="hint-wrap" onclick="this.classList.toggle('open')">💡 提示
+      <div class="hint-content">CNN = Convolutional Neural Network（卷积神经网络）；GoogLeNet Inception V4 是本文使用的架构；"虚拟" = CT扫描后3D重建的骨盆模型，非实体骨骼。</div>
+    </div>
+    <div class="user-input-area"><textarea data-save="dl-card-1-1-notes" placeholder="写下你的猜测..."></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <table style="width:100%;border-collapse:collapse;font-size:.88em;">
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">deep learning</td><td style="padding:6px 10px">卷积神经网络（CNN），具体采用GoogLeNet Inception V4架构+迁移学习（transfer learning）。相比传统机器学习，CNN可自动从图像中分层提取特征，无需人工定义特征。</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">forensic sex estimation</td><td style="padding:6px 10px">法医性别推断。在法医人类学中，性别是构建生物档案（biological profile）的第一步，决定后续的年龄、身高、种族推断方法的选择。</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">virtual pelvic models</td><td style="padding:6px 10px">基于CT扫描的3D虚拟骨盆模型。优势：可快速获取当代人群数据（医院CT数据库），避免实体骨骼收集的伦理和物流困难。局限：某些性别特征（如耳前沟、耻骨联合瘢痕）在虚拟模型中可能不可见或模糊。</td></tr>
+      <tr><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">Han population</td><td style="padding:6px 10px">汉族人群——强调人群特异性（population-specificity）。传统形态学方法多基于18-19世纪美国/英国骨骼收藏，其直接适用于汉族人群存疑。环境、营养、遗传因素影响骨骼发育。</td></tr>
+    </table>
+    <p style="margin-top:10px;"><strong>标题翻译：</strong>深度学习在汉族人群虚拟骨盆模型法医性别推断中的应用。</p>
+  </div>
+</div>
+
+<div class="card" id="card-1-2">
+  <h3><span class="badge">1.2</span> 摘要填空</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 阅读摘要，填写三要素+创新点</p>
+    <ul class="task-list">
+      <li><strong>问题：</strong>传统性别推断方法有什么局限？</li>
+      <li><strong>方法：</strong>用了什么模型？多少样本？怎么验证？</li>
+      <li><strong>结论：</strong>CNN vs 人类专家，谁更准？</li>
+    </ul>
+    <div class="user-input-area"><textarea data-save="dl-card-1-2-notes" placeholder="问题：&#10;方法：&#10;结论："></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>摘要逐句解读：</strong></p>
+    <ol>
+      <li><strong>问题：</strong>准确性别推断对遗骸身份识别至关重要。→ 点明法医学意义。</li>
+      <li><strong>方法：</strong>开发CNN模型，在6个半骨盆区域（VP腹侧耻骨/DP背侧耻骨/GSN坐骨大切迹/PI骨盆入口/ischium坐骨/acetabulum髋臼）上进行性别推断，与两名资深法医人类学家（12年+8年经验）比较。862例汉族CT数据。→ 多区域+人类专家对比。</li>
+      <li><strong>核心结果：</strong>除坐骨和髋臼外，VP/DP/GSN/PI四区域模型的所有预测指标（accuracy/sensitivity/specificity/F1/AUC）均超过0.9。所有CNN模型准确率均优于两名人类专家。→ 深度学习碾压人类。</li>
+      <li><strong>验证：</strong>热图（heatmap）确认CNN模型聚焦于传统性别解剖特征。→ 模型学到了"正确的"特征，不是过拟合噪声。</li>
+      <li><strong>结论：</strong>AI技术在虚拟骨盆性别推断中有巨大潜力，值得前瞻性法医试验进一步验证。→ 定位为"有潜力"，不是"已成熟"。</li>
+    </ol>
+    <div class="key-insight">核心信息：CNN在5/6个骨盆区域上超越人类专家——这与近期AI医学影像的大趋势一致。但热图验证是本文区别于纯"黑箱"研究的关键加分项。</div>
+  </div>
+</div>
+
+<div class="card" id="card-1-3">
+  <h3><span class="badge">1.3</span> 扫图表</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 看图表标题，预测每张图/表的含义</p>
+    <ul class="task-list">
+      <li>Figure 1: 6个子图的训练/验证曲线 → 猜哪个区域最好？哪个最差？</li>
+      <li>Figure 2: 6个区域的热图 → 红色区域意味着什么？</li>
+      <li>Figure 3: 6个ROC曲线+专家散点 → CNN vs 人类的位置关系？</li>
+      <li>Table 1: 训练验证性能 → 和Table 2测试性能比较，有过拟合吗？</li>
+    </ul>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>Figure 1（训练曲线）：</strong>6个子图（VP/DP/GSN/PI/Ischium/Acetabulum）× 训练+验证accuracy+loss曲线。VP/DP/GSN三个模型在约50步收敛（~35分钟），PI模型需117步（~75分钟）。Acetabulum模型验证loss最高（0.719），预示性能最差。</p>
+    <p><strong>Figure 2（热图）：</strong>Guided Backpropagation热图——红色=对性别分类贡献大的像素区。VP/DP的热图集中在耻骨下缘和耻骨整体形态；GSN热图聚焦坐骨大切迹轮廓。关键发现：闭孔（obturator foramen）也在多个区域热图中贡献——这是个意外发现。</p>
+    <p><strong>Figure 3（ROC+专家）：</strong>6个ROC曲线，每个图上标了两名人类专家的(specificity, sensitivity)散点。除Acetabulum外，5个区域的专家点均落在CNN的ROC曲线下方→CNN优于人类。</p>
+    <p><strong>Table 1 vs Table 2：</strong>验证准确率(内部) vs 测试准确率(独立)。VP: 96.9%→100%; DP: 97.2%→98.8%; GSN: 94.7%→93.0%; PI: 98.2%→96.5%; Ischium: 82.5%→86.0%; Acetabulum: 74.6%→73.8%。无明显过拟合（大部分测试性能≈验证性能）。</p>
+  </div>
+</div>
+
+<div class="card" id="card-1-4">
+  <h3><span class="badge">1.4</span> 结论最后一段</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 自己概括结论，然后与原文对比</p>
+    <div class="user-input-area"><textarea data-save="dl-card-1-4-notes" placeholder="核心发现：&#10;局限：&#10;展望："></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>原文翻译：</strong>本文展示了基于放射学数据集的AI技术在虚拟半骨盆模型性别推断中的潜力。尽管可用样本数量有限，大多数CNN模型（使用迁移学习训练于各半骨盆解剖区域图像）在性别推断中取得了高准确率、灵敏度、特异度和AUC值，甚至优于具有丰富人类学经验的专家。当前AI技术不能取代法医人类学家，但我们相信深度学习将很快成为更准确性别推断的辅助工具。我们将继续推进此方法，在更大规模的多中心训练数据集上进行前瞻性法医试验，并将算法扩展到其他具有性别二态性的骨骼（颅骨、下颌骨、肱骨、股骨）。</p>
+    <p><strong>自检清单：</strong></p>
+    <ul>
+      <li>✅ 展示了潜力 → "demonstrate the potential"</li>
+      <li>✅ CNN优于人类 → "even better than human experts"</li>
+      <li>⚠️ AI不能取代人类 → 明确申明定位为"辅助工具"</li>
+      <li>🔮 未来方向：多中心、大样本、多骨骼扩展</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- ===== STEP 2 ===== -->
+<section id="s2"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 2 · 引言精读</h2>
+
+<div class="card" id="card-2-1">
+  <h3><span class="badge">2.1</span> 漏斗结构</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 找出引言的4层漏斗结构</p>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <div class="funnel">
+      <div class="f1">🌍 第1层：性别推断是法医人类学个体识别的基础。骨盆因分娩和双足行走的功能需求，在所有骨骼中性别二态性最强、最可靠。</div>
+      <div class="f2">🔬 第2层：传统形态学方法（Phenice 1969, Klales 2012等）基于18-19世纪欧美骨骼收藏，人群特异性存疑。CT和3D重建技术使得快速获取当代人群数据成为可能。</div>
+      <div class="f3">⚙️ 第3层：AI/深度学习在医学图像识别中表现卓越。已有初步应用于法医人类学（手部骨龄、骨盆骨龄、手/腕/颅骨性别推断），但在骨盆性别推断上的系统研究极少。</div>
+      <div class="f4">🎯 第4层：本研究在862例汉族CT数据上训练CNN(GoogLeNet Inception V4)对6个半骨盆区域做性别推断，并与两名人类专家进行对比。<div class="gap">GAP: ①缺乏基于当代中国人群的深度学习骨盆性别推断系统研究；②CNN vs 人类专家在同一测试集上的头对头比较缺失。</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="card" id="card-2-2">
+  <h3><span class="badge">2.2</span> 逐段精读</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 引言共6段（包括2段过渡），每段说了什么？</p>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>P1：性别推断的重要性+骨盆的优势。</strong>性别是构建生物档案的第一步。骨盆因双足运动和分娩的双重功能压力，性别二态性最强。</p>
+    <p><strong>P2：传统方法的局限。</strong>形态学方法（Phenice等）源自19世纪的欧美骨骼收藏 → 是否适用于汉族存疑（人群特异性、环境、营养的代际变化）。CT扫描+3D重建为获取当代数据提供了便利。</p>
+    <p><strong>P3：虚拟骨骼的潜力。</strong>虚拟骨骼模型在形态特征描绘上足以媲美实体骨骼，在某些场景下可作为传统骨骼收藏的替代品。</p>
+    <p><strong>P4：AI/深度学习趋势。</strong>AI在医学图像识别领域掀起革命。列举了骨龄评估、视网膜疾病筛查等应用。在法医人类学中已有初步尝试（手部X线骨龄、骨盆骨龄、手/腕/颅骨性别推断），但骨盆性别推断的CNN研究极少。</p>
+    <p><strong>P5：深度学习的优势。</strong>CNN可分层提取特征——从输入数据中自动学习层级化表示，无需人工设计特征。这是与传统形态学方法和传统机器学习的根本区别。</p>
+    <p><strong>P6（目的）：</strong>在862例汉族CT数据上训练GoogLeNet Inception V4对6个半骨盆区域做性别推断，并进行CNN vs 人类专家的对比实验。</p>
+  </div>
+</div>
+
+<div class="card" id="card-2-3">
+  <h3><span class="badge">2.3</span> 引言笔记模板</h3>
+  <div class="think-zone">
+    <p class="prompt">📝 记录背景、知识缺口和假设</p>
+    <div class="user-input-area"><textarea data-save="dl-card-2-3-notes" placeholder="背景和动机：&#10;知识缺口：&#10;研究假设：&#10;你的疑问："></textarea></div>
+  </div>
+</div>
+</section>
+
+<!-- ===== STEP 3 ===== -->
+<section id="s3"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 3 · 方法精读</h2>
+
+<div class="card" id="card-3-1">
+  <h3><span class="badge">3.1</span> 方法分块+核心流程</h3>
+  <div class="think-zone"><p class="prompt">❓ 方法分为几大模块？画出核心流程图</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>五大方法模块：</strong></p>
+    <ol>
+      <li><strong>研究人群与3D重建（Study population）：</strong>862例（女437/男425）汉族成人骨盆CT，2015-2017年汉中医院。排除疾病/畸形/损伤。Mimics软件手动重建3D虚拟骨骼。仅用左侧髋骨。</li>
+      <li><strong>2D图像采集与预处理：</strong>6个区域（VP/DP/GSN/PI/Ischium/Acetabulum）手工裁剪→定向→2D截图→降采样至255×255像素。数据划分：80%训练+验证（690例），20%独立测试（172例）。数据增强（对比度/亮度/旋转×4倍）。</li>
+      <li><strong>CNN训练与验证：</strong>GoogLeNet Inception V4 + ImageNet预训练权重（迁移学习）。Adadelta优化器，学习率0.01，batch size 64，学习率衰减因子0.8/每10 epochs。硬件：NVIDIA Titan Xp 12GB GPU。热图分析：Guided Backpropagation。</li>
+      <li><strong>独立测试+人类专家对比：</strong>CNN输出概率值→阈值0.5二分类。两名人类专家（A:12年/B:8年经验）使用已发表方法评分。VP/DP/GSN用Klales & Walker的1-5分级量表；PI/Ischium/Acetabulum用Rogers & Saunders和Bruzek的二元判定。</li>
+      <li><strong>统计分析：</strong>ROC/AUC、accuracy/sensitivity/specificity/F1。95%CI用Clopper-Pearson法。AUC比较用DeLong检验。观察者间/内一致性用Weighted Kappa和Cohen's Kappa。</li>
+    </ol>
+    <div class="key-insight">核心流程：862例CT → 3D重建 → 提取6区域2D图像 → 数据增强(×4) → 80%训练Inception V4(迁移学习) → 20%独立测试 → CNN vs 2名人类专家 → 热图验证。</div>
+  </div>
+</div>
+
+<div class="card" id="card-3-2">
+  <h3><span class="badge">3.2</span> 实验设计核心问答</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 回答关键方法学问题</p>
+    <ul class="task-list">
+      <li>为什么用迁移学习（transfer learning）而不是从头训练？</li>
+      <li>为什么只取左侧髋骨？</li>
+      <li>为什么要把3D模型拍成2D图像？</li>
+      <li>人类专家的评分量表为什么不同？</li>
+    </ul>
+    <div class="user-input-area"><textarea data-save="dl-card-3-2-notes" placeholder="你的思考..."></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>迁移学习 vs 从头训练：</strong>862例对深度学习来说样本量很小（ImageNet有128万张）。Inception V4在ImageNet上预训练的权重已经学到了通用图像特征（边缘/纹理/形状），迁移到骨盆图像只需要微调（fine-tune）最后几层。数据增强（×4倍→~2756张训练图）进一步缓解了小样本问题。引用Kermany et al. 2018：迁移学习用1000样本能达到从头训练10000样本的相当性能。</p>
+    <p><strong>仅用左侧：</strong>左右髋骨是对称的（镜像关系），同时使用可能引入冗余和过拟合风险。选取单侧是骨盆性别推断研究的常见做法。但这也意味着模型无法利用双侧不对称性信息。</p>
+    <p><strong>3D→2D：</strong>Inception V4是为2D图像设计的架构。将3D模型按标准视角拍摄2D图像是当前将CNN应用于3D医学数据的主流折中方案。代价是丢失了深度信息和三维空间关系。</p>
+    <p><strong>评分量表不同：</strong>VP/DP/GSN有成熟的1-5分级方法（Klales 2012, Walker 2005）→ 可用Weighted Kappa评估观察者一致性。PI/Ischium/Acetabulum缺少公认的多级量表→只能用二元判定+Cohen's Kappa。</p>
+  </div>
+</div>
+
+<div class="card" id="card-3-3">
+  <h3><span class="badge">3.3</span> 术语解释</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 理解深度学习方法部分的关键术语</p>
+    <ul class="task-list">
+      <li>GoogLeNet Inception V4 是什么架构？</li>
+      <li>Adadelta 优化器为什么选它？</li>
+      <li>Guided Backpropagation 热图是什么？</li>
+      <li>迁移学习（transfer learning）的原理？</li>
+    </ul>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>GoogLeNet Inception V4：</strong>Google在2016年提出的深度CNN架构。核心创新是"Inception模块"——在同一层并行使用不同大小的卷积核（1×1, 3×3, 5×5）+池化，然后拼接结果。这使得网络能同时捕获不同尺度的特征。V4版本增加了残差连接（ResNet的思想）。</p>
+    <p><strong>Adadelta优化器：</strong>自适应学习率优化算法，不需要手动设置学习率衰减——它根据历史梯度自动调整每参数的学习率。对本文这种迁移学习场景（预训练层用小学习率、新任务层用大学习率）尤其合适。</p>
+    <p><strong>Guided Backpropagation热图：</strong>一种CNN可解释性技术。它反向传播分类信号，但只保留"正向激活且正向梯度"的神经元——从而高亮出"对最终分类决策贡献最大"的输入像素。红色=高贡献，蓝色=低贡献。本文用热图验证模型是否聚焦于已知的性别解剖特征。</p>
+    <p><strong>迁移学习原理：</strong>深度学习底层学到的是通用特征（边缘、纹理、形状），高层学到的是任务特定特征。预训练权重保留了底层通用特征→在新任务上只需用少量数据调整高层分类器。这极大降低了对训练数据量的需求。</p>
+  </div>
+</div>
+
+<div class="card" id="card-3-4">
+  <h3><span class="badge">3.4</span> 方法笔记模板</h3>
+  <div class="think-zone">
+    <p class="prompt">📝 总结实验设计的优缺点</p>
+    <div class="user-input-area"><textarea data-save="dl-card-3-4-notes" placeholder="设计类型：&#10;主要优势：&#10;潜在问题：&#10;改进建议："></textarea></div>
+  </div>
+</div>
+</section>
+
+<!-- ===== STEP 4 ===== -->
+<section id="s4"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 4 · 结果精读</h2>
+
+<div class="card" id="card-4-1">
+  <h3><span class="badge">4.1</span> CNN训练与验证表现</h3>
+  <div class="think-zone"><p class="prompt">❓ Table 1的数据说明了什么？哪些模型好，哪些差？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>展示了什么：</strong>Table 1列出6个CNN模型在训练和内部验证阶段的步数(steps)、训练/验证accuracy、训练/验证loss、训练时间。</p>
+    <div class="key-insight">关键发现：VP/DP/GSN三个模型在~50步收敛（~35分钟），PI模型需要117步（~75分钟）。验证准确率从74.6%（Acetabulum）到98.2%（PI），跨度极大。Acetabulum和Ischium的验证loss（0.719, 0.504）明显高于其他四区域。</div>
+    <p><strong>说明了什么：</strong>①不同骨盆区域的"性别信号"强度差异显著——PI的性别二态性在2D图像上可能比传统认知的更强；②Acetabulum的训练不充分（underfitting），但无法确定是数据量不够还是髋臼本身的性别二态性弱。</p>
+  </div>
+</div>
+
+<div class="card" id="card-4-2">
+  <h3><span class="badge">4.2</span> 独立测试：CNN模型表现</h3>
+  <div class="think-zone"><p class="prompt">❓ Table 2展示的独立测试结果——哪个区域最强？有无过拟合？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>展示了什么：</strong>Table 2列出6个CNN模型在172例独立测试集上的accuracy/sensitivity/specificity/F1/AUC（含95%CI）。</p>
+    <div class="key-insight">VP: AUC=1.000 (完美！), Accuracy=100% | DP: AUC=0.999, Accuracy=98.8% | PI: AUC=0.998, Accuracy=96.5% | GSN: AUC=0.965, Accuracy=93.0% | Ischium: AUC=0.930, Accuracy=86.0% | Acetabulum: AUC=0.822, Accuracy=73.8%。DeLong检验：VP/DP/PI的AUC显著高于其他区域(P&lt;0.05)；VP/DP/PI三者之间AUC无显著差异。</div>
+    <p><strong>说明了什么：</strong>无过拟合——独立测试准确率与内部验证准确率高度一致（VP: 100% vs 96.9%; DP: 98.8% vs 97.2%）。Acetabulum的73.8%甚至低于推荐的75%准确率边界，与CT重建时难以将髋臼与股骨头分离有关。</p>
+  </div>
+</div>
+
+<div class="card" id="card-4-3">
+  <h3><span class="badge">4.3</span> 热图分析：模型在看什么？</h3>
+  <div class="think-zone"><p class="prompt">❓ Figure 2的热图揭示了什么？模型真的"学到了"性别特征吗？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>展示了什么：</strong>Guided Backpropagation热图——红色高亮区域是CNN进行性别分类时最关注的像素。</p>
+    <div class="key-insight">VP和DP热图：集中在耻骨下缘（inferior margin of pubic ramus）和耻骨整体形态——这些正是Phenice(1969)和Klales(2012)等方法依赖的传统解剖特征（腹侧弧、耻骨下角、耻骨体形态）。GSN热图：聚焦坐骨大切迹轮廓。意外发现：闭孔（obturator foramen）区域在多张热图中也有贡献。</div>
+    <p><strong>说明了什么：</strong>这是本文的核心加分项——热图提供了模型决策的可解释性证据。它不仅证明模型"对了"，还证明模型是通过关注"正确的解剖特征"来判断的，而非利用了数据集中的虚假相关（如扫描参数、骨密度差异等）。闭孔贡献的意外发现可能暗示该结构存在此前未被充分认识的性别二态性特征。</p>
+  </div>
+</div>
+
+<div class="card" id="card-4-4">
+  <h3><span class="badge">4.4</span> 人类专家表现 & CNN vs 人类对比</h3>
+  <div class="think-zone"><p class="prompt">❓ Table 3-4 + Figure 3：人类专家表现如何？CNN vs 人类的关键差异在哪？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>Table 3（观察者一致性）：</strong>VP/DP/GSN的观察者内一致性几乎完美（Weighted Kappa 0.820-0.899），PI/Ischium/Acetabulum为高度一致（0.724-0.809）。观察者间一致性为高度一致（0.651-0.815）。→ 人类专家的评估是可靠（reliable）的。</p>
+    <p><strong>Table 4（人类准确率）：</strong>准确率72.7%-80.2%，灵敏度71.3%-88.5%，特异度56.5%-81.2%。注意：Acetabulum上人类约76.7% vs CNN 73.8%——这是唯一人类接近CNN的区域。</p>
+    <div class="key-insight">Figure 3的核心信息：除Acetabulum外，两名人类专家的(1-specificity, sensitivity)点均落在CNN的ROC曲线下方——说明在任何给定特异度水平上，CNN的灵敏度都高于人类。DeLong检验确认差异显著（P&lt;0.05）。</div>
+    <p><strong>说明了什么：</strong>在大多数骨盆区域，CNN系统性地优于人类专家。但Acetabulum的"持平"结果提示：①髋臼本身的性别信号弱（人类和AI都做不好）；②或者3D→2D过程中丢失了髋臼的关键三维信息。</p>
+  </div>
+</div>
+</section>
+
+<!-- ===== STEP 5 ===== -->
+<section id="s5"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 5 · 讨论精读</h2>
+
+<div class="card" id="card-5-1">
+  <h3><span class="badge">5.1</span> 讨论结构</h3>
+  <div class="think-zone"><p class="prompt">❓ 讨论部分有几个逻辑段落？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>讨论6段逻辑结构：</strong></p>
+    <ol>
+      <li><strong>场景设定：</strong>法医实践中常面对不完整/部分破坏的骨盆（灾难、战争、动物啃咬等），传统方法和度量方法在这种情况下都很困难。</li>
+      <li><strong>人群特异性问题：</strong>基于古代骨骼收藏的方法可能不适用于当代人群（祖先、环境、营养的群体间差异），可能误导生物档案构建和警方调查。</li>
+      <li><strong>核心结果讨论：</strong>多数CNN模型在独立测试中达到高准确率，与内部验证一致→无严重过拟合。Acetabulum应视为欠拟合。</li>
+      <li><strong>与人类专家的比较：</strong>CNN优于人类（除Acetabulum）。CNN几小时即可训练完成，而人类专家需要多年训练。热图验证模型聚焦于已知解剖特征。</li>
+      <li><strong>逐区域比较前人文献：</strong>VP/DP结果优于已有形态学研究；PI的高准确率(96.5%)令人意外（PI不是广泛认可的性别推断理想替代指标）；GSN准确率高于前人因CNN能忽略坐骨棘/梨状结节等发育变异的干扰；Acetabulum的低准确率与部分前人研究一致，可能与CT重建时髋臼-股骨头分离困难有关。</li>
+      <li><strong>局限与展望：</strong>样本量小、单中心单设备单人群（西北汉族）、3D重建中某些特征（耳前沟、耻骨联合瘢痕）可能不可见。未来需要多中心、多设备、多人群、真实世界数据验证，并可扩展到其他骨骼。</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card" id="card-5-2">
+  <h3><span class="badge">5.2</span> 作者解释</h3>
+  <div class="think-zone"><p class="prompt">❓ 作者如何解释PI的高准确率（96.5%）？如何解释Acetabulum的低准确率？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>PI高准确率的解释：</strong>作者承认PI"不是广泛认可的性别推断理想替代指标"，但CNN在PI上取得了96.5%-100%的准确率。作者引用Klales (2020)书中的说法来说明PI有一定性别二态性——但并未给出为什么CNN能从中提取出比人类肉眼更多的性别信号的机制性解释。这是一个"AI发现了人类忽略的模式"的典型案例。</p>
+    <p><strong>Acetabulum低准确率的解释：</strong>归因于CT重建过程中"难以将髋臼与股骨头分离"（Colman et al. 2019）。这是一个技术限制而非生物学问题——意味着虚拟模型中髋臼区域的3D→2D图像可能包含了股骨头的残留伪影，干扰了模型学习真正的髋臼性别特征。</p>
+  </div>
+</div>
+
+<div class="card" id="card-5-3">
+  <h3><span class="badge">5.3</span> 核心概念深度解析</h3>
+  <div class="think-zone"><p class="prompt">❓ "AI不会取代法医人类学家"——这个结论背后的逻辑是什么？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>作者给出的两个理由：</strong></p>
+    <ol>
+      <li><strong>缺乏可解释性和透明度（lack of interpretability and transparency）：</strong>尽管热图显示模型关注了正确的解剖结构，但我们仍无法解释模型"如何"和"为什么"对特定图像产生特定输出。在法医学这样一个证据需要被法庭质证的领域，黑箱模型是巨大的障碍。</li>
+      <li><strong>3D重建中的地标识别误差和虚拟-实体骨骼尺寸差异：</strong>某些性别特征（如耳前沟pre-auricular sulcus、耻骨联合瘢痕）在3D虚拟模型中可能不可见或模糊——这意味着AI只能处理虚拟模型能够捕捉的特征，而实体骨骼上的人眼观察仍然有其不可替代的价值。</li>
+    </ol>
+    <div class="key-insight">结论的精妙之处："AI技术可以与人工方法结合，增强法医人类学家的能力，但不能取代他们"——这是一个"增强（augment）"而非"替代（replace）"的定位。</div>
+  </div>
+</div>
+
+<div class="card" id="card-5-4">
+  <h3><span class="badge">5.4</span> 批判性思考清单</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 对本文进行批判性评估</p>
+    <ul class="task-list">
+      <li>862例对深度学习来说够吗？数据增强是否真的解决了小样本问题？</li>
+      <li>只用左侧髋骨——是否丢失了信息？</li>
+      <li>3D→2D的转换是否合理？有没有更好的方案？</li>
+      <li>CNN的100%完美准确率（VP）是否可能存在数据泄漏？</li>
+      <li>人类专家的评估是在2D图像上进行的——这是否公平？</li>
+    </ul>
+    <div class="user-input-area"><textarea data-save="dl-card-5-4-notes" placeholder="你的批判性思考..."></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <ul>
+      <li><strong>862例是否足够：</strong>对从头训练的深度学习来说不够，但对迁移学习+数据增强来说是可接受的。但Kermany等人也承认"迁移学习的性能仍低于极大数据集上训练"。862例中仅172例用于独立测试——这个测试集也很小，导致95%CI较宽。</li>
+      <li><strong>单侧问题：</strong>合理但不完美。双侧不对称性在性别推断中可能提供额外信息（如分娩对女性骨盆的不对称影响），放弃右侧意味着放弃了这部分信息。</li>
+      <li><strong>3D→2D：</strong>是合理的工程折中，但确实丢失了深度信息。未来应探索PointNet、3D-CNN等原生3D深度学习方法。</li>
+      <li><strong>VP的100%准确率：</strong>需要警惕可能的过拟合或数据泄漏。172例测试中87例女性+85例男性，100%准确意味着172/172全对——这在任何生物医学分类任务中都极为罕见。应检查：①训练/测试划分是否真随机？②同一人的不同区域图像是否存在相关性？③数据增强是否在划分前进行（导致训练集图像泄漏到测试集）？</li>
+      <li><strong>人类专家的"不公平"比较：</strong>这是一个合理的担忧——人类专家习惯于在3D实体骨骼或至少3D虚拟模型上评估，仅给2D图像可能系统性地削弱了人类表现。但另一方面，这恰恰凸显了CNN的优势：能从有限的2D视图中提取人类肉眼无法利用的微妙纹理和形态信息。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card" id="card-5-5">
+  <h3><span class="badge">5.5</span> 作者自述局限</h3>
+  <div class="think-zone"><p class="prompt">❓ 作者承认了哪些局限？遗漏了什么？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>作者承认的局限：</strong></p>
+    <ul>
+      <li>⚠️ 数据集规模相对较小（依赖数据增强+迁移学习弥补）</li>
+      <li>⚠️ 单平台、单中心、主要为西北汉族——推广性有限</li>
+      <li>⚠️ 迁移学习的性能仍低于在极大数据库上训练的模型</li>
+      <li>⚠️ 需要多中心、多设备、多人群验证</li>
+      <li>⚠️ 3D重建可能丢失某些性别特征（耳前沟、耻骨联合瘢痕）</li>
+      <li>⚠️ 缺乏可解释性——即使有热图，仍无法完全解释模型决策</li>
+    </ul>
+    <p><strong>作者未提及但值得注意：</strong></p>
+    <ul>
+      <li>🔴 VP模型100%准确率的过度乐观可能——未讨论置信区间和可能的过拟合</li>
+      <li>🔴 未进行外部验证（external validation）——独立测试来自同一中心，不算真正的"外部"</li>
+      <li>🔴 手工裁剪6个区域——引入了操作者主观性，且在实际应用中不可规模化</li>
+      <li>🔴 没有与传统的度量方法（如判别函数分析）比较，仅与形态学方法比较</li>
+      <li>🔴 年龄分布的影响未分析——骨盆形态随年龄变化，但分析中未控制年龄变量</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<footer>精读生成于 2026-08-08 · 基于 Cao et al. (2022) Forensic Sciences Research · 按 <kbd>G</kbd> 查看术语表</footer>
+</div>
+
+<!-- Glossary -->
+<div class="glossary-overlay" id="glossaryOverlay" onclick="toggleGlossary()"></div>
+<div class="glossary-bar" id="glossaryBar">
+  <h3>📖 术语表（15个）</h3>
+  <div class="term"><strong>CNN</strong><span>Convolutional Neural Network，卷积神经网络，深度学习核心架构</span></div>
+  <div class="term"><strong>GoogLeNet Inception V4</strong><span>Google 2016年提出的深度CNN架构，含Inception模块和残差连接</span></div>
+  <div class="term"><strong>Transfer Learning</strong><span>迁移学习：用预训练模型的权重初始化新任务，大幅减少所需训练数据</span></div>
+  <div class="term"><strong>VP (Ventral Pubis)</strong><span>腹侧耻骨——耻骨前/腹侧面，含腹侧弧等关键性别特征</span></div>
+  <div class="term"><strong>DP (Dorsal Pubis)</strong><span>背侧耻骨——耻骨后/背侧面，含耻骨下角轮廓</span></div>
+  <div class="term"><strong>GSN (Greater Sciatic Notch)</strong><span>坐骨大切迹——骨盆后缘大弧形切迹，强性别二态性</span></div>
+  <div class="term"><strong>PI (Pelvic Inlet)</strong><span>骨盆入口——骨盆上口，男性心形/女性椭圆形</span></div>
+  <div class="term"><strong>AUC</strong><span>Area Under the ROC Curve，ROC曲线下面积，综合衡量分类器性能</span></div>
+  <div class="term"><strong>Guided Backpropagation</strong><span>导向反向传播——CNN可解释性技术，高亮对分类贡献最大的像素</span></div>
+  <div class="term"><strong>Adadelta</strong><span>自适应学习率优化算法，无需手动设置学习率衰减</span></div>
+  <div class="term"><strong>Data Augmentation</strong><span>数据增强——通过变换增加训练样本量（旋转/亮度/对比度）</span></div>
+  <div class="term"><strong>Phenice Method</strong><span>Phenice 1969年提出的耻骨性别判定三特征法（腹侧弧/耻骨下凹/耻骨支内侧嵴）</span></div>
+  <div class="term"><strong>Overfitting</strong><span>过拟合——模型在训练数据上表现好但无法泛化到新数据</span></div>
+  <div class="term"><strong>Mimics</strong><span>Materialise公司的医学3D重建软件，将CT切片转为3D骨骼模型</span></div>
+  <div class="term"><strong>Sexual Dimorphism</strong><span>性别二态性——同一物种雌雄个体间的形态差异</span></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+function revealAnswer(btn) {
+  const card = btn.closest('.card');
+  const answer = card.querySelector('.answer-zone');
+  if (answer.classList.contains('show')) {
+    answer.classList.remove('show');
+    btn.textContent = '💡 揭晓答案';
+    btn.classList.remove('revealed');
+  } else {
+    answer.classList.add('show');
+    btn.textContent = '🔄 收起答案';
+    btn.classList.add('revealed');
+  }
+}
+function toggleGlossary() { document.getElementById('glossaryBar').classList.toggle('open'); document.getElementById('glossaryOverlay').classList.toggle('show'); }
+function scrollToSection(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._timeout); t._timeout=setTimeout(()=>t.classList.remove('show'),1500); }
+function revealAll() { document.querySelectorAll('.answer-zone').forEach(a=>a.classList.add('show')); document.querySelectorAll('.reveal-btn').forEach(b=>{b.textContent='🔄 收起答案';b.classList.add('revealed');}); showToast('✅ 已全部揭晓'); }
+function resetAll() { document.querySelectorAll('.answer-zone').forEach(a=>a.classList.remove('show')); document.querySelectorAll('.reveal-btn').forEach(b=>{b.textContent='💡 揭晓答案';b.classList.remove('revealed');}); document.querySelectorAll('.hint-wrap').forEach(h=>h.classList.remove('open')); showToast('🔄 已全部重置'); }
+function toggleAll() { if (Array.from(document.querySelectorAll('.answer-zone')).some(a=>!a.classList.contains('show'))) revealAll(); else resetAll(); }
+function getAllCards() { return Array.from(document.querySelectorAll('.card[id^="card-"]')); }
+function findCurrentCardIndex() { const cards=getAllCards(); const vm=window.scrollY+window.innerHeight/2; for(let i=cards.length-1;i>=0;i--){if(cards[i].offsetTop<=vm)return i;} return 0; }
+function scrollToCard(i) { const cards=getAllCards(); if(i>=0&&i<cards.length){cards[i].scrollIntoView({behavior:'smooth',block:'center'});showToast(`卡片 ${i+1}/${cards.length}`);} }
+function nextCard(){scrollToCard(findCurrentCardIndex()+1);} function prevCard(){scrollToCard(findCurrentCardIndex()-1);}
+function revealCurrent(){const cards=getAllCards();const i=findCurrentCardIndex();if(i>=0&&i<cards.length){const btn=cards[i].querySelector('.reveal-btn');const ans=cards[i].querySelector('.answer-zone');if(!ans.classList.contains('show')&&btn)revealAnswer(btn);}}
+function nextSection(){const secs=['s1','s2','s3','s4','s5'];const vm=window.scrollY+window.innerHeight/2;for(let i=0;i<secs.length;i++){const s=document.getElementById(secs[i]);if(s&&s.offsetTop>vm+50){s.scrollIntoView({behavior:'smooth'});showToast(`跳至 Step ${i+1}`);return;}}}
+document.addEventListener('keydown',function(e){if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;switch(e.key){case'ArrowRight':case' ':e.preventDefault();nextCard();break;case'ArrowLeft':e.preventDefault();prevCard();break;case'Enter':case'ArrowDown':e.preventDefault();revealCurrent();break;case'Shift':e.preventDefault();nextSection();break;case'a':case'A':e.preventDefault();revealAll();break;case'r':case'R':e.preventDefault();resetAll();break;case't':case'T':e.preventDefault();toggleAll();break;case'g':case'G':e.preventDefault();toggleGlossary();break;case'1':e.preventDefault();document.getElementById('s1').scrollIntoView({behavior:'smooth'});showToast('Step 1 · 结构扫描');break;case'2':e.preventDefault();document.getElementById('s2').scrollIntoView({behavior:'smooth'});showToast('Step 2 · 引言精读');break;case'3':e.preventDefault();document.getElementById('s3').scrollIntoView({behavior:'smooth'});showToast('Step 3 · 方法精读');break;case'4':e.preventDefault();document.getElementById('s4').scrollIntoView({behavior:'smooth'});showToast('Step 4 · 结果精读');break;case'5':e.preventDefault();document.getElementById('s5').scrollIntoView({behavior:'smooth'});showToast('Step 5 · 讨论精读');break;case'Escape':if(document.getElementById('glossaryBar').classList.contains('open'))toggleGlossary();break;}});
+document.querySelectorAll('textarea[data-save]').forEach(ta=>{const key=ta.getAttribute('data-save');const saved=localStorage.getItem(key);if(saved)ta.value=saved;ta.addEventListener('input',()=>localStorage.setItem(key,ta.value));});
+window.addEventListener('scroll',()=>{const secs=['s1','s2','s3','s4','s5'];const links=document.querySelectorAll('.step-nav a');let cur='s1';secs.forEach(id=>{const el=document.getElementById(id);if(el&&el.offsetTop<=window.scrollY+120)cur=id;});links.forEach((a,i)=>{a.classList.toggle('active',secs[i]===cur);});});
+</script>
+</body>
+</html>
