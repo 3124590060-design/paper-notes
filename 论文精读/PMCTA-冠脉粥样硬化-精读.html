@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>精读：PMCTA诊断离体心脏冠脉粥样硬化</title>
+<style>
+:root {
+  --bg: #0f1923; --surface: #1a2d3c; --surface2: #1e3a4a; --gold: #c9a96e;
+  --gold-light: #e0c88e; --text: #e8e0d0; --text-dim: #a0b0c0; --accent: #4a8c8c;
+  --red: #c0392b; --blue: #5d9ec9; --green: #5a9e6f; --card-radius: 10px;
+  --border: rgba(201,169,110,0.2); --font: -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.75; font-size: 15px; }
+.container { max-width: 880px; margin: 0 auto; padding: 20px 24px 80px; }
+header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+header h1 { font-size: 1.7em; color: var(--gold-light); margin-bottom: 10px; line-height: 1.4; }
+header .meta { color: var(--text-dim); font-size: .88em; }
+header .meta span { margin: 0 8px; }
+/* Step nav */
+.step-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; position: sticky; top: 10px; z-index: 99; background: rgba(15,25,35,.92); padding: 10px 0; border-radius: 8px; }
+.step-nav a { color: var(--text-dim); text-decoration: none; padding: 6px 13px; border: 1px solid var(--border); border-radius: 6px; font-size: .82em; transition: .2s; cursor: pointer; }
+.step-nav a:hover, .step-nav a.active { color: var(--gold-light); border-color: var(--gold); background: rgba(201,169,110,.1); }
+/* Card */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--card-radius); padding: 24px 28px; margin-bottom: 20px; transition: .3s; }
+.card:hover { border-color: var(--gold); }
+.card h3 { color: var(--gold-light); font-size: 1.05em; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.card h3 .badge { background: var(--accent); color: #fff; font-size: .7em; padding: 2px 8px; border-radius: 4px; font-weight: normal; }
+.think-zone { background: var(--surface2); border-radius: 8px; padding: 16px 18px; margin-bottom: 14px; }
+.think-zone .prompt { color: var(--text); font-weight: 600; margin-bottom: 8px; font-size: .95em; }
+.task-list { list-style: none; padding-left: 0; margin-bottom: 10px; }
+.task-list li { padding: 4px 0 4px 20px; position: relative; color: var(--text-dim); font-size: .9em; }
+.task-list li::before { content: "▸"; position: absolute; left: 0; color: var(--gold); }
+.hint-wrap { font-size: .85em; color: var(--text-dim); cursor: pointer; margin: 8px 0; padding: 6px 10px; background: rgba(201,169,110,.06); border-radius: 6px; user-select: none; }
+.hint-wrap .hint-content { display: none; margin-top: 8px; font-style: italic; color: var(--gold-light); }
+.hint-wrap.open .hint-content { display: block; }
+textarea { width: 100%; min-height: 70px; background: rgba(0,0,0,.25); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 10px 12px; font-family: var(--font); font-size: .88em; resize: vertical; }
+textarea:focus { outline: none; border-color: var(--gold); }
+.reveal-btn-wrap { text-align: center; margin-bottom: 10px; }
+.reveal-btn { background: linear-gradient(135deg,var(--gold),#b8934f); color: #1a1a1a; border: none; padding: 8px 28px; border-radius: 20px; cursor: pointer; font-size: .9em; font-weight: 600; transition: .25s; }
+.reveal-btn:hover { box-shadow: 0 0 16px rgba(201,169,110,.35); transform: translateY(-1px); }
+.reveal-btn.revealed { background: var(--surface2); color: var(--gold-light); border: 1px solid var(--gold); }
+.answer-zone { display: none; background: linear-gradient(135deg,rgba(201,169,110,.06),rgba(74,140,140,.06)); border-left: 3px solid var(--gold); padding: 16px 18px; border-radius: 0 8px 8px 0; font-size: .92em; line-height: 1.8; }
+.answer-zone.show { display: block; }
+.answer-zone p { margin-bottom: 8px; }
+.answer-zone ul, .answer-zone ol { margin: 6px 0 6px 20px; }
+.key-insight { background: rgba(201,169,110,.15); border-left: 3px solid var(--gold); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-weight: 500; }
+/* Funnel */
+.funnel { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 14px 0; font-size: .85em; }
+.funnel div { background: var(--surface2); padding: 10px 20px; border-radius: 6px; text-align: center; border: 1px solid var(--border); }
+.funnel .f1 { width: 95%; background: rgba(74,140,140,.2); }
+.funnel .f2 { width: 80%; background: rgba(74,140,140,.18); }
+.funnel .f3 { width: 60%; background: rgba(74,140,140,.15); }
+.funnel .f4 { width: 35%; background: rgba(201,169,110,.2); border-color: var(--gold); }
+.funnel .gap { color: var(--red); font-weight: bold; margin-top: 4px; }
+/* Glossary bar */
+.glossary-bar { position: fixed; right: -420px; top: 0; width: 400px; height: 100vh; background: var(--surface); border-left: 2px solid var(--gold); padding: 24px 20px; overflow-y: auto; transition: right .35s; z-index: 999; }
+.glossary-bar.open { right: 0; }
+.glossary-bar h3 { color: var(--gold-light); margin-bottom: 16px; }
+.glossary-bar .term { margin-bottom: 14px; }
+.glossary-bar .term strong { color: var(--gold); display: block; font-size: .92em; }
+.glossary-bar .term span { color: var(--text-dim); font-size: .84em; }
+.glossary-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 998; display: none; }
+.glossary-overlay.show { display: block; }
+.glossary-hint { color: var(--text-dim); font-size: .75em; text-align: center; margin-top: 8px; }
+/* Toast */
+.toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--gold); color: var(--gold-light); padding: 8px 24px; border-radius: 20px; z-index: 1000; font-size: .9em; opacity: 0; transition: opacity .3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+/* footer */
+footer { text-align: center; color: var(--text-dim); font-size: .78em; padding: 32px 0 20px; border-top: 1px solid var(--border); margin-top: 32px; }
+/* Responsive */
+@media (max-width: 640px) {
+  .container { padding: 12px 14px 60px; }
+  header { padding: 24px 0 20px; }
+  header h1 { font-size: 1.3em; }
+  .card { padding: 16px 14px; }
+  .step-nav { gap: 3px; }
+  .step-nav a { padding: 5px 8px; font-size: .73em; }
+  .glossary-bar { width: 90vw; right: -95vw; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<header>
+  <h1>PMCTA在离体心脏冠状动脉粥样硬化诊断中的价值</h1>
+  <p class="meta">Wan L, Chen J, Zhou Z, et al. <span>|</span> Forensic Sciences Research, 2023, 8, 308–312 <span>|</span> DOI: 10.1093/fsr/owad038</p>
+  <p class="glossary-hint">按 <kbd>G</kbd> 打开术语表 · 按 <kbd>1-5</kbd> 跳章节 · 按 <kbd>A</kbd> 全部揭晓 · 按 <kbd>R</kbd> 重置</p>
+</header>
+
+<!-- Step Nav -->
+<nav class="step-nav" id="stepNav">
+  <a onclick="scrollToSection('s1')" title="结构扫描">§1 结构扫描</a>
+  <a onclick="scrollToSection('s2')" title="引言精读">§2 引言精读</a>
+  <a onclick="scrollToSection('s3')" title="方法精读">§3 方法精读</a>
+  <a onclick="scrollToSection('s4')" title="结果精读">§4 结果精读</a>
+  <a onclick="scrollToSection('s5')" title="讨论精读">§5 讨论精读</a>
+</nav>
+
+<!-- ==================== STEP 1 ==================== -->
+<section id="s1"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 1 · 结构扫描</h2>
+
+<div class="card" id="card-1-1">
+  <h3><span class="badge">1.1</span> 标题拆解</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 请逐词拆解论文标题，猜测每个关键词的含义</p>
+    <ul class="task-list">
+      <li>"PMCTA" 是什么技术的缩写？与 PMCT 有何区别？</li>
+      <li>"coronary atherosclerosis" 指什么病理改变？</li>
+      <li>"isolated human hearts" 暗示了怎样的实验设计？</li>
+      <li>标题中 "value" 意味着研究试图回答什么问题？</li>
+    </ul>
+    <div class="hint-wrap" onclick="this.classList.toggle('open')">💡 提示
+      <div class="hint-content">PMCTA = Postmortem Computed Tomography Angiography（死后CT血管造影）；PMCT = 死后CT平扫（无造影剂）；"isolated" = 从尸体取出后单独灌注。</div>
+    </div>
+    <div class="user-input-area"><textarea data-save="card-1-1-notes" placeholder="写下你对每个术语的猜测和理解..."></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>逐词术语表：</strong></p>
+    <table style="width:100%;border-collapse:collapse;font-size:.88em;">
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">PMCTA</td><td style="padding:6px 10px">Postmortem Computed Tomography Angiography，死后CT血管造影。通过向血管系统注入造影剂后进行CT扫描，使血管显影的技术。</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">coronary atherosclerosis</td><td style="padding:6px 10px">冠状动脉粥样硬化。动脉壁内脂质沉积、纤维增生和钙化导致管壁增厚变硬、管腔狭窄的病理过程。</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">isolated human hearts</td><td style="padding:6px 10px">离体人类心脏。在常规尸检中完整取出心脏，单独进行血管灌注和CT扫描，而非在尸体上进行全身血管造影。</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">diagnosis</td><td style="padding:6px 10px">诊断。本研究关注的是PMCTA作为一种辅助诊断工具，而非替代金标准（尸检+组织学）。</td></tr>
+      <tr><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">value</td><td style="padding:6px 10px">价值/应用价值。核心问题是：PMCTA的狭窄分级结果与金标准相比是否一致？能否作为辅助手段？</td></tr>
+    </table>
+    <p style="margin-top:10px;"><strong>标题翻译：</strong>PMCTA在离体人类心脏冠状动脉粥样硬化诊断中的价值。</p>
+  </div>
+</div>
+
+<div class="card" id="card-1-2">
+  <h3><span class="badge">1.2</span> 摘要填空</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 请阅读摘要后，用自己的话填写三要素</p>
+    <ul class="task-list">
+      <li><strong>研究问题：</strong>这篇论文要解决什么临床/法医问题？</li>
+      <li><strong>方法：</strong>用了什么实验设计？样本量多少？金标准是什么？</li>
+      <li><strong>结论：</strong>PMCTA的效果如何？有什么局限？</li>
+    </ul>
+    <div class="user-input-area">
+      <textarea data-save="card-1-2-notes" placeholder="问题：&#10;方法：&#10;结论："></textarea>
+    </div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>摘要逐句翻译+核心信息：</strong></p>
+    <ol>
+      <li><strong>背景：</strong>PMCT在调查冠状动脉疾病方面价值有限，尽管相比传统尸检有若干优势。→ <em>指出PMCT的不足：血管与肌肉密度相近，难以区分。</em></li>
+      <li><strong>引入PMCTA：</strong>为解决此问题，PMCTA已被引入多种研究，用于调查涉及血管损伤、闭塞或其他血管病理的自然和非自然死亡。→ <em>PMCTA是PMCT的升级方案。</em></li>
+      <li><strong>研究目的：</strong>研究PMCTA在离体心脏冠状动脉狭窄诊断中的应用价值。→ <em>聚焦离体器官造影，而非全身造影。</em></li>
+      <li><strong>方法：</strong>水基造影剂注入离体心脏，扫描后与金标准（尸检+组织学）比较。16例疑似心源性猝死者。→ <em>样本量小但含金标准对照。</em></li>
+      <li><strong>关键结果：</strong>PMCTA与金标准的诊断一致性良好（P > 0.05，即无显著差异）。→ <em>统计检验支持PMCTA的有效性。</em></li>
+      <li><strong>局限：</strong>水基造影剂仅能检查血管病变，对心肌水肿等死因诊断有局限。→ <em>不能替代组织学检查。</em></li>
+      <li><strong>结论：</strong>PMCTA可作为传统尸检之外的辅助新方法；3D重建更客观、直观，数据可随时复读。→ <em>定位为辅助工具，非替代品。</em></li>
+    </ol>
+    <div class="key-insight">核心信息：PMCTA与传统尸检在冠脉狭窄分级上"无统计学差异"（P=0.779），意味着PMCTA的诊断效能与金标准相当——但它只能看血管，不能看心肌。</div>
+  </div>
+</div>
+
+<div class="card" id="card-1-3">
+  <h3><span class="badge">1.3</span> 扫图表</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 只看图标题和图注，猜每张图/表在展示什么趋势</p>
+    <ul class="task-list">
+      <li>Figure 1: 造影装置的照片——猜这个装置有哪些组成部分？</li>
+      <li>Figure 2: 血管造影与组织病理图像的对比——猜它们之间的一致性如何？</li>
+      <li>Table 1: PMCTA vs 尸检的结果对比表——猜一致率有多少？</li>
+    </ul>
+    <div class="user-input-area"><textarea data-save="card-1-3-notes" placeholder="Figure 1 猜测：&#10;Figure 2 猜测：&#10;Table 1 猜测："></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>Figure 1（造影装置）：</strong>展示了自制的离体心脏冠脉造影装置，包含血压计（新增单元）、自制三通阀和导管、塑料盐水袋。血压计用于监测和控制灌注压力（120–150 mmHg）。</p>
+    <p><strong>Figure 2（造影-组织学对比）：</strong>A: MSCT显示左主干和左前降支钙化；B: 3D血管造影显示前降支重度狭窄；C: 解剖标本对应位置；D: 组织病理确认重度狭窄。展示了PMCTA与金标准的多模态对应关系。</p>
+    <p><strong>Table 1（16例PMCTA vs 尸检结果）：</strong>在三支主要冠脉（LAD、LCX、RCA）上，PMCTA与尸检的狭窄分级高度一致。仅Case 2-RCA、Case 3-LAD、Case 10-RCA三处出现轻微偏差（差1级）。10/16例PMCTA检出阳性（≥轻度狭窄），其中5例死因确认为CAD相关。</p>
+  </div>
+</div>
+
+<div class="card" id="card-1-4">
+  <h3><span class="badge">1.4</span> 结论最后一段</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 读结论最后一段，用自己的话概括核心发现和作者展望</p>
+    <div class="user-input-area"><textarea data-save="card-1-4-notes" placeholder="核心发现：&#10;局限：&#10;展望："></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>原文翻译：</strong>本研究使用了一种自行开发且有效的离体人心脏PMCTA造影方法。对离体心脏进行PMCTA有助于辅助诊断尸体冠状动脉狭窄。不足之处在于本工作中对所有心脏使用了相同的造影剂注射压力，大型或小型心脏可能出现造影剂不足或过量的问题。我们认为未来应根据所检器官的大小调整注射压力。</p>
+    <p><strong>自检清单：</strong></p>
+    <ul>
+      <li>✅ 方法有效吗？→ 作者声称"self-developed and effective"</li>
+      <li>✅ 定位是什么？→ "auxiliary diagnosis"（辅助诊断），不是替代</li>
+      <li>⚠️ 主要局限？→ 统一注射压力不适应不同大小心脏</li>
+      <li>🔮 未来方向？→ 根据器官大小调整注射压力</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- ==================== STEP 2 ==================== -->
+<section id="s2"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 2 · 引言精读</h2>
+
+<div class="card" id="card-2-1">
+  <h3><span class="badge">2.1</span> 漏斗结构</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 引言遵循"从宽到窄"的漏斗结构。请找出对应的4层内容</p>
+    <ul class="task-list">
+      <li>第1层（最宽）：什么大背景？</li>
+      <li>第2层：什么已知方法及其缺陷？</li>
+      <li>第3层：前人做了什么？还有什么问题？</li>
+      <li>第4层（最窄/漏斗尖）：本研究做什么？</li>
+    </ul>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <div class="funnel">
+      <div class="f1">🌍 第1层：心血管疾病是人类最常见死因，CAD是SCD最常见类型。尸检+组织学+免疫组化是金标准。</div>
+      <div class="f2">🔬 第2层：PMCT已广泛用于法医病理，但因血管与肌肉密度相近，MDCT对血管系统成像能力有限。</div>
+      <div class="f3">⚙️ 第3层：PMCTA可弥补PMCT的不足。Inokuchi等(2013)在38例离体心脏上验证了可行性，但存在死后血凝块误判、灌注参数不佳导致伪影等问题。离体单器官造影可清除血凝块、减少伪影。</div>
+      <div class="f4">🎯 第4层（本文）：比较离体心脏PMCTA与尸检+组织学结果，分析PMCTA在冠状动脉粥样硬化性心脏病狭窄诊断中的应用价值。<div class="gap">GAP: 尚缺乏将离体心脏PMCTA与金标准进行系统性统计比较的研究</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="card" id="card-2-2">
+  <h3><span class="badge">2.2</span> 逐段精读</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 引言共5段，每段的核心论点是什么？</p>
+    <ul class="task-list">
+      <li>第1段：为什么关注冠状动脉疾病？</li>
+      <li>第2段：PMCT的局限是什么？</li>
+      <li>第3段：PMCTA有什么优势？前人做了什么？</li>
+      <li>第4段：离体心脏PMCTA有什么独特优势？</li>
+      <li>第5段：本文的明确目的是什么？</li>
+    </ul>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>第1段：</strong>心血管疾病是最常见死因 → CAD是SCD最常见类型 → 尸检+组织学是金标准 → PMCT越来越多地被使用。关键转折：尽管PMCT有优势，但在血管评估方面存在根本性缺陷（密度对比不足）。</p>
+    <p><strong>第2段：</strong>PMCT的软组​​织对比度有限、血管系统成像能力低 → PMCTA通过使用造影剂弥补这一缺陷 → 可检测冠脉病变、出血源 → PMCTA被认为是诊断冠脉狭窄、医源性脑梗死、脑动静脉畸形等的有效方法。</p>
+    <p><strong>第3段：</strong>Inokuchi等(2013)的离体心脏PMCTA研究表明有助于检测动脉疾病、指导冠脉解剖、客观评估狭窄范围和程度。但PMCTA也存在不足：死后血凝块可能被误判为血栓、灌注参数不当可能产生伪影。</p>
+    <p><strong>第4段（关键转折）：</strong>离体单器官PMCTA的独特优势：可缓慢冲洗清除死后血凝块 → 充分灌注使整个血管系统显影 → 减少伪影。这为本文的实验设计提供了直接依据。</p>
+    <p><strong>第5段（研究目的）：</strong>基于以上，本研究比较离体心脏PMCTA与尸检+组织学结果，分析PMCTA在诊断冠状动脉粥样硬化性心脏病（AHD）狭窄中的应用价值。</p>
+  </div>
+</div>
+
+<div class="card" id="card-2-3">
+  <h3><span class="badge">2.3</span> 引言笔记模板</h3>
+  <div class="think-zone">
+    <p class="prompt">📝 记录引言的背景、知识缺口、研究目的和假设</p>
+    <div class="user-input-area"><textarea data-save="card-2-3-notes" placeholder="背景：&#10;知识缺口：&#10;研究目的：&#10;我的疑问："></textarea></div>
+  </div>
+</div>
+</section>
+
+<!-- ==================== STEP 3 ==================== -->
+<section id="s3"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 3 · 方法精读</h2>
+
+<div class="card" id="card-3-1">
+  <h3><span class="badge">3.1</span> 方法分块 + 核心流程</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 方法部分可以分成几个模块？核心实验流程是怎样的？</p>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>方法五大模块：</strong></p>
+    <ol>
+      <li><strong>Subjects（研究对象）：</strong>16例成人尸体（男12/女4），20-68岁（均值43.4岁），2016-2020年AFS收检。纳入标准：疑似心源性猝死、无明显致命外伤。获得亲属书面同意。</li>
+      <li><strong>MDCT扫描与图像处理参数：</strong>40层MDCT（Siemens SOMATOM Definition AS），120 kV/240 mA，层厚5.0和0.625 mm重建。RadiAnt DICOM Viewer阅片，Syngo Imaging XS工作站做3D重建。</li>
+      <li><strong>造影剂灌注：</strong>自制改进型离体心脏冠脉造影装置（血压计+三通阀+导管+盐水袋）。水溶性泛影葡胺:生理盐水=10:1。灌注压力16.0-20.0 kPa（120-150 mmHg），注入80-100 mL。</li>
+      <li><strong>评估方法与标准：</strong>两名放射科医师（法医放射20年+临床放射30年经验）评估。狭窄分四级：重度≥75%、中度50-74%、轻度25-49%、无明显狭窄&lt;25%。观察LAD、左主干、LCX、RCA四支血管。</li>
+      <li><strong>统计方法：</strong>两样本Kolmogorov-Smirnov检验（随机区组设计），检验水准α=0.05，软件Stata 15.0。</li>
+    </ol>
+    <div class="key-insight">核心流程：尸体到场1h内PMCT平扫 → 尸检取出心脏 → 主动脉插管/结扎 → 水冲洗清除血凝块 → 灌注造影剂(120-150mmHg) → CT扫描 → 3D重建 → 两名放射医师评估 → 尸检+组织学确认 → 统计比较。</div>
+  </div>
+</div>
+
+<div class="card" id="card-3-2">
+  <h3><span class="badge">3.2</span> 实验设计核心问答</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 回答以下实验设计的关键问题</p>
+    <ul class="task-list">
+      <li>样本量是否充分？为什么选择16例？</li>
+      <li>金标准是什么？为什么这样设计？</li>
+      <li>评估者是谁？为什么要用两名放射医师？</li>
+      <li>统计方法为什么选Kolmogorov-Smirnov检验？</li>
+    </ul>
+    <div class="user-input-area"><textarea data-save="card-3-2-notes" placeholder="你的思考..."></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>样本量：</strong>16例——属于小样本探索性研究。因为是法医尸检研究，获得符合条件的连续案例本身就有难度。论文未做样本量计算（power analysis），这是其局限之一。</p>
+    <p><strong>金标准：</strong>尸检（沿冠脉长轴每2mm横切）+ 组织学检查。这是双重金标准设计——肉眼观察+镜下确认，最大限度减少误判。</p>
+    <p><strong>评估者：</strong>两名放射医师（20年+30年经验）。双人独立评估增加可靠性，资深经验减少判读误差。但未明确说明是独立盲法评估还是协商一致。</p>
+    <p><strong>统计方法：</strong>K-S检验是非参数检验，适用于小样本且不要求数据正态分布。随机区组设计控制了个体间变异（同一心脏的不同血管作为区组因素）。检验水准α=0.05为常规标准。</p>
+  </div>
+</div>
+
+<div class="card" id="card-3-3">
+  <h3><span class="badge">3.3</span> 术语解释</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 方法部分出现了哪些你不熟悉的专业术语？</p>
+    <ul class="task-list">
+      <li>MDCT、collimation、slice thickness 分别指什么？</li>
+      <li>Meglumine diatrizoate（泛影葡胺）为什么选择水溶性造影剂？</li>
+      <li>Kolmogorov-Smirnov test 用于什么场景？</li>
+    </ul>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>MDCT（多层螺旋CT）：</strong>40层MDCT意味着机架旋转一圈可同时采集40层图像。相比单层CT，扫描速度更快、Z轴分辨率更高。</p>
+    <p><strong>Collimation（准直）：</strong>6.0 × 1.0 mm² 表示探测器配置——6排探测器，每排1.0 mm宽。决定了Z轴的空间分辨率。</p>
+    <p><strong>Slice thickness（层厚）：</strong>重建层厚（5.0 mm和0.625 mm）——较厚层用于快速浏览，较薄层用于精细诊断。层厚以半层递增（overlap reconstruction）可提高Z轴分辨率。</p>
+    <p><strong>泛影葡胺（水溶性造影剂）：</strong>临床常用，易获取。水溶性意味着会从血管壁外渗——但在本研究中，从注射到扫描的时间极短（数分钟内），不足以产生显著外渗伪影。相比油性造影剂，水溶性更适合离体器官短期灌注。</p>
+    <p><strong>K-S检验：</strong>用于比较PMCTA和尸检的狭窄分级分布是否来自同一总体。P=0.779 > 0.05 意味着无法拒绝"两者一致"的原假设——即两者诊断结果无显著差异。</p>
+  </div>
+</div>
+
+<div class="card" id="card-3-4">
+  <h3><span class="badge">3.4</span> 方法笔记模板</h3>
+  <div class="think-zone">
+    <p class="prompt">📝 请你总结本研究的实验设计类型、主要变量和潜在的混杂因素</p>
+    <div class="user-input-area"><textarea data-save="card-3-4-notes" placeholder="设计类型：&#10;自变量/因变量：&#10;混杂因素：&#10;可以改进的地方："></textarea></div>
+  </div>
+</div>
+</section>
+
+<!-- ==================== STEP 4 ==================== -->
+<section id="s4"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 4 · 结果精读</h2>
+
+<div class="card" id="card-4-1">
+  <h3><span class="badge">4.1</span> PMCTA vs 尸检总体一致性</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ Table 1 展示了什么数据？PMCTA和尸检的总体一致性如何？</p>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>展示了什么：</strong>Table 1 列出了16个案例在LAD、LCX、RCA三支血管上PMCTA和尸检的狭窄分级对比，以及每个案例的最终死因诊断。</p>
+    <p><strong>关键发现：</strong></p>
+    <div class="key-insight">PMCTA与尸检在冠脉粥样硬化性血管狭窄的诊断上一致（P = 0.779，K-S检验）——两者无统计学显著差异。</div>
+    <p><strong>说明了什么：</strong>统计检验支持PMCTA的诊断效能与尸检金标准相当。10/16例PMCTA检出冠脉狭窄阳性（≥轻度），其中仅5例死因最终确认为CAD相关——其余死因包括肺炎、急性出血坏死性胰腺炎、肥厚型心肌病、颅内出血等。</p>
+    <p><strong>偏差案例：</strong>Case 2-RCA、Case 3-LAD（PMCTA高判1级）、Case 10-RCA（PMCTA低判1级）。Case 13-LAD为尸检检出轻度狭窄但PMCTA判为阴性。</p>
+  </div>
+</div>
+
+<div class="card" id="card-4-2">
+  <h3><span class="badge">4.2</span> PMCTA显示冠脉狭窄的能力</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ PMCTA能清晰显示什么程度的冠脉狭窄？有哪些具体表现？</p>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>展示了什么：</strong>PMCTA可以显示不同程度的冠脉狭窄（见图2示例——Case 1 前降支重度狭窄的MSCT钙化影像、3D造影图像、解剖标本和组织病理的对应展示）。</p>
+    <p><strong>关键发现：</strong></p>
+    <div class="key-insight">PMCTA能够清晰显示冠脉狭窄的程度和范围。3D重建可以多角度、多方式同时观察冠状动脉。</div>
+    <p><strong>说明了什么：</strong>PMCTA不仅能量化狭窄程度，还能通过3D可视化更直观地展示病变位置、形态和范围。与传统尸检中肉眼每2mm横切判断相比，PMCTA可能减少漏诊或误诊。</p>
+  </div>
+</div>
+</section>
+
+<!-- ==================== STEP 5 ==================== -->
+<section id="s5"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 5 · 讨论精读</h2>
+
+<div class="card" id="card-5-1">
+  <h3><span class="badge">5.1</span> 讨论结构</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 讨论部分可以分成几个逻辑段落？每段讨论什么？</p>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>讨论7段逻辑结构：</strong></p>
+    <ol>
+      <li><strong>技术定位：</strong>PMCTA作为虚拟尸检的重要组成部分，已有广泛报道。研究分两大类：全身血管造影 vs 单器官血管造影。</li>
+      <li><strong>为什么选择离体心脏（三个原因）：</strong>①常规尸检中肉眼检查血管易遗漏异常区域；②尸体PMCT因出血干扰观察损伤部位；③中国人口分布广泛，全身血管造影设备可及性有限，离体器官转运更方便。</li>
+      <li><strong>方法学改进：</strong>在Inokuchi等离体猪心造影方法基础上做了改进——增加了压力测量装置（血压计），解决了造影剂不足的问题，持续灌注使血管永久充盈。</li>
+      <li><strong>核心结果复述+偏差解释：</strong>PMCTA与组织学高度相关。3处偏差的解释：Case 10心脏较小→相同灌注量导致更高的灌注压→可能影响狭窄判断。建议未来按心脏大小调整灌注压力。</li>
+      <li><strong>PMCTA不能替代尸检的论证：</strong>Case 6虽有重度狭窄但仅为辅助发现；Case 7-10有狭窄但不是死因；Case 11-16狭窄诊断正确但死因无法仅凭血管狭窄确定。→ 冠脉狭窄程度单独不足以确定死因。</li>
+      <li><strong>PMCTA的独特优势：</strong>精确定位狭窄、引导尸检重点取材、减少假阴性；多角度观察；可计算狭窄程度；数据可重复使用、远程会诊、法庭证据（3D可视化）。</li>
+      <li><strong>总结定位：</strong>PMCTA不能完全替代尸检，但可以作为传统尸检的辅助手段。未来应调整注射压力以适应不同大小的心脏。</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card" id="card-5-2">
+  <h3><span class="badge">5.2</span> 作者解释</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 作者如何解释PMCTA与尸检之间的3处偏差？这个解释有说服力吗？</p>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>作者的解释：</strong></p>
+    <ul>
+      <li>Case 2-RCA 和 Case 3-LAD（PMCTA判读高于尸检1级）：作者未具体解释，仅说"偏差很小"。</li>
+      <li>Case 10-RCA（PMCTA判读低于尸检1级）：作者归因于该案例心脏较小 → 相同灌注量 → 更高灌注压 → 可能影响狭窄判断。</li>
+    </ul>
+    <p><strong>批判性评价：</strong></p>
+    <ul>
+      <li>✅ 灌注压力统一的局限是合理的解释方向。</li>
+      <li>⚠️ 但将3处偏差仅归因于灌注压力/心脏大小，而未讨论评估者间差异、造影剂分布不均、死后血管收缩等其他可能因素，略显单一。</li>
+      <li>⚠️ Case 2和Case 3的PMCTA高判与"更高灌注压→挤出更多管腔→低估狭窄"的推理方向矛盾，作者未充分解释。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card" id="card-5-3">
+  <h3><span class="badge">5.3</span> 核心概念深度解析</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ "PMCTA不能替代尸检，只能作为辅助手段"——为什么？这个结论的关键逻辑链是什么？</p>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>关键逻辑链：</strong></p>
+    <ol>
+      <li>PMCTA只能显示<strong>血管形态</strong>（狭窄程度和范围）→ 不能显示心肌状态（水肿、梗死、炎症）</li>
+      <li>冠脉狭窄≠死因：许多人体内存在不同程度的冠脉狭窄但并非死于CAD（如本研究中Case 7-10有狭窄但死因为肺炎、胰腺炎、心肌病、颅内出血）</li>
+      <li>确定死因需要综合证据：血管狭窄+心肌病理+临床表现+毒化分析+其他器官发现</li>
+      <li>因此，PMCTA提供的是<strong>血管形态学证据</strong>中的一环，必须与尸检（尤其是组织学）结合</li>
+    </ol>
+    <div class="key-insight">核心概念：PMCTA的价值在于"定位与量化"——精准定位狭窄位置、量化狭窄程度、引导尸检重点取材，而非独立确定死因。</div>
+  </div>
+</div>
+
+<div class="card" id="card-5-4">
+  <h3><span class="badge">5.4</span> 批判性思考清单</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 请对这篇论文的方法、结果和结论进行批判性评估</p>
+    <ul class="task-list">
+      <li>样本量是否足够？代表性如何？</li>
+      <li>评估者偏倚是否被妥善控制？</li>
+      <li>研究的推广性（generalizability）如何？</li>
+      <li>作者是否过度解读了结果？</li>
+      <li>有没有遗漏的混淆因素？</li>
+    </ul>
+    <div class="user-input-area"><textarea data-save="card-5-4-notes" placeholder="你的批判性思考..."></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>参考批判性评估：</strong></p>
+    <ul>
+      <li><strong>样本量：</strong>16例很小，属于探索性/可行性研究。未做事前功效分析。但考虑到法医尸检研究的特殊性（需连续收案+亲属同意），可理解。</li>
+      <li><strong>评估者偏倚：</strong>未明确说明放射医师是否对尸检结果设盲。如果知道尸检结果再去判读PMCTA，会引入确认偏倚。</li>
+      <li><strong>推广性：</strong>单中心、中国人群、40层MDCT设备——结果是否适用于其他CT设备、其他人群、其他造影剂方案尚不清楚。</li>
+      <li><strong>过度解读风险：</strong>P=0.779（即"不拒绝H₀"）被解释为"两种方法一致"——但这是"未能检出差异"，不等同于"证明了一致"。小样本下检验效能低，容易得出无差异的结论。</li>
+      <li><strong>遗漏因素：</strong>死后间隔时间（PMI）对血管和组织状态的影响未被充分讨论。死后自溶可能改变血管壁的机械特性和造影剂分布。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card" id="card-5-5">
+  <h3><span class="badge">5.5</span> 作者自述局限</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 作者在讨论和结论中主动承认了哪些局限？还遗漏了什么？</p>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>作者承认的局限：</strong></p>
+    <ul>
+      <li>⚠️ 所有案例使用相同灌注压力——大心脏或小心脏可能出现造影剂不足或过量</li>
+      <li>⚠️ 水基造影剂仅能检查血管病理变化，对心肌水肿等死因诊断有局限</li>
+      <li>⚠️ PMCTA不能完全替代尸检</li>
+    </ul>
+    <p><strong>作者未提及但值得注意的局限：</strong></p>
+    <ul>
+      <li>🔴 样本量仅16例，统计检验效能不足</li>
+      <li>🔴 P=0.779是"未拒绝H₀"而非"证明H₀"，等效性检验（equivalence test）会更合适</li>
+      <li>🔴 未讨论死后间隔时间对造影剂分布的影响</li>
+      <li>🔴 未说明放射医师是否对尸检结果设盲</li>
+      <li>🔴 灌注压力范围120-150 mmHg较宽——这本身就是一个变异来源</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<footer>精读生成于 2026-08-08 · 基于 Wan et al. (2023) Forensic Sciences Research · 按 <kbd>G</kbd> 查看术语表</footer>
+</div>
+
+<!-- Glossary Sidebar -->
+<div class="glossary-overlay" id="glossaryOverlay" onclick="toggleGlossary()"></div>
+<div class="glossary-bar" id="glossaryBar">
+  <h3>📖 术语表（15个）</h3>
+  <div class="term"><strong>PMCTA</strong><span>Postmortem Computed Tomography Angiography，死后CT血管造影</span></div>
+  <div class="term"><strong>PMCT</strong><span>Postmortem Computed Tomography，死后CT平扫（无造影剂）</span></div>
+  <div class="term"><strong>MDCT</strong><span>Multidetector Computed Tomography，多层螺旋CT</span></div>
+  <div class="term"><strong>CAD / AHD</strong><span>Coronary Artery Disease / Arteriosclerotic Heart Disease，冠心病</span></div>
+  <div class="term"><strong>SCD</strong><span>Sudden Cardiac Death，心源性猝死</span></div>
+  <div class="term"><strong>LAD</strong><span>Left Anterior Descending，左前降支</span></div>
+  <div class="term"><strong>LCX</strong><span>Left Circumflex，左回旋支</span></div>
+  <div class="term"><strong>RCA</strong><span>Right Coronary Artery，右冠状动脉</span></div>
+  <div class="term"><strong>Meglumine Diatrizoate</strong><span>泛影葡胺，水溶性碘造影剂，临床常用</span></div>
+  <div class="term"><strong>Collimation</strong><span>准直，决定CT扫描层面厚度和Z轴分辨率的参数</span></div>
+  <div class="term"><strong>3D Reconstruction</strong><span>三维重建，将CT二维切片数据重建为三维立体图像</span></div>
+  <div class="term"><strong>K-S Test</strong><span>Kolmogorov-Smirnov检验，非参数统计检验，比较两个分布是否一致</span></div>
+  <div class="term"><strong>Gold Standard</strong><span>金标准，诊断试验中公认的最准确方法（本文为尸检+组织学）</span></div>
+  <div class="term"><strong>Perfusion Pressure</strong><span>灌注压力，将造影剂注入血管系统的压力（本文16.0-20.0 kPa）</span></div>
+  <div class="term"><strong>Ex Situ / Isolated Heart</strong><span>离体心脏，从尸体取出后单独进行造影研究的器官</span></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// === Core Functions ===
+function revealAnswer(btn) {
+  const card = btn.closest('.card');
+  const answer = card.querySelector('.answer-zone');
+  const isShown = answer.classList.contains('show');
+  if (isShown) {
+    answer.classList.remove('show');
+    btn.textContent = '💡 揭晓答案';
+    btn.classList.remove('revealed');
+  } else {
+    answer.classList.add('show');
+    btn.textContent = '🔄 收起答案';
+    btn.classList.add('revealed');
+  }
+}
+
+function toggleGlossary() {
+  const bar = document.getElementById('glossaryBar');
+  const overlay = document.getElementById('glossaryOverlay');
+  bar.classList.toggle('open');
+  overlay.classList.toggle('show');
+}
+
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(() => t.classList.remove('show'), 1500);
+}
+
+function revealAll() {
+  document.querySelectorAll('.answer-zone').forEach(a => a.classList.add('show'));
+  document.querySelectorAll('.reveal-btn').forEach(b => { b.textContent = '🔄 收起答案'; b.classList.add('revealed'); });
+  showToast('✅ 已全部揭晓');
+}
+
+function resetAll() {
+  document.querySelectorAll('.answer-zone').forEach(a => a.classList.remove('show'));
+  document.querySelectorAll('.reveal-btn').forEach(b => { b.textContent = '💡 揭晓答案'; b.classList.remove('revealed'); });
+  document.querySelectorAll('.hint-wrap').forEach(h => h.classList.remove('open'));
+  showToast('🔄 已全部重置');
+}
+
+function toggleAll() {
+  const anyHidden = Array.from(document.querySelectorAll('.answer-zone')).some(a => !a.classList.contains('show'));
+  if (anyHidden) revealAll(); else resetAll();
+}
+
+// === Navigation ===
+function getAllCards() {
+  return Array.from(document.querySelectorAll('.card[id^="card-"]'));
+}
+
+function findCurrentCardIndex() {
+  const cards = getAllCards();
+  const viewMiddle = window.scrollY + window.innerHeight / 2;
+  for (let i = cards.length - 1; i >= 0; i--) {
+    if (cards[i].offsetTop <= viewMiddle) return i;
+  }
+  return 0;
+}
+
+function scrollToCard(index) {
+  const cards = getAllCards();
+  if (index >= 0 && index < cards.length) {
+    cards[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showToast(`卡片 ${index + 1}/${cards.length}`);
+  }
+}
+
+function nextCard() { scrollToCard(findCurrentCardIndex() + 1); }
+function prevCard() { scrollToCard(findCurrentCardIndex() - 1); }
+
+function revealCurrent() {
+  const cards = getAllCards();
+  const idx = findCurrentCardIndex();
+  if (idx >= 0 && idx < cards.length) {
+    const btn = cards[idx].querySelector('.reveal-btn');
+    const answer = cards[idx].querySelector('.answer-zone');
+    if (!answer.classList.contains('show') && btn) revealAnswer(btn);
+  }
+}
+
+function nextSection() {
+  const sections = ['s1','s2','s3','s4','s5'];
+  const viewMiddle = window.scrollY + window.innerHeight / 2;
+  for (let i = 0; i < sections.length; i++) {
+    const sec = document.getElementById(sections[i]);
+    if (sec && sec.offsetTop > viewMiddle + 50) {
+      sec.scrollIntoView({ behavior: 'smooth' });
+      showToast(`跳至 Step ${i+1}`);
+      return;
+    }
+  }
+}
+
+// === Keyboard ===
+document.addEventListener('keydown', function(e) {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+  switch(e.key) {
+    case 'ArrowRight': case ' ': e.preventDefault(); nextCard(); break;
+    case 'ArrowLeft': e.preventDefault(); prevCard(); break;
+    case 'Enter': case 'ArrowDown': e.preventDefault(); revealCurrent(); break;
+    case 'Shift': if (e.key === 'Shift') { e.preventDefault(); nextSection(); } break;
+    case 'a': case 'A': e.preventDefault(); revealAll(); break;
+    case 'r': case 'R': e.preventDefault(); resetAll(); break;
+    case 't': case 'T': e.preventDefault(); toggleAll(); break;
+    case 'g': case 'G': e.preventDefault(); toggleGlossary(); break;
+    case '1': e.preventDefault(); document.getElementById('s1').scrollIntoView({behavior:'smooth'}); showToast('Step 1 · 结构扫描'); break;
+    case '2': e.preventDefault(); document.getElementById('s2').scrollIntoView({behavior:'smooth'}); showToast('Step 2 · 引言精读'); break;
+    case '3': e.preventDefault(); document.getElementById('s3').scrollIntoView({behavior:'smooth'}); showToast('Step 3 · 方法精读'); break;
+    case '4': e.preventDefault(); document.getElementById('s4').scrollIntoView({behavior:'smooth'}); showToast('Step 4 · 结果精读'); break;
+    case '5': e.preventDefault(); document.getElementById('s5').scrollIntoView({behavior:'smooth'}); showToast('Step 5 · 讨论精读'); break;
+    case 'Escape': if (document.getElementById('glossaryBar').classList.contains('open')) toggleGlossary(); break;
+  }
+});
+
+// === Save/Load notes from localStorage ===
+document.querySelectorAll('textarea[data-save]').forEach(ta => {
+  const key = ta.getAttribute('data-save');
+  const saved = localStorage.getItem(key);
+  if (saved) ta.value = saved;
+  ta.addEventListener('input', () => localStorage.setItem(key, ta.value));
+});
+
+// === Active nav highlight on scroll ===
+window.addEventListener('scroll', () => {
+  const sections = ['s1','s2','s3','s4','s5'];
+  const links = document.querySelectorAll('.step-nav a');
+  let current = 's1';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= window.scrollY + 120) current = id;
+  });
+  links.forEach((a, i) => {
+    a.classList.toggle('active', sections[i] === current);
+  });
+});
+</script>
+</body>
+</html>
