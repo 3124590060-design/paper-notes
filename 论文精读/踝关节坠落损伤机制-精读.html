@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>精读：基于THUMS模型的踝关节坠落与撞击损伤机制</title>
+<style>
+:root {
+  --bg: #0f1923; --surface: #1a2d3c; --surface2: #1e3a4a; --gold: #c9a96e;
+  --gold-light: #e0c88e; --text: #e8e0d0; --text-dim: #a0b0c0; --accent: #4a8c8c;
+  --red: #c0392b; --blue: #5d9ec9; --green: #5a9e6f; --card-radius: 10px;
+  --border: rgba(201,169,110,0.2); --font: -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.75; font-size: 15px; }
+.container { max-width: 880px; margin: 0 auto; padding: 20px 24px 80px; }
+header { text-align: center; padding: 48px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+header h1 { font-size: 1.7em; color: var(--gold-light); margin-bottom: 10px; line-height: 1.4; }
+header .meta { color: var(--text-dim); font-size: .88em; }
+.step-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; position: sticky; top: 10px; z-index: 99; background: rgba(15,25,35,.92); padding: 10px 0; border-radius: 8px; }
+.step-nav a { color: var(--text-dim); text-decoration: none; padding: 6px 13px; border: 1px solid var(--border); border-radius: 6px; font-size: .82em; cursor: pointer; transition: .2s; }
+.step-nav a:hover, .step-nav a.active { color: var(--gold-light); border-color: var(--gold); background: rgba(201,169,110,.1); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--card-radius); padding: 24px 28px; margin-bottom: 20px; transition: .3s; }
+.card:hover { border-color: var(--gold); }
+.card h3 { color: var(--gold-light); font-size: 1.05em; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.card h3 .badge { background: var(--accent); color: #fff; font-size: .7em; padding: 2px 8px; border-radius: 4px; font-weight: normal; }
+.think-zone { background: var(--surface2); border-radius: 8px; padding: 16px 18px; margin-bottom: 14px; }
+.think-zone .prompt { color: var(--text); font-weight: 600; margin-bottom: 8px; font-size: .95em; }
+.task-list { list-style: none; padding-left: 0; margin-bottom: 10px; }
+.task-list li { padding: 4px 0 4px 20px; position: relative; color: var(--text-dim); font-size: .9em; }
+.task-list li::before { content: "▸"; position: absolute; left: 0; color: var(--gold); }
+.hint-wrap { font-size: .85em; color: var(--text-dim); cursor: pointer; margin: 8px 0; padding: 6px 10px; background: rgba(201,169,110,.06); border-radius: 6px; user-select: none; }
+.hint-wrap .hint-content { display: none; margin-top: 8px; font-style: italic; color: var(--gold-light); }
+.hint-wrap.open .hint-content { display: block; }
+textarea { width: 100%; min-height: 70px; background: rgba(0,0,0,.25); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 10px 12px; font-family: var(--font); font-size: .88em; resize: vertical; }
+textarea:focus { outline: none; border-color: var(--gold); }
+.reveal-btn-wrap { text-align: center; margin-bottom: 10px; }
+.reveal-btn { background: linear-gradient(135deg,var(--gold),#b8934f); color: #1a1a1a; border: none; padding: 8px 28px; border-radius: 20px; cursor: pointer; font-size: .9em; font-weight: 600; transition: .25s; }
+.reveal-btn:hover { box-shadow: 0 0 16px rgba(201,169,110,.35); transform: translateY(-1px); }
+.reveal-btn.revealed { background: var(--surface2); color: var(--gold-light); border: 1px solid var(--gold); }
+.answer-zone { display: none; background: linear-gradient(135deg,rgba(201,169,110,.06),rgba(74,140,140,.06)); border-left: 3px solid var(--gold); padding: 16px 18px; border-radius: 0 8px 8px 0; font-size: .92em; line-height: 1.8; }
+.answer-zone.show { display: block; }
+.answer-zone p { margin-bottom: 8px; }
+.answer-zone ul, .answer-zone ol { margin: 6px 0 6px 20px; }
+.key-insight { background: rgba(201,169,110,.15); border-left: 3px solid var(--gold); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-weight: 500; }
+.funnel { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 14px 0; font-size: .85em; }
+.funnel div { background: var(--surface2); padding: 10px 20px; border-radius: 6px; text-align: center; border: 1px solid var(--border); }
+.funnel .f1 { width: 95%; background: rgba(74,140,140,.2); }
+.funnel .f2 { width: 80%; background: rgba(74,140,140,.18); }
+.funnel .f3 { width: 60%; background: rgba(74,140,140,.15); }
+.funnel .f4 { width: 35%; background: rgba(201,169,110,.2); border-color: var(--gold); }
+.funnel .gap { color: var(--red); font-weight: bold; margin-top: 4px; }
+.glossary-bar { position: fixed; right: -420px; top: 0; width: 400px; height: 100vh; background: var(--surface); border-left: 2px solid var(--gold); padding: 24px 20px; overflow-y: auto; transition: right .35s; z-index: 999; }
+.glossary-bar.open { right: 0; }
+.glossary-bar h3 { color: var(--gold-light); margin-bottom: 16px; }
+.glossary-bar .term { margin-bottom: 14px; }
+.glossary-bar .term strong { color: var(--gold); display: block; font-size: .92em; }
+.glossary-bar .term span { color: var(--text-dim); font-size: .84em; }
+.glossary-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 998; display: none; }
+.glossary-overlay.show { display: block; }
+.glossary-hint { color: var(--text-dim); font-size: .75em; text-align: center; margin-top: 8px; }
+.toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--gold); color: var(--gold-light); padding: 8px 24px; border-radius: 20px; z-index: 1000; font-size: .9em; opacity: 0; transition: opacity .3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+footer { text-align: center; color: var(--text-dim); font-size: .78em; padding: 32px 0 20px; border-top: 1px solid var(--border); margin-top: 32px; }
+@media (max-width: 640px) {
+  .container { padding: 12px 14px 60px; } header h1 { font-size: 1.3em; } .card { padding: 16px 14px; }
+  .step-nav a { padding: 5px 8px; font-size: .73em; } .glossary-bar { width: 90vw; right: -95vw; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>基于THUMS模型的踝关节坠落与撞击损伤机制初步研究</h1>
+  <p class="meta">Li Z, Zhang J, Wang J, Huang P, Zou D, Chen Y. <span>|</span> Forensic Sciences Research, 2022, 7(3), 518–527 <span>|</span> DOI: 10.1080/20961790.2021.1875582</p>
+  <p class="glossary-hint">按 <kbd>G</kbd> 打开术语表 · 按 <kbd>1-5</kbd> 跳章节 · 按 <kbd>A</kbd> 全部揭晓 · 按 <kbd>R</kbd> 重置</p>
+</header>
+
+<nav class="step-nav" id="stepNav">
+  <a onclick="scrollToSection('s1')">§1 结构扫描</a>
+  <a onclick="scrollToSection('s2')">§2 引言精读</a>
+  <a onclick="scrollToSection('s3')">§3 方法精读</a>
+  <a onclick="scrollToSection('s4')">§4 结果精读</a>
+  <a onclick="scrollToSection('s5')">§5 讨论精读</a>
+</nav>
+
+<!-- ===== STEP 1 ===== -->
+<section id="s1"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 1 · 结构扫描</h2>
+
+<div class="card" id="card-1-1">
+  <h3><span class="badge">1.1</span> 标题拆解</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 逐词拆解标题"Preliminary study on the mechanisms of ankle injuries under falling and impact conditions based on the THUMS model"</p>
+    <ul class="task-list">
+      <li>"Preliminary study" 为什么强调"初步"？</li>
+      <li>"mechanisms of ankle injuries" 损伤机制指什么？</li>
+      <li>"falling and impact conditions" 坠落和撞击有何不同？</li>
+      <li>"THUMS model" 是什么？为什么选它？</li>
+    </ul>
+    <div class="hint-wrap" onclick="this.classList.toggle('open')">💡 提示
+      <div class="hint-content">THUMS = Total Human Model of Safety（全人体安全模型），丰田公司开发的精细有限元人体模型。Version 4.0含主要内脏、血管、肌肉群及结缔组织。</div>
+    </div>
+    <div class="user-input-area"><textarea data-save="ankle-card-1-1-notes" placeholder="写下你的猜测..."></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <table style="width:100%;border-collapse:collapse;font-size:.88em;">
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">Preliminary study</td><td style="padding:6px 10px">初步研究——暗示①研究尚不完整（未涵盖所有可能的载荷条件）；②模型有局限（韧带/距骨/跟骨未设失效阈值）；③是探索性而非验证性研究。</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">mechanisms</td><td style="padding:6px 10px">损伤机制（biomechanisms）——受伤的力学过程：力从哪里来→如何传递→哪些结构承受了超过耐受阈值的应力/应变→最终形成何种损伤模式。</td></tr>
+      <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">falling vs impact</td><td style="padding:6px 10px">坠落：足先着地→力从下往上传递→轴向压缩。撞击：外力直接作用于腿/踝部→力从撞击点向外传播。两者力学机制根本不同。</td></tr>
+      <tr><td style="padding:6px 10px;color:var(--gold);white-space:nowrap">THUMS 4.0</td><td style="padding:6px 10px">丰田+多家机构联合开发的50百分位成年男性有限元模型（175cm/77kg）。含骨骼、韧带、肌肉、内脏的精细网格，下肢各组件经过系列冲击试验验证。</td></tr>
+    </table>
+    <p style="margin-top:10px;"><strong>标题翻译：</strong>基于THUMS模型的坠落和撞击条件下踝关节损伤机制的初步研究。</p>
+  </div>
+</div>
+
+<div class="card" id="card-1-2">
+  <h3><span class="badge">1.2</span> 摘要填空</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 阅读摘要，提取三要素</p>
+    <ul class="task-list">
+      <li><strong>问题：</strong>法医实践中踝关节损伤机制判断面临什么困难？</li>
+      <li><strong>方法：</strong>模拟了多少种条件？</li>
+      <li><strong>结论：</strong>坠落和撞击的损伤模式有何区别？</li>
+    </ul>
+    <div class="user-input-area"><textarea data-save="ankle-card-1-2-notes" placeholder="问题：&#10;方法：&#10;结论："></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>摘要逐句解读：</strong></p>
+    <ol>
+      <li><strong>背景：</strong>踝关节损伤在法医实践中常见，主要来自坠落和交通事故。损伤机制和方式的判断对法医专家来说"关键且具有挑战性"——当前仍依赖经验，高度主观，缺乏系统研究。</li>
+      <li><strong>方法：</strong>THUMS 4.0 + 有限元方法模拟：坠落——3种高度(5/10/20m)×5种姿势(自然/内翻/外翻/跖屈/背屈) + 复合姿势；撞击——3种方向(A-P/L-M/P-A)×3种速度(10/15/20m/s)×4种部位(踝/小腿下段/中段/上段)。</li>
+      <li><strong>关键发现：</strong>坠落造成特异性胫骨远端压缩骨折。低高度或大角度内翻/跖屈/背屈造成的胫腓骨骨干骨折和韧带损伤与小腿中上段撞击造成的类似损伤难以区分。撞击不产生典型的胫骨远端压缩骨折。</li>
+      <li><strong>结论：</strong>系统研究有助于在法医实践中重建踝关节损伤过程、分析损伤机制。</li>
+    </ol>
+    <div class="key-insight">核心区分特征：胫骨远端垂直压缩骨折 → 坠落（特异性）；胫腓骨骨干骨折+韧带损伤+撕脱骨折 → 撞击（非特异性，坠落也可能产生）。</div>
+  </div>
+</div>
+
+<div class="card" id="card-1-3">
+  <h3><span class="badge">1.3</span> 扫图表</h3>
+  <div class="think-zone"><p class="prompt">❓ 看图标题猜趋势：Figures 1-9 + Tables 1-6 各自展示什么？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>Figure 1:</strong> THUMS 4.0的踝关节模型示意——展示壳单元模拟的踝韧带、实体单元模拟的跟腱附着于跟骨等结构。</p>
+    <p><strong>Figure 2:</strong> 外翻姿势下胫骨和距骨有效塑性应变随坠落高度增加而增加——与外翻/自然姿势不同。</p>
+    <p><strong>Figure 3:</strong> 背屈20°坠落5m的踝关节面仰视图——胫骨远端外侧前部首先骨折（有效塑性应变最初增大的位置）。</p>
+    <p><strong>Figure 4:</strong> 背屈30°坠落5m的韧带最大主应变云图——前后距腓韧带和胫距前韧带应力明显增大。</p>
+    <p><strong>Figure 5-6:</strong> L-M和P-A撞击踝关节形成的不同骨折模式——L-M: 外踝骨折+内踝撕脱；P-A: 外侧髁骨折+内踝撕脱（10m/s）或胫腓骨骨干骨折（20m/s）。</p>
+    <p><strong>Figure 7-9:</strong> 小腿不同高度A-P撞击→韧带和骨骼的应力/应变分布；L-M撞击小腿下段→速度依赖的损伤模式。</p>
+    <p><strong>Tables 1-2:</strong> 坠落和撞击的加载条件矩阵。</p>
+    <p><strong>Tables 3-6:</strong> 各加载条件下主要解剖结构的峰值应变数据。</p>
+  </div>
+</div>
+
+<div class="card" id="card-1-4">
+  <h3><span class="badge">1.4</span> 结论最后一段</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 总结作者的核心发现和建议</p>
+    <div class="user-input-area"><textarea data-save="ankle-card-1-4-notes" placeholder="核心发现：&#10;局限：&#10;展望："></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>原文翻译：</strong>本研究呈现了不同损伤载荷条件下踝关节损伤的初步生物力学机制。当足部坠落着地时，踝关节因不同地面条件呈现不同姿势。自然和外翻姿势易产生典型胫骨远端和腓骨压缩骨折，对应距骨位置也有高骨折风险。大角度内翻/跖屈/背屈则可造成胫腓骨骨干骨折——这与临床经验不一致，应在法医实践中引起高度重视。直接径向撞击和前方撞击踝关节几乎不造成骨折；相反，撞击小腿下段会产生更严重的踝关节损伤。侧方撞击随速度不同产生外踝或内外踝联合骨折。撞击小腿中上段几乎不产生关节内骨折，但可产生韧带损伤。初步结果为识别踝关节损伤的生物力学机制和方式提供了新方法和关键观点。</p>
+    <p><strong>自检清单：</strong>✅ 坠落≠一定产生压缩骨折（取决于姿势和高度）| ✅ 撞击不产生远端胫骨压缩骨折（鉴别点）| ⚠️ 大角度姿势坠落与撞击难以区分 | 🔮 需要更系统的研究和更完善的模型。</p>
+  </div>
+</div>
+</section>
+
+<!-- ===== STEP 2 ===== -->
+<section id="s2"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 2 · 引言精读</h2>
+
+<div class="card" id="card-2-1">
+  <h3><span class="badge">2.1</span> 漏斗结构</h3>
+  <div class="think-zone"><p class="prompt">❓ 找出引言4层漏斗</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <div class="funnel">
+      <div class="f1">🌍 第1层：踝关节骨折是最常见的关节内骨折之一，主要来自坠落、扭伤和交通事故。力的大小、方向、作用部位不同→损伤形态极为复杂多样。</div>
+      <div class="f2">🔬 第2层：当前法医对踝关节损伤机制的判断仍主要依赖经验，缺乏客观性，无法满足法医证据的客观要求。</div>
+      <div class="f3">⚙️ 第3层：有限元方法已在生物力学和生物工程领域广泛应用，较多用于汽车安全性能和交通事故中的踝损伤研究。但系统性的法医踝损伤机制FE研究缺乏。</div>
+      <div class="f4">🎯 第4层：本研究用THUMS 4.0系统模拟不同坠落和撞击加载条件下的踝关节损伤过程，探索损伤机制和模式，评估FE方法在法医实践中的价值。<div class="gap">GAP: ①踝损伤机制判断缺乏客观量化方法；②缺乏系统性的法医FE踝损伤模拟研究；③坠落vs撞击的损伤模式差异未被系统总结。</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="card" id="card-2-2">
+  <h3><span class="badge">2.2</span> 逐段精读</h3>
+  <div class="think-zone"><p class="prompt">❓ 引言4段的核心论点？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>P1（临床+法医背景）：</strong>踝骨折常见→坠落/扭伤/交通事故→损伤形态高度复杂→当前法医判断依赖经验→缺乏客观性。</p>
+    <p><strong>P2（FE方法背景）：</strong>FE方法在生物力学/生物工程中广泛使用→已建立众多足踝FE模型用于汽车安全→从1990s的简化低仿生模型到2005年后精细模型（Iwamoto改进胫骨本构模型）→Untaroiu(2013)用小腿-踝模型研究前碰撞载荷→Smolen & Quenneville(2017)评估5种脆弱姿势的骨表面应变。</p>
+    <p><strong>P3（关键gap）：</strong>使用FE方法对踝关节损伤机制进行定量和系统研究在已发表文献中不常见（"are not common in the published literature"）。</p>
+    <p><strong>P4（本文目的）：</strong>用THUMS 4.0系统模拟不同坠落和撞击条件下的踝关节损伤→探索损伤机制和模式→评估FE方法在法医实践中的价值。</p>
+  </div>
+</div>
+
+<div class="card" id="card-2-3">
+  <h3><span class="badge">2.3</span> 引言笔记模板</h3>
+  <div class="think-zone">
+    <p class="prompt">📝 记录研究背景和知识缺口</p>
+    <div class="user-input-area"><textarea data-save="ankle-card-2-3-notes" placeholder="背景：&#10;知识缺口：&#10;研究假设：&#10;你的疑问："></textarea></div>
+  </div>
+</div>
+</section>
+
+<!-- ===== STEP 3 ===== -->
+<section id="s3"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 3 · 方法精读</h2>
+
+<div class="card" id="card-3-1">
+  <h3><span class="badge">3.1</span> 方法分块+核心流程</h3>
+  <div class="think-zone"><p class="prompt">❓ 方法分为几大模块？核心模拟流程是怎样的？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>四大方法模块：</strong></p>
+    <ol>
+      <li><strong>THUMS 4.0 FE模型：</strong>50百分位成年男性(175cm/77kg)，含主要内脏/血管/肌肉群/结缔组织。踝韧带=壳单元，足韧带=1D单元，跟腱=实体单元附着于跟骨。下肢各组件的验证：股骨(静态三点弯)/膝(动态侧向加载+四点弯)/胫骨(动态三点弯)/足踝(动态轴向加载)。</li>
+      <li><strong>坠落加载条件：</strong>刚性地板→THUMS初始站立→重力9.8m/s²→自由落体初速度→地面倾斜角模拟不同踝姿势。3高度×5姿势×3角度=45种条件。复合姿势：跖屈+内翻10°/跖屈+外翻10°/背屈+内翻10°/背屈+外翻10°。</li>
+      <li><strong>撞击加载条件：</strong>简化刚性保险杠模型。4部位(踝/小腿下段125mm/中段240mm/上段350mm)×3方向(A-P/L-M/P-A)×3速度(10/15/20m/s)=36种条件。</li>
+      <li><strong>硬件与软件：</strong>5台HP Z820服务器(Intel Xeon E5-2687W 3.10GHz/Nvidia Quadro 4000/64GB RAM/Windows Server 2008 R2)，LS-DYNA求解器，LS-PrePost后处理。数据提取+GraphPad Prism 8+SPSS 20.0统计。</li>
+    </ol>
+    <div class="key-insight">核心流程：THUMS模型加载 → 设置边界条件（地面/保险杠+接触+重力）→ LS-DYNA求解 → 提取变形/位移/应力/应变 → 分析不同条件下的损伤模式差异。</div>
+  </div>
+</div>
+
+<div class="card" id="card-3-2">
+  <h3><span class="badge">3.2</span> 实验设计核心问答</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 关键方法学问题</p>
+    <ul class="task-list"><li>为什么用THUMS 4.0而非自己建立模型？</li><li>坠落高度5/10/20m的选择依据是什么？</li><li>为什么撞击速度选10/15/20 m/s？</li><li>接触摩擦系数0.75是经验值吗？</li></ul>
+    <div class="user-input-area"><textarea data-save="ankle-card-3-2-notes" placeholder="你的思考..."></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>THUMS 4.0 vs 自建模型：</strong>THUMS经过系统验证（股骨/膝/胫骨/足踝均有对应试验验证），模型可信度高于自建。且自建同等精细程度的全人FE模型需要数年工作量。但THUMS 4.0也有局限——韧带/距骨/跟骨未设失效阈值。</p>
+    <p><strong>坠落高度：</strong>5m→约31km/h着地速度（自由落体v=√(2gh)）；10m→约50km/h；20m→约71km/h。覆盖了从较低坠落到极高坠落的范围。但5m在实际中已是较严重坠落（约2层楼）。</p>
+    <p><strong>撞击速度：</strong>10m/s=36km/h（市区交通事故典型速度）；15m/s=54km/h；20m/s=72km/h（高速公路范围）。覆盖了交通事故中行人撞击的典型速度谱。</p>
+    <p><strong>摩擦系数0.75：</strong>原文设为动态摩擦系数，来自LS-DYNA的CONTACT_AUTOMATIC_SURFACE_TO_SURFACE接触定义。鞋底-地面的典型摩擦系数在0.5-0.9之间，0.75为合理中值。但摩擦系数对踝关节损伤模式的影响未被讨论。</p>
+  </div>
+</div>
+
+<div class="card" id="card-3-3">
+  <h3><span class="badge">3.3</span> 术语解释</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 理解FE模拟的关键术语</p>
+    <ul class="task-list"><li>有限元方法(FE)的基本原理？</li><li>有效塑性应变(effective plastic strain) vs 最大主应变(max principal strain)？</li><li>壳单元 vs 1D单元 vs 实体单元的区别？</li><li>LS-DYNA是什么？</li></ul>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>有限元方法(FE)：</strong>将连续体离散为有限个小单元（网格），对每个单元建立力学方程，联立求解得到整体变形/应力/应变分布。精度取决于网格质量和材料本构模型。</p>
+    <p><strong>有效塑性应变：</strong>衡量材料发生不可逆变形的程度。当有效塑性应变超过材料失效应变阈值时→判定断裂。本文用此指标评估骨骼骨折风险。最大主应变：在某个方向上材料拉伸的最大值——用于评估韧带等"拉断"型损伤。</p>
+    <p><strong>壳单元 vs 1D vs 实体：</strong>壳单元（shell element）=二维薄层单元，适合模拟韧带/筋膜等薄膜结构。1D单元（beam/spring element）=一维线单元，适合模拟细长韧带（足部）。实体单元（solid element）=三维体单元，适合模拟骨骼/跟腱等有体积的结构。</p>
+    <p><strong>LS-DYNA：</strong>Livermore Software Technology Corporation开发的显式有限元求解器，擅长处理大变形、碰撞、冲击等瞬态动力学问题。汽车碰撞和冲击模拟的行业标准。</p>
+  </div>
+</div>
+
+<div class="card" id="card-3-4">
+  <h3><span class="badge">3.4</span> 方法笔记模板</h3>
+  <div class="think-zone">
+    <p class="prompt">📝 总结实验设计和潜在问题</p>
+    <div class="user-input-area"><textarea data-save="ankle-card-3-4-notes" placeholder="设计类型：&#10;主要优势：&#10;潜在问题：&#10;改进建议："></textarea></div>
+  </div>
+</div>
+</section>
+
+<!-- ===== STEP 4 ===== -->
+<section id="s4"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 4 · 结果精读</h2>
+
+<div class="card" id="card-4-1">
+  <h3><span class="badge">4.1</span> 坠落-自然和外翻姿势</h3>
+  <div class="think-zone"><p class="prompt">❓ Table 3 + Figure 2：自然姿势和外翻姿势下坠落的损伤模式是怎样的？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>展示了什么：</strong>自然姿势落地后，距骨向外、向后、向上移动→压缩胫骨远端和外踝→骨折。距骨应力集中区预示骨折风险。距骨外移→前内侧韧带群拉伸→推胫骨内移→胫腓韧带应力增加。随坠落高度增加，韧带应力/应变峰值不增反降，但峰值出现时间提前。</p>
+    <div class="key-insight">关键发现：外翻姿势与自然姿势的损伤模式一致——但外翻姿势下胫骨和距骨的有效塑性应变随坠落高度增加而增加（这不同于自然姿势）。这意味着外翻坠落可能产生更严重的骨骼损伤。</div>
+    <p><strong>说明了什么：</strong>自然和外翻姿势产生的是"典型"垂直压缩骨折模式——与Lauge-Hansen分型V型和Ashurst-Bromer纵向骨折一致。但韧带损伤风险不随高度线性增加——这可能是因为更高坠落时骨骼先断裂吸收了能量，韧带反而"逃过一劫"。</p>
+  </div>
+</div>
+
+<div class="card" id="card-4-2">
+  <h3><span class="badge">4.2</span> 坠落-内翻/跖屈/背屈姿势</h3>
+  <div class="think-zone"><p class="prompt">❓ Table 4 + Figures 3-4：非中性姿势下的损伤有何特殊之处？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>展示了什么：</strong></p>
+    <ul>
+      <li><strong>内翻：</strong>角度越小→外踝和胫骨远端的有效应力和塑性应变越大。内翻姿势下胫骨远端和距骨承受的塑性应变<strong>小于</strong>外翻姿势→内翻可能造成较轻损伤。</li>
+      <li><strong>跖屈：</strong>损伤模式受坠落高度影响。5m不易产生关节内骨折；10m和20m直接产生胫骨远端压缩骨折。随高度增加，胫骨和距骨塑性应变增大。大角度跖屈(30°)+低高度(5m)→足持续滑动→无骨折。</li>
+      <li><strong>背屈：</strong>胫骨远端外侧前关节面首先受压骨折→然后外踝被TFL牵拉+跟骨压缩→骨折。仅低高度(5m)+大角度(30°)时才出现足-地相对滑动→无关节内骨折→以后外侧韧带群牵拉损伤为特征。</li>
+    </ul>
+    <div class="key-insight">关键发现：当坠落高度较低且姿势角度较大时，足与地面的相对滑动会消耗能量，<strong>不产生关节内压缩骨折</strong>。此时损伤表现为胫腓骨骨干骨折和韧带损伤——这些模式与撞击损伤<strong>无法区分</strong>。</div>
+  </div>
+</div>
+
+<div class="card" id="card-4-3">
+  <h3><span class="badge">4.3</span> 撞击-踝关节直接撞击</h3>
+  <div class="think-zone"><p class="prompt">❓ Table 6 + Figures 5-6：不同方向和速度的踝关节直接撞击产生什么损伤？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>A-P撞击踝关节：</strong>主要造成前内侧韧带（胫距前韧带/胫舟韧带）损伤，但<strong>一般不产生骨折</strong>，所有速度下均未形成关节内骨折。膝关节屈曲将冲击能量有效转化为腿部动能。</p>
+    <p><strong>L-M撞击踝关节：</strong>直接造成外踝骨折+踝关节外旋（extorsion）。高速(≥20m/s)时还产生内踝撕脱骨折（三角韧带牵拉）。低速撞击仅产生外踝骨折。</p>
+    <p><strong>P-A撞击踝关节：</strong>模式变化大——10m/s: 外踝骨折+内踝撕脱；15m/s: 无骨折（原文未充分解释）；20m/s: 胫腓骨撞击点骨折+后内侧韧带群明显拉伸。膝关节过伸角度限制导致踝和下肢运动受限。</p>
+    <div class="key-insight">关键发现：直接撞击踝关节几乎不产生胫骨远端压缩骨折——这是与坠落损伤的根本区别。</div>
+  </div>
+</div>
+
+<div class="card" id="card-4-4">
+  <h3><span class="badge">4.4</span> 撞击-小腿间接撞击</h3>
+  <div class="think-zone"><p class="prompt">❓ Figures 7-9 + Table 5：撞击小腿各段对踝关节的间接效应？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>A-P撞击小腿下段：</strong>与撞击踝关节机制类似→踝过度背屈+两侧韧带过度拉伸→内踝撕脱骨折。三角韧带和后距腓韧带损伤风险大。相比A-P撞击踝关节和其他腿段，<strong>A-P撞击小腿下段导致的骨骼和韧带应力/应变最大</strong>，可能造成最严重的复合损伤。</p>
+    <p><strong>L-M撞击小腿下段：</strong>低速(10m/s)不产生骨折（撞击点位于胫腓骨结合部）。随速度增加→腓骨下段骨折+内踝撕脱。不同速度形成不同损伤模式。</p>
+    <p><strong>P-A撞击小腿下段：</strong>低速(10/15m/s)→距骨内侧碰撞内踝→应力/应变增加但无关节内骨折。高速(20m/s)→应力增加→内踝、胫骨远端后方、距骨关节内骨折。</p>
+    <p><strong>撞击中上段腿：</strong>A-P和P-A撞击→撞击点胫腓骨骨折+高速时踝韧带间接损伤。L-M撞击中段腿→仅高速(15-20m/s)产生撞击点骨折，踝韧带和骨骼应力/应变不显著增加。</p>
+    <div class="key-insight">关键发现：撞击高度离踝关节越远→对踝损伤的影响越弱。但A-P撞击小腿下段是个例外——它产生的踝损伤比直接撞击踝关节更严重。</div>
+  </div>
+</div>
+</section>
+
+<!-- ===== STEP 5 ===== -->
+<section id="s5"><h2 style="color:var(--gold-light);margin-bottom:20px;font-size:1.2em;">Step 5 · 讨论精读</h2>
+
+<div class="card" id="card-5-1">
+  <h3><span class="badge">5.1</span> 讨论结构</h3>
+  <div class="think-zone"><p class="prompt">❓ 讨论部分有哪几个核心逻辑段？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>讨论7段结构：</strong></p>
+    <ol>
+      <li><strong>问题重申：</strong>法医实践中踝损伤机制复杂多样，民事和刑事纠纷中急需澄清。当前研究停留在经验判断阶段。</li>
+      <li><strong>FE方法优势：</strong>克服尸体实验和动物实验的限制（低成本/高效率/可重复），THUMS 4.0精细建模+充分验证。</li>
+      <li><strong>坠落损伤的再分析：</strong>不是每种坠落都产生压缩骨折——推翻传统观点。总结坠落姿势×高度对损伤模式的影响规律。</li>
+      <li><strong>与Untaroiu等结论的比较：</strong>本研究的坠落损伤规律与Untaroiu(2013)的踏板碰撞轴向加载研究结论相近→提示法医实践中应考虑坠落高度和踝姿势。</li>
+      <li><strong>撞击损伤的系统分析：</strong>A-P撞击踝不产生骨折（膝关节屈曲转化能量）；P-A撞击产生多种模式；L-M撞击的速度依赖性。小腿下段间接撞击的特殊性。</li>
+      <li><strong>核心鉴别框架：</strong>"有胫骨远端压缩骨折→坠落；无压缩骨折→不能排除坠落"的非对称鉴别逻辑。胫腓骨骨干骨折/韧带损伤/撕脱骨折是非特异性模式。</li>
+      <li><strong>局限：</strong>模型韧带/距骨/跟骨无失效阈值；载荷条件不够全面；模型无自主收缩肌肉；传统FE无法模拟骨折线扩展。</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card" id="card-5-2">
+  <h3><span class="badge">5.2</span> 作者解释</h3>
+  <div class="think-zone"><p class="prompt">❓ 作者如何解释"不是所有坠落都产生压缩骨折"这一反直觉发现？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>核心解释：</strong>低高度+大角度姿势→足与地面发生相对滑动→距骨和胫骨之间的强力相互作用不充分→不足以产生胫骨远端压缩骨折。同时，足滑动导致胫腓骨中下段承受大的弯曲力矩和扭转→产生骨干骨折。</p>
+    <p><strong>与传统临床经验的对比：</strong>传统Lauge-Hansen分型认为坠落造成V型骨折（垂直压缩）。但该分型未考虑法医实践中更复杂的条件：坠落高度和着地后踝姿势的多样性。本文的模拟表明：当坠落条件偏离"理想化轴向压缩"时，损伤模式可以完全不同于传统教科书描述。</p>
+    <p><strong>法医实践的启示：</strong>在法医案例中分析踝关节损伤机制时，需要考虑坠落高度和地面条件对踝姿势的影响，特别关注胫腓骨骨干骨折的非典型机制——不能因为"没有压缩骨折"就排除坠落。</p>
+  </div>
+</div>
+
+<div class="card" id="card-5-3">
+  <h3><span class="badge">5.3</span> 核心概念深度解析</h3>
+  <div class="think-zone"><p class="prompt">❓ "鉴别坠落与撞击"的非对称逻辑是什么？这在法医学中意味着什么？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>非对称鉴别逻辑：</strong></p>
+    <div class="key-insight">"有胫骨远端垂直压缩骨折 → 可以认定坠落（特异性高）；无压缩骨折 → 不能排除坠落（敏感性低）。"</div>
+    <p>这意味着：</p>
+    <ul>
+      <li><strong>正向推断（肯定性）：</strong>发现典型的胫骨远端压缩骨折→可以较确定地推断为坠落机制。这是一个<strong>高特异性</strong>的指标。</li>
+      <li><strong>反向推断（排除性）：</strong>没有压缩骨折≠不是坠落。因为低高度+大角度姿势的坠落可能只产生骨干骨折+韧带损伤，与撞击损伤模式重叠。这是一个<strong>低敏感性</strong>的指标。</li>
+    </ul>
+    <p><strong>法医学意义：</strong>在法医鉴定中，这种非对称逻辑意味着：①我们永远不能仅凭"没有压缩骨折"就排除坠落的可能性；②胫腓骨骨干骨折+韧带损伤的案例需要额外证据（现场勘查/目击证词/其他损伤模式/车辆痕迹等）来推断损伤机制；③FE模拟可以帮助理解特定案例中"为什么坠落产生了非典型模式"。</p>
+  </div>
+</div>
+
+<div class="card" id="card-5-4">
+  <h3><span class="badge">5.4</span> 批判性思考清单</h3>
+  <div class="think-zone">
+    <p class="prompt">❓ 对本文进行批判性评估</p>
+    <ul class="task-list"><li>THUMS 4.0的验证充分吗？</li><li>模型缺乏韧带/距骨/跟骨失效阈值——这影响多大？</li><li>模拟的"骨折"是真实的吗？</li><li>摩擦系数0.75的敏感性如何？</li><li>研究结论的可推广性？</li></ul>
+    <div class="user-input-area"><textarea data-save="ankle-card-5-4-notes" placeholder="你的批判性思考..."></textarea></div>
+  </div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <ul>
+      <li><strong>THUMS验证：</strong>股骨/膝/胫骨/足踝均有对应力学试验验证——验证充分。但这些验证是在特定加载条件下进行的，本文的坠落和撞击条件可能超出验证范围。</li>
+      <li><strong>缺乏失效阈值：</strong>这是本文最大的技术局限。模型无法直接模拟韧带断裂和距骨/跟骨骨折→作者只能通过"应变超过合理阈值"间接推断损伤风险。这意味着：①报告的"韧带损伤"是基于应变推断而非实际断裂；②可能低估了合并距骨骨折的坠落损伤。</li>
+      <li><strong>"骨折"的真实性：</strong>有效塑性应变超过阈值→可判定骨骼单元的"断裂"。但这是基于连续介质力学的简化处理，不能真实再现骨折线的形成和扩展。作者明确承认：传统FE无法模拟楔形骨折、螺旋骨折等特殊形态。</li>
+      <li><strong>摩擦系数敏感性：</strong>0.75这个值直接决定了足-地滑动的临界条件——而足是否滑动又是区分"压缩骨折"和"骨干骨折"模式的关键。作者未做摩擦系数的敏感性分析，这是一个重要的遗漏。</li>
+      <li><strong>可推广性：</strong>50百分位男性模型+简化地面/保险杠边界条件。真实事故中，地面不一定是刚性的（草地/沙地/斜坡），保险杠不是简化的平板，个体差异（体重/骨密度/肌肉力量）未考虑。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card" id="card-5-5">
+  <h3><span class="badge">5.5</span> 作者自述局限</h3>
+  <div class="think-zone"><p class="prompt">❓ 作者在讨论中主动承认了哪些局限？有没有遗漏的重要局限？</p></div>
+  <div class="reveal-btn-wrap"><button class="reveal-btn" onclick="revealAnswer(this)">💡 揭晓答案</button></div>
+  <div class="answer-zone">
+    <p><strong>作者承认的局限（4点）：</strong></p>
+    <ul>
+      <li>⚠️ 韧带/距骨/跟骨/其他足骨的失效阈值未设定→模型无法直接重建韧带断裂和距骨跟骨骨折</li>
+      <li>⚠️ 人体材料属性测量仍是FE模型改进的长期任务</li>
+      <li>⚠️ 模型缺少自主收缩肌肉→无法模拟损伤过程中肌肉收缩的保护效应</li>
+      <li>⚠️ 基于传统FE方法的THUMS不能模拟最真实的骨折形态→无法再现骨折线形成和扩展（楔形/螺旋等特殊形态）→解决依赖FE技术本身的发展（如Smoothed Particle Galerkin方法）</li>
+    </ul>
+    <p><strong>作者未提及但值得注意的局限：</strong></p>
+    <ul>
+      <li>🔴 没有进行摩擦系数的敏感性分析（0.75是单一假设值，实际中鞋-地摩擦系数从0.3到0.9不等）</li>
+      <li>🔴 地面被设为无穷大刚性体——真实地面是有弹性和变形能力的</li>
+      <li>🔴 保险杠被简化为刚性平板——真实保险杠有复杂的几何形状和材料特性</li>
+      <li>🔴 50百分位单一男性模型——无法评估性别/体型对损伤模式的影响</li>
+      <li>🔴 每种条件只模拟了一次（确定性模拟）——没有讨论模型参数不确定性对结果的潜在影响</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<footer>精读生成于 2026-08-08 · 基于 Li et al. (2022) Forensic Sciences Research · 按 <kbd>G</kbd> 查看术语表</footer>
+</div>
+
+<!-- Glossary -->
+<div class="glossary-overlay" id="glossaryOverlay" onclick="toggleGlossary()"></div>
+<div class="glossary-bar" id="glossaryBar">
+  <h3>📖 术语表（15个）</h3>
+  <div class="term"><strong>THUMS</strong><span>Total Human Model of Safety，丰田开发的全人体有限元安全模型，V4.0含主要器官/血管/肌肉的精细网格</span></div>
+  <div class="term"><strong>FE (Finite Element)</strong><span>有限元方法——将连续体离散为小单元，通过数值求解力学方程来模拟变形/应力/应变</span></div>
+  <div class="term"><strong>LS-DYNA</strong><span>显式有限元求解器，擅长瞬态动力学（碰撞/冲击/大变形），汽车安全的行业标准</span></div>
+  <div class="term"><strong>Effective Plastic Strain</strong><span>有效塑性应变——衡量材料不可逆变形的程度，超过失效阈值→判定断裂（骨骼）</span></div>
+  <div class="term"><strong>Max Principal Strain</strong><span>最大主应变——材料在某个方向上拉伸的最大值，用于评估韧带"拉断"风险</span></div>
+  <div class="term"><strong>Lauge-Hansen Classification</strong><span>踝关节骨折分型系统——按受伤时足的位置和受力方向分为5型（V型=垂直压缩）</span></div>
+  <div class="term"><strong>LAD / LCX / RCA</strong><span>无（这是上一篇文章的术语，请忽略）</span></div>
+  <div class="term"><strong>Inversion / Eversion</strong><span>内翻（足底转向内侧）/ 外翻（足底转向外侧）</span></div>
+  <div class="term"><strong>Plantar Flexion / Dorsiflexion</strong><span>跖屈（脚尖向下，如踮脚）/ 背屈（脚尖向上，如勾脚）</span></div>
+  <div class="term"><strong>A-P / L-M / P-A</strong><span>前-后方向 / 外侧-内侧方向 / 后-前方向的撞击</span></div>
+  <div class="term"><strong>Avulsion Fracture</strong><span>撕脱骨折——韧带/肌腱从骨骼附着点"撕下"一小块骨片</span></div>
+  <div class="term"><strong>Compression Fracture</strong><span>压缩骨折——轴向力将骨组织压碎，常见于胫骨远端（本文的坠落特征性损伤）</span></div>
+  <div class="term"><strong>TFL (Tibiofibular Ligament)</strong><span>胫腓韧带——连接胫骨和腓骨的韧带群</span></div>
+  <div class="term"><strong>Deltoid Ligament</strong><span>三角韧带——踝关节内侧的主要韧带复合体，防止踝外翻</span></div>
+  <div class="term"><strong>CONTACT_AUTOMATIC_ SURFACE_TO_SURFACE</strong><span>LS-DYNA的自动面-面接触定义——模拟两个物体碰撞时的力学交互</span></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+function revealAnswer(btn) {
+  const card = btn.closest('.card');
+  const answer = card.querySelector('.answer-zone');
+  if (answer.classList.contains('show')) {
+    answer.classList.remove('show');
+    btn.textContent = '💡 揭晓答案';
+    btn.classList.remove('revealed');
+  } else {
+    answer.classList.add('show');
+    btn.textContent = '🔄 收起答案';
+    btn.classList.add('revealed');
+  }
+}
+function toggleGlossary() { document.getElementById('glossaryBar').classList.toggle('open'); document.getElementById('glossaryOverlay').classList.toggle('show'); }
+function scrollToSection(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._timeout); t._timeout=setTimeout(()=>t.classList.remove('show'),1500); }
+function revealAll() { document.querySelectorAll('.answer-zone').forEach(a=>a.classList.add('show')); document.querySelectorAll('.reveal-btn').forEach(b=>{b.textContent='🔄 收起答案';b.classList.add('revealed');}); showToast('✅ 已全部揭晓'); }
+function resetAll() { document.querySelectorAll('.answer-zone').forEach(a=>a.classList.remove('show')); document.querySelectorAll('.reveal-btn').forEach(b=>{b.textContent='💡 揭晓答案';b.classList.remove('revealed');}); document.querySelectorAll('.hint-wrap').forEach(h=>h.classList.remove('open')); showToast('🔄 已全部重置'); }
+function toggleAll() { if (Array.from(document.querySelectorAll('.answer-zone')).some(a=>!a.classList.contains('show'))) revealAll(); else resetAll(); }
+function getAllCards() { return Array.from(document.querySelectorAll('.card[id^="card-"]')); }
+function findCurrentCardIndex() { const cards=getAllCards(); const vm=window.scrollY+window.innerHeight/2; for(let i=cards.length-1;i>=0;i--){if(cards[i].offsetTop<=vm)return i;} return 0; }
+function scrollToCard(i) { const cards=getAllCards(); if(i>=0&&i<cards.length){cards[i].scrollIntoView({behavior:'smooth',block:'center'});showToast(`卡片 ${i+1}/${cards.length}`);} }
+function nextCard(){scrollToCard(findCurrentCardIndex()+1);} function prevCard(){scrollToCard(findCurrentCardIndex()-1);}
+function revealCurrent(){const cards=getAllCards();const i=findCurrentCardIndex();if(i>=0&&i<cards.length){const btn=cards[i].querySelector('.reveal-btn');const ans=cards[i].querySelector('.answer-zone');if(!ans.classList.contains('show')&&btn)revealAnswer(btn);}}
+function nextSection(){const secs=['s1','s2','s3','s4','s5'];const vm=window.scrollY+window.innerHeight/2;for(let i=0;i<secs.length;i++){const s=document.getElementById(secs[i]);if(s&&s.offsetTop>vm+50){s.scrollIntoView({behavior:'smooth'});showToast(`跳至 Step ${i+1}`);return;}}}
+document.addEventListener('keydown',function(e){if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;switch(e.key){case'ArrowRight':case' ':e.preventDefault();nextCard();break;case'ArrowLeft':e.preventDefault();prevCard();break;case'Enter':case'ArrowDown':e.preventDefault();revealCurrent();break;case'Shift':e.preventDefault();nextSection();break;case'a':case'A':e.preventDefault();revealAll();break;case'r':case'R':e.preventDefault();resetAll();break;case't':case'T':e.preventDefault();toggleAll();break;case'g':case'G':e.preventDefault();toggleGlossary();break;case'1':e.preventDefault();document.getElementById('s1').scrollIntoView({behavior:'smooth'});showToast('Step 1 · 结构扫描');break;case'2':e.preventDefault();document.getElementById('s2').scrollIntoView({behavior:'smooth'});showToast('Step 2 · 引言精读');break;case'3':e.preventDefault();document.getElementById('s3').scrollIntoView({behavior:'smooth'});showToast('Step 3 · 方法精读');break;case'4':e.preventDefault();document.getElementById('s4').scrollIntoView({behavior:'smooth'});showToast('Step 4 · 结果精读');break;case'5':e.preventDefault();document.getElementById('s5').scrollIntoView({behavior:'smooth'});showToast('Step 5 · 讨论精读');break;case'Escape':if(document.getElementById('glossaryBar').classList.contains('open'))toggleGlossary();break;}});
+document.querySelectorAll('textarea[data-save]').forEach(ta=>{const key=ta.getAttribute('data-save');const saved=localStorage.getItem(key);if(saved)ta.value=saved;ta.addEventListener('input',()=>localStorage.setItem(key,ta.value));});
+window.addEventListener('scroll',()=>{const secs=['s1','s2','s3','s4','s5'];const links=document.querySelectorAll('.step-nav a');let cur='s1';secs.forEach(id=>{const el=document.getElementById(id);if(el&&el.offsetTop<=window.scrollY+120)cur=id;});links.forEach((a,i)=>{a.classList.toggle('active',secs[i]===cur);});});
+</script>
+</body>
+</html>
