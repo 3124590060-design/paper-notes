@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>综述选题：深度学习在法医人类学性别推断中的应用</title>
+<style>
+:root {
+  --bg: #0f1923; --surface: #1a2d3c; --surface2: #1e3a4a; --gold: #c9a96e;
+  --gold-light: #e0c88e; --text: #e8e0d0; --text-dim: #a0b0c0; --accent: #4a8c8c;
+  --red: #c0392b; --blue: #5d9ec9; --green: #5a9e6f; --card-radius: 10px;
+  --border: rgba(201,169,110,0.2); --font: -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  --orange: #d4884a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.75; font-size: 15px; }
+.container { max-width: 960px; margin: 0 auto; padding: 20px 24px 80px; }
+header { text-align: center; padding: 40px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+header h1 { font-size: 1.6em; color: var(--gold-light); margin-bottom: 6px; }
+header .sub { color: var(--text-dim); font-size: .88em; }
+header .doi { color: var(--accent); font-size: .8em; }
+.snapshot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+.snapshot-grid .snap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--card-radius); padding: 18px 20px; }
+.snapshot-grid .snap h4 { color: var(--gold); font-size: .95em; margin-bottom: 8px; }
+.snapshot-grid .snap p, .snapshot-grid .snap ul { font-size: .9em; color: var(--text-dim); }
+.snapshot-grid .snap ul { padding-left: 18px; }
+.snapshot-grid .snap.innovation { border-color: var(--red); }
+@media (max-width: 640px) { .snapshot-grid { grid-template-columns: 1fr; } }
+.section-title { color: var(--gold-light); font-size: 1.2em; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.paradigm { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 14px 0; font-size: .85em; }
+.paradigm .step { background: var(--surface2); padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border); white-space: nowrap; }
+.paradigm .step.new { background: rgba(192,57,43,.2); border-color: var(--red); color: #e8a090; font-weight: 600; }
+.paradigm .arrow { color: var(--gold); font-size: 1.1em; }
+.clue-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--card-radius); padding: 22px 24px; margin-bottom: 18px; }
+.clue-card h3 { color: var(--gold-light); font-size: 1.05em; margin-bottom: 10px; }
+.clue-card .feasibility { display: inline-block; background: var(--accent); color: #fff; padding: 3px 12px; border-radius: 12px; font-size: .78em; margin-left: 8px; }
+.clue-card .feasibility.high { background: var(--green); }
+.clue-card .feasibility.medium { background: var(--orange); }
+.clue-card .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+@media (max-width: 640px) { .clue-card .grid-2 { grid-template-columns: 1fr; } }
+.clue-card .metric { background: var(--surface2); border-radius: 8px; padding: 10px 14px; }
+.clue-card .metric .label { font-size: .78em; color: var(--text-dim); }
+.clue-card .metric .value { font-size: 1.05em; color: var(--gold-light); font-weight: 600; }
+.reading-list { list-style: none; padding: 0; }
+.reading-list li { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin-bottom: 10px; }
+.reading-list li .priority { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: .75em; font-weight: 600; margin-right: 8px; }
+.reading-list li .priority.p1 { background: var(--red); color: #fff; }
+.reading-list li .priority.p2 { background: var(--orange); color: #fff; }
+.reading-list li .priority.p3 { background: var(--accent); color: #fff; }
+.reading-list li .title { color: var(--gold-light); font-weight: 600; }
+.reading-list li .reason { font-size: .85em; color: var(--text-dim); margin-top: 4px; }
+.meaning-box { background: linear-gradient(135deg, rgba(201,169,110,.08), rgba(192,57,43,.06)); border: 1px solid var(--gold); border-radius: var(--card-radius); padding: 22px 26px; margin-top: 24px; }
+.meaning-box h3 { color: var(--gold-light); margin-bottom: 10px; }
+.meaning-box p { font-size: .93em; }
+footer { text-align: center; color: var(--text-dim); font-size: .78em; padding: 32px 0 20px; border-top: 1px solid var(--border); margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>综述选题页：深度学习在法医人类学性别推断中的应用</h1>
+  <p class="sub">基于 Cao et al. (2022) "Use of deep learning in forensic sex estimation of virtual pelvic models from the Han population"</p>
+  <p class="doi">Forensic Sciences Research, 2022, 7(3), 540–549 · DOI: 10.1080/20961790.2021.2024369</p>
+</header>
+
+<h2 class="section-title">📸 论文快照</h2>
+<div class="snapshot-grid">
+  <div class="snap"><h4>🔍 研究问题</h4><p>深度学习CNN能否在虚拟半骨盆模型上进行准确的性别推断？能否超越资深法医人类学家的传统形态学方法？模型关注的区域是否与传统解剖特征一致？</p></div>
+  <div class="snap"><h4>⚙️ 方法</h4><p>862例汉族CT→3D重建→提取6区域2D图像→数据增强×4→GoogLeNet Inception V4迁移学习→172例独立测试→CNN vs 2名专家(12年+8年)→Guided Backpropagation热图验证。</p></div>
+  <div class="snap"><h4>📊 结论</h4><p>除坐骨和髋臼外，4/6区域CNN指标全>0.9。VP准确率100%、AUC=1.000。所有CNN模型均优于人类专家。热图确认模型聚焦传统解剖性别特征。AI定位为"辅助工具"。</p></div>
+  <div class="snap innovation"><h4>💡 创新点</h4><ul><li>首次在汉族人群虚拟骨盆上系统训练CNN做性别推断</li><li>首次头对头比较CNN vs 人类专家在同一测试集上的表现</li><li>热图可解释性验证（非纯黑箱）</li><li>意外发现PI(骨盆入口)和闭孔的性别推断潜力</li></ul></div>
+</div>
+
+<h2 class="section-title">🔗 研究范式链</h2>
+<div class="paradigm">
+  <span class="step">医院CT数据库</span><span class="arrow">→</span>
+  <span class="step">Mimics 3D重建</span><span class="arrow">→</span>
+  <span class="step new">6区域2D图像提取</span><span class="arrow">→</span>
+  <span class="step new">数据增强×4</span><span class="arrow">→</span>
+  <span class="step new">CNN迁移学习</span><span class="arrow">→</span>
+  <span class="step new">热图可解释性</span><span class="arrow">→</span>
+  <span class="step">独立测试集评估</span><span class="arrow">→</span>
+  <span class="step new">CNN vs 人类专家对比</span>
+</div>
+<p style="font-size:.84em;color:var(--text-dim);margin-top:6px;"><span style="color:var(--red);font-weight:600;">红色步骤</span> = 本文新增/改进的环节。核心范式革新在于：用CT数据替代实体骨骼收藏、用CNN替代主观形态学评分、用热图提供可解释性。</p>
+
+<h2 class="section-title">🧵 三条综述线索</h2>
+
+<div class="clue-card">
+  <h3>线索一：人工智能在法医人类学性别推断中的应用——从传统形态学到深度学习的范式转变 <span class="feasibility high">可行性 ★★★★★</span></h3>
+  <div class="grid-2">
+    <div class="metric"><div class="label">需要阅读论文量</div><div class="value">~35-50篇</div></div>
+    <div class="metric"><div class="label">竞争程度</div><div class="value">较低（2022年后才涌现，尚无系统性综述）</div></div>
+    <div class="metric"><div class="label">目标期刊</div><div class="value">Forensic Sci Int / Int J Legal Med / J Forensic Sci</div></div>
+    <div class="metric"><div class="label">预计工作量</div><div class="value">2-3个月</div></div>
+  </div>
+  <p><strong>逻辑链：</strong>法医性别推断的传统范式（形态学+度量学+判别函数）→ 局限（主观性/人群特异性/经验门槛）→ 计算方法的早期尝试（传统ML：SVM/决策树/逻辑回归）→ 深度学习的突破（CNN/迁移学习/数据增强）→ 按骨骼部位分述（骨盆/颅骨/下颌骨/长骨）→ 虚拟骨骼 vs 实体骨骼的数据来源之争 → 可解释性问题（热图/注意力机制）→ 从实验室到法庭的转化障碍。</p>
+  <p><strong>框架建议：</strong>以"方法演进"为主线，按时间+技术维度组织。每个骨骼部位设"传统方法基准→传统ML→深度学习"的对比表，突出深度学习带来的准确率增益。专设一节讨论"可解释性：法庭对AI黑箱的挑战"。</p>
+</div>
+
+<div class="clue-card">
+  <h3>线索二：骨盆性别二态性的量化评估——从肉眼形态到AI特征提取的整合视角 <span class="feasibility high">可行性 ★★★★☆</span></h3>
+  <div class="grid-2">
+    <div class="metric"><div class="label">需要阅读论文量</div><div class="value">~40-55篇</div></div>
+    <div class="metric"><div class="label">竞争程度</div><div class="value">中等偏低（骨盆性别推断综述已有，但整合AI视角的尚无）</div></div>
+    <div class="metric"><div class="label">目标期刊</div><div class="value">Am J Phys Anthropol / Forensic Sci Res / Int J Legal Med</div></div>
+    <div class="metric"><div class="label">预计工作量</div><div class="value">2.5-3.5个月</div></div>
+  </div>
+  <p><strong>逻辑链：</strong>骨盆为什么是性别推断的"金标准"骨骼（分娩+双足运动双重功能压力）→ 各解剖区域的性别二态性生物学基础（VP的腹侧弧/DP的耻骨下角/GSN的宽度和深度/PI的形状/Ischium的长度比/Acetabulum的大小和方向）→ 传统方法对各区域的评估效能汇总（Phenice/Klales/Walker/Bruzek等方法）→ 传统方法的两种局限：观察者间变异+人群特异性 → AI方法揭示的新模式（本文PI 96.5%、闭孔贡献等意外发现）→ 整合框架：哪些区域适合AI、哪些区域适合人类、哪些区域适合两者结合？</p>
+  <p><strong>框架建议：</strong>按解剖区域分章节，每章含"生物学基础→传统方法→AI方法→两者比较→推荐方案"五段式结构。以一张"性别二态性信号强度×评估方法自动化程度"的双轴散点图作为核心可视化。</p>
+</div>
+
+<div class="clue-card">
+  <h3>线索三：深度学习在法医学中的可解释性挑战——热图、注意力机制与法庭可接受性 <span class="feasibility medium">可行性 ★★★☆☆</span></h3>
+  <div class="grid-2">
+    <div class="metric"><div class="label">需要阅读论文量</div><div class="value">~30-45篇（需跨法医学+AI可解释性两个领域）</div></div>
+    <div class="metric"><div class="label">竞争程度</div><div class="value">极低（跨学科综述，几乎无直接竞争者）</div></div>
+    <div class="metric"><div class="label">目标期刊</div><div class="value">J Forensic Sci (评论) / Sci Justice / Law Prob Risk</div></div>
+    <div class="metric"><div class="label">预计工作量</div><div class="value">3-4个月</div></div>
+  </div>
+  <p><strong>逻辑链：</strong>AI在法医学中应用的"黑箱"困境→ Daubert/Frye标准对科学证据可检验性和可解释性的要求 → 当前AI可解释性技术分类（事后解释：热图/显著性图/LIME/SHAP；内在可解释：注意力机制/决策树蒸馏/概念瓶颈）→ 法医学中可解释性实践的现状（Cao的热图/其他法医AI论文的可解释性做了什么/遗漏了什么）→ 法庭对AI证据的接受度：案例法和趋势分析 → 法医AI可解释性的"最低标准"建议（什么情况下热图足够？什么情况下需要更强的可解释性？）→ "增强vs替代"的伦理边界。</p>
+  <p><strong>框架建议：</strong>先讲AI可解释性的技术谱系（从完全黑箱到完全可解释），再讲法医学证据标准（Daubert/Frye/联邦证据规则），最后将两者映射——提出"法医AI可解释性等级量表"作为综述的核心贡献。这篇综述需要法医学+计算机科学的双学科视角，建议考虑合作者。</p>
+</div>
+
+<h2 class="section-title">📚 下一步阅读清单</h2>
+<ul class="reading-list">
+  <li><span class="priority p1">P1·必读</span><span class="title">Bewes J, et al. (2019) Artificial intelligence for sex determination of skeletal remains: application of a deep learning artificial neural network to human skulls. J Forensic Leg Med, 62:40–43.</span><div class="reason">最早将深度学习应用于法医骨骼性别推断的论文之一（颅骨），是本文的直接前驱文献。</div></li>
+  <li><span class="priority p1">P1·必读</span><span class="title">Klales AR, et al. (2012) A revised method of sexing the human innominate using Phenice's nonmetric traits and statistical methods. Am J Phys Anthropol, 149:104–114.</span><div class="reason">当前最广泛使用的骨盆形态学性别推断方法（Klales方法），本文人类专家即参照此方法。综述必须覆盖。</div></li>
+  <li><span class="priority p1">P1·必读</span><span class="title">Spampinato C, et al. (2017) Deep learning for automated skeletal bone age assessment in X-ray images. Med Image Anal, 36:41–51.</span><div class="reason">深度学习在骨骼评估（骨龄）中的开创性工作，为后续法医应用奠定了方法论基础。</div></li>
+  <li><span class="priority p2">P2·推荐</span><span class="title">Colman KL, et al. (2019) The accuracy of 3D virtual bone models of the pelvis for morphological sex estimation. Int J Legal Med, 133:1853–1860.</span><div class="reason">系统评估虚拟骨盆模型对形态学性别推断准确性的影响——直接回答"虚拟能替代实体吗？"这个关键问题。</div></li>
+  <li><span class="priority p2">P2·推荐</span><span class="title">Kenyhercz MW, et al. (2017) Worldwide population variation in pelvic sexual dimorphism: a validation and recalibration of the Klales et al. method. Forensic Sci Int, 277:259.e1–259.e8.</span><div class="reason">全球多人群Klales方法验证——为综述中"深度学习能否解决人群特异性问题"提供对照基线。</div></li>
+  <li><span class="priority p2">P2·推荐</span><span class="title">Esteva A, et al. (2017) Dermatologist-level classification of skin cancer with deep neural networks. Nature, 542:115–118.</span><div class="reason">深度学习中"AI vs 人类专家"对比范式的典范论文，为综述的方法论框架提供参考。</div></li>
+  <li><span class="priority p3">P3·拓展</span><span class="title">Li Y, et al. (2019) Forensic age estimation for pelvic X-ray images using deep learning. Eur Radiol, 29:2322–2329.</span><div class="reason">骨盆X线+深度学习的骨龄推断——与本文方法类似但任务不同（年龄vs性别），为综述提供交叉视角。</div></li>
+  <li><span class="priority p3">P3·拓展</span><span class="title">Yune S, et al. (2019) Beyond human perception: sexual dimorphism in hand and wrist radiographs is discernible by a deep learning model. J Digit Imaging, 32:665–671.</span><div class="reason">将深度学习性别推断从骨盆/颅骨扩展到手足——暗示AI可能发现人类肉眼无法察觉的性别信号。</div></li>
+</ul>
+
+<div class="meaning-box">
+  <h3>💬 这篇论文对综述意味着什么</h3>
+  <p>Cao et al. (2022) 在法医AI性别推断领域中处于一个特殊位置：它<strong>不是</strong>第一篇将深度学习应用于法医骨骼的论文（Bewes 2019的颅骨CNN更早），但它很可能是该方向上<strong>方法论最完整的一篇</strong>——有862例的样本量、6个解剖区域的系统覆盖、迁移学习+数据增强的合理技术选择、头对头的人类专家对比实验、以及热图可解释性分析。这意味着它在综述中可以扮演"方法学标杆"的角色。</p>
+  <p style="margin-top:8px;">对综述而言，这篇论文提供了三个关键贡献：</p>
+  <p style="margin-top:4px;">① <strong>性能基准</strong>——VP 100%/AUC 1.000、DP 98.8%/AUC 0.999等数字可以作为综述中"当前技术水平(State of the Art)"的锚点数值；</p>
+  <p style="margin-top:4px;">② <strong>意外发现</strong>——PI 96.5%和闭孔的热图贡献，为综述提出"AI可能发现新性别特征"这一论点提供了实证支撑；</p>
+  <p style="margin-top:4px;">③ <strong>方法学讨论的多重抓手</strong>——VP完美准确率的可信度问题、3D→2D的信息丢失、迁移学习的天花板效应、Acetabulum的欠拟合原因——这些问题每一个都可以单独展开成综述中的一个批判性讨论小节。</p>
+</div>
+
+<footer>综述选题生成于 2026-08-08 · 基于 Cao et al. (2022)</footer>
+</div>
+</body>
+</html>
