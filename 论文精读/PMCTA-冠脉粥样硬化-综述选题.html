@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>综述选题：PMCTA在法医心血管诊断中的应用</title>
+<style>
+:root {
+  --bg: #0f1923; --surface: #1a2d3c; --surface2: #1e3a4a; --gold: #c9a96e;
+  --gold-light: #e0c88e; --text: #e8e0d0; --text-dim: #a0b0c0; --accent: #4a8c8c;
+  --red: #c0392b; --blue: #5d9ec9; --green: #5a9e6f; --card-radius: 10px;
+  --border: rgba(201,169,110,0.2); --font: -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  --orange: #d4884a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.75; font-size: 15px; }
+.container { max-width: 960px; margin: 0 auto; padding: 20px 24px 80px; }
+header { text-align: center; padding: 40px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+header h1 { font-size: 1.6em; color: var(--gold-light); margin-bottom: 6px; }
+header .sub { color: var(--text-dim); font-size: .88em; }
+header .doi { color: var(--accent); font-size: .8em; }
+
+/* Snapshot 2x2 */
+.snapshot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+.snapshot-grid .snap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--card-radius); padding: 18px 20px; }
+.snapshot-grid .snap h4 { color: var(--gold); font-size: .95em; margin-bottom: 8px; }
+.snapshot-grid .snap p, .snapshot-grid .snap ul { font-size: .9em; color: var(--text-dim); }
+.snapshot-grid .snap ul { padding-left: 18px; }
+.snapshot-grid .snap.innovation { border-color: var(--red); }
+@media (max-width: 640px) { .snapshot-grid { grid-template-columns: 1fr; } }
+
+/* Section */
+.section-title { color: var(--gold-light); font-size: 1.2em; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+/* Paradigm chain */
+.paradigm { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 14px 0; font-size: .85em; }
+.paradigm .step { background: var(--surface2); padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border); white-space: nowrap; }
+.paradigm .step.new { background: rgba(192,57,43,.2); border-color: var(--red); color: #e8a090; font-weight: 600; }
+.paradigm .arrow { color: var(--gold); font-size: 1.1em; }
+
+/* Clue cards */
+.clue-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--card-radius); padding: 22px 24px; margin-bottom: 18px; }
+.clue-card h3 { color: var(--gold-light); font-size: 1.05em; margin-bottom: 10px; }
+.clue-card .feasibility { display: inline-block; background: var(--accent); color: #fff; padding: 3px 12px; border-radius: 12px; font-size: .78em; margin-left: 8px; }
+.clue-card .feasibility.high { background: var(--green); }
+.clue-card .feasibility.medium { background: var(--orange); }
+.clue-card .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+@media (max-width: 640px) { .clue-card .grid-2 { grid-template-columns: 1fr; } }
+.clue-card .metric { background: var(--surface2); border-radius: 8px; padding: 10px 14px; }
+.clue-card .metric .label { font-size: .78em; color: var(--text-dim); }
+.clue-card .metric .value { font-size: 1.05em; color: var(--gold-light); font-weight: 600; }
+
+/* Reading list */
+.reading-list { list-style: none; padding: 0; }
+.reading-list li { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin-bottom: 10px; }
+.reading-list li .priority { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: .75em; font-weight: 600; margin-right: 8px; }
+.reading-list li .priority.p1 { background: var(--red); color: #fff; }
+.reading-list li .priority.p2 { background: var(--orange); color: #fff; }
+.reading-list li .priority.p3 { background: var(--accent); color: #fff; }
+.reading-list li .title { color: var(--gold-light); font-weight: 600; }
+.reading-list li .reason { font-size: .85em; color: var(--text-dim); margin-top: 4px; }
+
+/* Meaning box */
+.meaning-box { background: linear-gradient(135deg, rgba(201,169,110,.08), rgba(192,57,43,.06)); border: 1px solid var(--gold); border-radius: var(--card-radius); padding: 22px 26px; margin-top: 24px; }
+.meaning-box h3 { color: var(--gold-light); margin-bottom: 10px; }
+.meaning-box p { font-size: .93em; }
+
+footer { text-align: center; color: var(--text-dim); font-size: .78em; padding: 32px 0 20px; border-top: 1px solid var(--border); margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>综述选题页：PMCTA在法医心血管诊断中的应用</h1>
+  <p class="sub">基于 Wan et al. (2023) "The value of PMCTA in the diagnosis of coronary atherosclerosis in isolated human hearts"</p>
+  <p class="doi">Forensic Sciences Research, 8, 308–312 · DOI: 10.1093/fsr/owad038</p>
+</header>
+
+<!-- 1. Paper Snapshot -->
+<h2 class="section-title">📸 论文快照</h2>
+<div class="snapshot-grid">
+  <div class="snap">
+    <h4>🔍 研究问题</h4>
+    <p>死后CT血管造影（PMCTA）在离体心脏冠脉狭窄诊断中，与金标准（尸检+组织学）相比，应用价值如何？</p>
+  </div>
+  <div class="snap">
+    <h4>⚙️ 方法</h4>
+    <p>16例疑似心源性猝死者 → PMCT平扫 → 尸检取心 → 自制装置水基造影剂灌注（120-150 mmHg） → CT扫描+3D重建 → 两放射医师评估（4级狭窄分级） → K-S检验 vs 尸检+组织学金标准</p>
+  </div>
+  <div class="snap">
+    <h4>📊 结论</h4>
+    <p>PMCTA与金标准诊断一致性良好（P=0.779）。10/16例检出阳性。3处轻微偏差。PMCTA可精准定位狭窄、3D可视化、数据可复读——但不能替代尸检（仅能看血管，无法评估心肌）。</p>
+  </div>
+  <div class="snap innovation">
+    <h4>💡 创新点</h4>
+    <ul>
+      <li>改进灌注装置（增加血压计实现压力监控）</li>
+      <li>首次对离体人心脏PMCTA进行金标准统计比较</li>
+      <li>系统分析水基造影剂在离体器官造影中的可行性</li>
+      <li>3D重建作为法庭证据的潜力论述</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 2. Paradigm Chain -->
+<h2 class="section-title">🔗 研究范式链</h2>
+<div class="paradigm">
+  <span class="step">尸体PMCT扫描</span><span class="arrow">→</span>
+  <span class="step">尸检取心</span><span class="arrow">→</span>
+  <span class="step new">冲洗血凝块</span><span class="arrow">→</span>
+  <span class="step new">自制装置灌注造影剂</span><span class="arrow">→</span>
+  <span class="step new">CT血管造影+3D重建</span><span class="arrow">→</span>
+  <span class="step">双放射医师评估</span><span class="arrow">→</span>
+  <span class="step">尸检+组织学验证</span><span class="arrow">→</span>
+  <span class="step">统计比较</span>
+</div>
+<p style="font-size:.84em;color:var(--text-dim);margin-top:6px;"><span style="color:var(--red);font-weight:600;">红色步骤</span> = 本文新增/改进的环节。相比传统尸检流程，核心增量在于"离体造影+3D可视化+压力监控"三位一体。</p>
+
+<!-- 3. Three Review Clues -->
+<h2 class="section-title">🧵 三条综述线索</h2>
+
+<div class="clue-card">
+  <h3>线索一：PMCTA用于法医死后诊断——技术演进、应用场景与证据等级 <span class="feasibility high">可行性 ★★★★☆</span></h3>
+  <div class="grid-2">
+    <div class="metric"><div class="label">需要阅读论文量</div><div class="value">~40-60篇</div></div>
+    <div class="metric"><div class="label">竞争程度</div><div class="value">中等（已有数篇综述，但多聚焦全身造影）</div></div>
+    <div class="metric"><div class="label">目标期刊</div><div class="value">Int J Legal Med / Forensic Sci Int / J Forensic Sci</div></div>
+    <div class="metric"><div class="label">预计工作量</div><div class="value">2-3个月</div></div>
+  </div>
+  <p><strong>逻辑链：</strong>PMCT的局限（血管-软组织对比差）→ PMCTA的出现（1980s-2000s初步探索）→ 造影剂分类（油性/水性/石蜡基）→ 全身造影 vs 离体器官造影 → 不同血管系统的应用（冠脉/脑/主动脉/外周）→ 与金标准（尸检+组织学）的一致性证据汇总 → 法医实践中的证据等级与标准化需求。</p>
+  <p><strong>框架建议：</strong>按"技术类型 × 血管系统"矩阵组织。先综述PMCTA的技术分类（全身/靶向/单器官，油性/水性造影剂），再按解剖区域汇总诊断准确性，最后讨论标准化、证据等级和法庭可接受性。</p>
+</div>
+
+<div class="clue-card">
+  <h3>线索二：死后影像学在冠心病猝死诊断中的辅助价值——从PMCT到PMCTA的系统综述 <span class="feasibility high">可行性 ★★★★☆</span></h3>
+  <div class="grid-2">
+    <div class="metric"><div class="label">需要阅读论文量</div><div class="value">~30-45篇</div></div>
+    <div class="metric"><div class="label">竞争程度</div><div class="value">较低（聚焦冠心病猝死的死后影像学综述较少）</div></div>
+    <div class="metric"><div class="label">目标期刊</div><div class="value">Forensic Sci Res / Am J Forensic Med Pathol / J Forensic Leg Med</div></div>
+    <div class="metric"><div class="label">预计工作量</div><div class="value">1.5-2.5个月</div></div>
+  </div>
+  <p><strong>逻辑链：</strong>冠心病→心源性猝死→死后诊断的金标准与挑战→PMCT的优势（整体扫描/不可逆记录）与局限（无法评估血管狭窄）→PMCTA的引入（冠脉可视化）→不同PMCTA方案的比较（全身vs靶向vs离体）→诊断准确性数据的定量合并（如可行做meta-analysis）→PMCTA+PMCT+尸检的综合诊断流程建议。</p>
+  <p><strong>框架建议：</strong>以临床问题（冠心病猝死的死后诊断）为锚点，按诊断技术阶梯递进（肉眼尸检→组织学→PMCT→PMCTA→PMCTA+组织学联合），用ROC/DOR等指标比较各阶梯的诊断效能，最终提出最优诊断路径。</p>
+</div>
+
+<div class="clue-card">
+  <h3>线索三：离体器官血管造影在法医病理学中的应用——方法、优势与局限 <span class="feasibility medium">可行性 ★★★☆☆</span></h3>
+  <div class="grid-2">
+    <div class="metric"><div class="label">需要阅读论文量</div><div class="value">~25-35篇（但文献较分散、不易检索）</div></div>
+    <div class="metric"><div class="label">竞争程度</div><div class="value">低（尚无专门综述涵盖离体多器官造影）</div></div>
+    <div class="metric"><div class="label">目标期刊</div><div class="value">Forensic Sci Res / J Forensic Radiol Imaging</div></div>
+    <div class="metric"><div class="label">预计工作量</div><div class="value">2-3个月</div></div>
+  </div>
+  <p><strong>逻辑链：</strong>全身PMCTA的技术与物流挑战→离体器官造影的提出（Inokuchi 2013等先驱）→方法学演进（灌注装置、造影剂、压力参数）→按器官系统分述（心脏、脑、肺、肾等）→各器官的诊断准确性证据→离体 vs 在体造影的比较→法医实践中的应用场景（设备不可及地区/需转运器官/出血干扰全身造影等）→未来方向（标准化方案、灌注参数个体化）。</p>
+  <p><strong>框架建议：</strong>按器官系统分章节，每章统一方法学参数表格（样本量、灌注压力、造影剂类型、金标准、诊断准确性），便于跨研究比较。最后讨论"离体器官造影何时优于/劣于/互补于全身造影"的决策框架。</p>
+</div>
+
+<!-- 4. Reading List -->
+<h2 class="section-title">📚 下一步阅读清单</h2>
+<ul class="reading-list">
+  <li>
+    <span class="priority p1">P1·必读</span>
+    <span class="title">Inokuchi G, et al. (2013) The utility of postmortem computed tomography selective coronary angiography in parallel with autopsy. Forensic Sci Med Pathol, 9:506–514.</span>
+    <div class="reason">本文方法的直接前身——在38例离体心脏上率先验证了选择性冠脉PMCTA的可行性，是理解本文技术路线的必读文献。</div>
+  </li>
+  <li>
+    <span class="priority p1">P1·必读</span>
+    <span class="title">Grabherr S, et al. (2018) Postmortem CT angiography compared with autopsy: a forensic multicenter study. Radiology, 288:270–276.</span>
+    <div class="reason">多中心研究，提供了PMCTA与尸检对比的最高级别临床证据，可作为综述中"全身PMCTA"的参照系。</div>
+  </li>
+  <li>
+    <span class="priority p1">P1·必读</span>
+    <span class="title">Rutty GN, et al. (2017) Diagnostic accuracy of post-mortem CT with targeted coronary angiography versus autopsy. Lancet, 390:145–154.</span>
+    <div class="reason">发表在Lancet上的前瞻性盲法比较研究，是PMCTA领域证据等级最高的文献之一，综述必须引用。</div>
+  </li>
+  <li>
+    <span class="priority p2">P2·推荐</span>
+    <span class="title">Grabherr S, et al. (2014) Advances in post-mortem CT-angiography. Br J Radiol, 87:20130488.</span>
+    <div class="reason">综述性文献，提供了PMCTA技术发展的全景视角，是构建综述框架的重要参考。</div>
+  </li>
+  <li>
+    <span class="priority p2">P2·推荐</span>
+    <span class="title">Lee H, et al. (2019) Postmortem computed tomography and computed tomography angiography: cardiothoracic imaging applications. J Thorac Imaging, 34:286–298.</span>
+    <div class="reason">聚焦心胸PMCTA应用的最新综述（2019年），涵盖技术和诊断两方面，时效性好。</div>
+  </li>
+  <li>
+    <span class="priority p2">P2·推荐</span>
+    <span class="title">Chanchal Singh MK, et al. (2020) Correlation and assessment of coronary artery luminal stenosis: post-mortem computed tomography angiogram versus histopathology. Forensic Sci Int, 308:110171.</span>
+    <div class="reason">与本文最相似的金标准比较研究（2020年新发表），提供了与本研究的直接对比数据。</div>
+  </li>
+  <li>
+    <span class="priority p3">P3·拓展</span>
+    <span class="title">Qian H, et al. (2016) Diagnosis of a cerebral arteriovenous malformation using isolated brain computed tomography angiography. Am J Forensic Med Pathol, 37:201–204.</span>
+    <div class="reason">离体脑器官PMCTA的案例报告——为线索三（多器官离体造影综述）提供脑部应用的证据。</div>
+  </li>
+  <li>
+    <span class="priority p3">P3·拓展</span>
+    <span class="title">Morgan B, et al. (2013) Accuracy of targeted post-mortem computed tomography coronary angiography compared to assessment of serial histological sections. Int J Leg Med, 127:809–817.</span>
+    <div class="reason">靶向冠脉PMCTA与系列组织切片的系统比较，方法与本文高度相关但样本量更大。</div>
+  </li>
+</ul>
+
+<!-- 5. Meaning Box -->
+<div class="meaning-box">
+  <h3>💬 这篇论文对综述意味着什么</h3>
+  <p>Wan et al. (2023) 是"离体器官PMCTA"研究路线的最新节点，其核心贡献不在于"发现了一个惊人的新结论"（P=0.779的统计结果本身并不强力），而在于它<strong>示范了一个可被后续研究改进的方法学框架</strong>——自制灌注装置、标准化灌注压力范围、3D重建+双评估者设计。对综述而言，这篇论文的价值有两个层面：</p>
+  <p style="margin-top:8px;">① <strong>作为"离体心脏PMCTA vs 金标准"的直接证据纳入定量分析</strong>——虽然样本量小，但它是少有的进行了正式统计检验的研究；</p>
+  <p style="margin-top:4px;">② <strong>暴露了该领域的核心方法论问题</strong>——灌注压力的个体化缺失、小样本下统计检验效能不足、"未拒绝H₀"被误解为"证明H₀"——这些恰恰是综述可以进行批判性讨论和方法学改进建议的切入点。</p>
+  <p style="margin-top:8px;">如果你的综述目标是<strong>系统性地评估PMCTA的法医证据价值</strong>，这篇论文是必引文献；如果你的综述目标是<strong>提出PMCTA技术的标准化方案</strong>，这篇论文的方法学改进（血压计、三通阀）和不足（统一压力）同样提供了很好的正反两方面素材。</p>
+</div>
+
+<footer>综述选题生成于 2026-08-08 · 基于 Wan et al. (2023)</footer>
+</div>
+</body>
+</html>
