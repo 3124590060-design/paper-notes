@@ -23,6 +23,10 @@
     border-bottom: 2px solid #dfe6e9;
     display: flex; align-items: center; gap: 6px;
   }
+  .group-title .cnt {
+    font-size: 11px; font-weight: 400; color: #b2bec3;
+    background: #f0f3f6; border-radius: 10px; padding: 1px 8px;
+  }
   a.item {
     display: block; text-decoration: none;
     background: #fff; border-radius: 12px;
@@ -39,15 +43,21 @@
   }
   a.item .tag.green { background: #55efc4; color: #0a3d2e; }
   a.item .tag.orange { background: #fab1a0; color: #4a1f14; }
+  a.item .tag.blue { background: #74b9ff; }
+  a.item .tag.gray { background: #b2bec3; color: #fff; }
+  .section-note {
+    font-size: 12px; color: #0984e3; background: #eef5fd;
+    border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; line-height: 1.6;
+  }
   .footer { text-align: center; color: #b2bec3; font-size: 12px; margin-top: 20px; }
 </style>
 </head>
 <body>
   <h1>📚 我的论文精读笔记</h1>
-  <p class="subtitle">在 iPad / 手机上随时打开阅读 · 共 23 个页面</p>
+  <p class="subtitle">在 iPad / 手机上随时打开阅读 · 共 24 个页面 · 已按「黄平团队 / 其他团队」分区</p>
 
   <div class="group">
-    <div class="group-title">🦠 硅藻检测专题</div>
+    <div class="group-title">🏛️ 黄平团队 · 硅藻检测专题 <span class="cnt">6 页</span></div>
     <a class="item" href="论文精读/%20DiatomNet%20v1.0%20-%E7%A1%85%E8%97%BB%E6%A3%80%E6%B5%8B-%E7%B2%BE%E8%AF%BB.html">
       <span class="tag green">精读</span>DiatomNet v1.0 硅藻检测 — 论文精读
     </a>
@@ -65,7 +75,7 @@
   </div>
 
   <div class="group">
-    <div class="group-title">📄 论文精读</div>
+    <div class="group-title">🏛️ 黄平团队 · 振动光谱 / 病理诊断 <span class="cnt">7 页</span></div>
     <a class="item" href="论文精读/dbdb%E7%B3%96%E5%B0%BF%E7%97%85%E5%B0%8F%E9%BC%A0-FTIR-Raman-ML-%E7%B2%BE%E8%AF%BB.html">
       <span class="tag green">精读</span>db/db 糖尿病小鼠 FTIR-Raman-ML — 论文精读
     </a>
@@ -79,18 +89,16 @@
     <a class="item" href="论文精读/ftir-mi-forensic-%E7%BB%BC%E8%BF%B0%E9%80%89%E9%A2%98.html">
       <span class="tag orange">综述选题</span>FTIR 心肌损伤法医学 — 综述选题
     </a>
-    <a class="item" href="论文精读/CanoTrujillo%E7%AD%89-2026-%E6%8C%AF%E5%8A%A8%E5%85%89%E8%B0%B1%E5%8C%BA%E5%88%86%E6%B2%99%E5%9C%9F%E5%A4%9A%E7%89%A9%E7%A7%8D%E8%A1%80%E8%BF%B9-%E7%B2%BE%E8%AF%BB.html">
-      <span class="tag green">精读</span>振动光谱区分沙土多物种血迹 — 论文精读
-    </a>
-    <a class="item" href="论文精读/CanoTrujillo%E7%AD%89-2026-%E6%8C%AF%E5%8A%A8%E5%85%89%E8%B0%B1%E5%8C%BA%E5%88%86%E6%B2%99%E5%9C%9F%E5%A4%9A%E7%89%A9%E7%A7%8D%E8%A1%80%E8%BF%B9-%E7%BB%BC%E8%BF%B0%E9%80%89%E9%A2%98.html">
-      <span class="tag orange">综述选题</span>振动光谱区分沙土多物种血迹 — 综述选题
-    </a>
-    <a class="item" href="论文精读/PMCTA-%E5%86%A0%E8%84%89%E7%B2%95%E6%A0%B7%E7%A1%AC%E5%8C%96-%E7%B2%BE%E8%AF%BB.html">
+    <a class="item" href="论文精读/PMCTA-%E5%86%A0%E8%84%89%E7%B2%A5%E6%A0%B7%E7%A1%AC%E5%8C%96-%E7%B2%BE%E8%AF%BB.html">
       <span class="tag green">精读</span>PMCTA 冠脉粥样硬化诊断 — 论文精读
     </a>
-    <a class="item" href="论文精读/PMCTA-%E5%86%A0%E8%84%89%E7%B2%95%E6%A0%B7%E7%A1%AC%E5%8C%96-%E7%BB%BC%E8%BF%B0%E9%80%89%E9%A2%98.html">
+    <a class="item" href="论文精读/PMCTA-%E5%86%A0%E8%84%89%E7%B2%A5%E6%A0%B7%E7%A1%AC%E5%8C%96-%E7%BB%BC%E8%BF%B0%E9%80%89%E9%A2%98.html">
       <span class="tag orange">综述选题</span>PMCTA 冠脉粥样硬化诊断 — 综述选题
     </a>
+  </div>
+
+  <div class="group">
+    <div class="group-title">🏛️ 黄平团队 · 法医人类学 / 生物力学 <span class="cnt">4 页</span></div>
     <a class="item" href="论文精读/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E9%AA%A8%E7%9B%86%E6%80%A7%E5%88%AB%E6%8E%A8%E6%96%AD-%E7%B2%BE%E8%AF%BB.html">
       <span class="tag green">精读</span>深度学习骨盆性别推断 — 论文精读
     </a>
@@ -106,14 +114,25 @@
   </div>
 
   <div class="group">
-    <div class="group-title">🗂️ 其他</div>
+    <div class="group-title">🌍 其他团队 · 相关文献 <span class="cnt">2 页</span></div>
+    <div class="section-note">非黄平团队文献（其他研究组）——用于横向比较与综述补充</div>
+    <a class="item" href="论文精读/CanoTrujillo%E7%AD%89-2026-%E6%8C%AF%E5%8A%A8%E5%85%89%E8%B0%B1%E5%8C%BA%E5%88%86%E6%B2%99%E5%9C%9F%E5%A4%9A%E7%89%A9%E7%A7%8D%E8%A1%80%E8%BF%B9-%E7%B2%BE%E8%AF%BB.html">
+      <span class="tag green">精读</span>振动光谱区分沙土多物种血迹 — 论文精读
+    </a>
+    <a class="item" href="论文精读/CanoTrujillo%E7%AD%89-2026-%E6%8C%AF%E5%8A%A8%E5%85%89%E8%B0%B1%E5%8C%BA%E5%88%86%E6%B2%99%E5%9C%9F%E5%A4%9A%E7%89%A9%E7%A7%8D%E8%A1%80%E8%BF%B9-%E7%BB%BC%E8%BF%B0%E9%80%89%E9%A2%98.html">
+      <span class="tag orange">综述选题</span>振动光谱区分沙土多物种血迹 — 综述选题
+    </a>
+  </div>
+
+  <div class="group">
+    <div class="group-title">🗂️ 数据与工具 <span class="cnt">5 项</span></div>
     <a class="item" href="数据/黄平文献汇总总览.html">
-      <span class="tag orange">汇总表</span>黄平文献汇总总览（73篇 · 精进版）
+      <span class="tag blue">汇总表</span>黄平文献汇总总览（73篇 · 精进版）
     </a>
     <a class="item" href="数据/黄平文献粗读汇总表_精进版.xlsx">📊 黄平文献粗读汇总表_精进版.xlsx（下载）</a>
     <a class="item" href="数据/paper_explainer.html">paper_explainer — 论文讲解</a>
-    <a class="item" href="数据/%E9%BB%84%E5%B9%B3%E6%96%87%E7%8C%AE%E7%B2%97%E8%AF%BB%E6%B1%87%E6%80%BB%E8%A1%A8_%E7%B2%BE%E8%BF%9B%E7%89%88.xlsx">📊 黄平文献粗读汇总表（精进版）— Excel</a>
     <a class="item" href="黄平论文分类导图.html">🗺️ 黄平论文分类导图</a>
+    <a class="item" href="数据/%E9%BB%84%E5%B9%B3%E6%96%87%E7%8C%AE%E7%B2%97%E8%AF%BB%E6%B1%87%E6%80%BB%E8%A1%A8_%E7%B2%BE%E8%BF%9B%E7%89%88.xlsx">📊 黄平文献粗读汇总表（精进版）— Excel</a>
   </div>
 
   <p class="footer">由 Hermes 生成 · 2026-08</p>
